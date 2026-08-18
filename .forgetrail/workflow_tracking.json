@@ -322,6 +322,10 @@
     {
       "date": "2026-08-18",
       "summary": "D20: aiBreze pass on public copy; overlay + cursor rule; aibreze as a devDependency."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Bumped package to 0.1.0 for the first real CLI publish."
     }
   ],
   "openQuestions": []

@@ -1,6 +1,6 @@
 {
   "name": "localberth",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "description": "Local DNS for ports. Named TCP port leases for a local machine.",
