@@ -37,7 +37,7 @@ The domain is **not** the running app. The dashboard stays on `http://127.0.0.1:
 - Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
 - LocalBerth’s own dashboard has a lease named `localberth` on **54321**.
 - FilePress site at **localberth.com** explains the product and install (`pages/` for what / how-to).
-- Package **`localberth`** is publishable on npm (`bin.localberth`; not `private` at ship). Unscoped name was free as of 2026-08-18.
+- Package **`localberth`** is on npm (`bin.localberth`; not `private` at ship). Name reserved as `0.0.0` on 2026-08-18.
 
 **Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a global `berth` binary (name is crowded).
 
@@ -219,6 +219,6 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 3. License = Apache-2.0.
 4. Dashboard port = **54321**.
 5. **localberth.com** = FilePress explainer in `site/`; app is npm `localberth` running locally.
-6. **npm name stake:** `localberth@0.0.0` (placeholder bin). Human publishes. Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
+6. **npm name reserved:** `localberth@0.0.0` published 2026-08-18. Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
 
 **Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine + site).

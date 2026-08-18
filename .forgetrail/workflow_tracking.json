@@ -19,7 +19,8 @@
         "Name collisions researched and recorded",
         "Stack confirmed (same as Engram)",
         "Data home ~/.localberth/ + dashboard port 54321 + Apache-2.0",
-        "Public site = FilePress at site/ (localberth.com); app = published npm localberth"
+        "Public site = FilePress at site/ (localberth.com); app = published npm localberth",
+        "npm name reserved: localberth@0.0.0 (2026-08-18)"
       ],
       "exitCriteriaRemaining": [
         "Explicit user approval to advance to Phase 2"
@@ -169,7 +170,7 @@
       "id": "D11",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "The app ships as a published unscoped npm package named localberth (bin localberth). It runs locally after install. Unscoped name was unpublished as of 2026-08-18.",
+      "decision": "The app ships as a published unscoped npm package named localberth (bin localberth). It runs locally after install. Name reserved as localberth@0.0.0 on 2026-08-18.",
       "rationale": "Operator install path is npm/pnpm, not cloning this repo. Avoid the crowded berth bin.",
       "alternatives_considered": ["private: true indefinitely", "@catalystforge/localberth only", "Global berth bin"]
     },
@@ -195,6 +196,10 @@
     {
       "date": "2026-08-18",
       "summary": "Prepared localberth@0.0.0 publish stub (package.json + placeholder bin). User will publish."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "User published localberth@0.0.0 to npm. Name is reserved."
     }
   ],
   "openQuestions": []
