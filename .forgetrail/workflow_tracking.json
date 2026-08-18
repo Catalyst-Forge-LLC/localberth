@@ -103,21 +103,29 @@
       "id": "D3",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Product name Berth; repo path berth. Keep the berth CLI name locally; do not publish unscoped global until PATH collisions are decided.",
-      "rationale": "Metaphor fits. Folder is free. Global `berth` binary is already used by MCP/WhenLabs/worktree tools.",
+      "decision": "Repo path berth. CLI is localberth, not the crowded global berth binary.",
+      "rationale": "Folder is free. cargo/@whenlabs/berth already own `berth` on PATH.",
       "alternatives_considered": ["Nomenclator", "Pharos", "PortHub clone name"]
+    },
+    {
+      "id": "D4",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Public name LocalBerth; intended domain localberth.com. Pairing with localhost (machine vs slip), not a replacement for localhost URLs.",
+      "rationale": "localhost + LocalBerth read as a pair. Domain is available. Avoids berth CLI/search collisions.",
+      "alternatives_considered": ["Berth only", "*.localberth hostnames in v1"]
     }
   ],
   "gotchas": [],
   "sessions": [
     {
       "date": "2026-08-18",
-      "summary": "Sibling kickoff. Product shape locked. Brief drafted. Waiting on stack/data-home/license/port lock."
+      "summary": "Sibling kickoff. LocalBerth public name + localberth.com pairing with localhost. Waiting on stack/data-home/license/port lock."
     }
   ],
   "openQuestions": [
     "Stack: SvelteKit + SQLite + pnpm vs CLI-first",
-    "Data home: ~/.berth vs repo data/",
+    "Data home: ~/.localberth vs repo data/",
     "License: Apache-2.0 vs private-only",
     "Dashboard default port 3999"
   ]

@@ -1,4 +1,4 @@
-# Berth — Phase 1 architecture brief
+# LocalBerth — Phase 1 architecture brief
 
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
@@ -13,15 +13,17 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 **What we are building:**
 
-Berth is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Apps look up their port at start (`berth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). This is not DNS and not a reverse proxy.
+**LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1.
+
+Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; intended domain `localberth.com`; repo folder `/berth`; CLI `localberth`.
 
 **Project archetype:** `product` _(personal operator tool; license TBD — propose Apache-2.0 to match Engram)_
 
 **What “done” looks like for v1:**
 
 - Named leases persist (`engram` → `5193`, bind `0.0.0.0`, always-on).
-- `berth get <name>` prints the port (and fails clearly if missing).
-- `berth claim` / `berth ls` / `berth scan` work from the CLI.
+- `localberth get <name>` prints the port (and fails clearly if missing).
+- `localberth claim` / `ls` / `scan` work from the CLI.
 - Dashboard shows **leases** and **observed** listening sockets (process name when available).
 - Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
 - Berth’s own dashboard has a lease named `berth` (proposed default **3999**).
@@ -36,7 +38,7 @@ Berth is a local **port name service**: stable named leases for TCP ports, a das
 
 **Hero flow:**
 
-Need a port for an app → `berth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(berth get engram)` (or Vite helper) → dashboard shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
+Need a port for an app → `localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(localberth get engram)` (or Vite helper) → dashboard shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
 
 **Secondary (v1):**
 
@@ -55,7 +57,7 @@ Need a port for an app → `berth claim engram --port 5193 --bind 0.0.0.0` → f
 - **Observed is read-only.** Never kill a process unless a later phase adds an explicit command.
 - **Berth must lease itself** so it does not become another mystery port.
 
-**State persistence:** A-local. Propose `~/.berth/` (leases + optional SQLite scan cache). Repo `data/` only for dev fixtures.
+**State persistence:** A-local. Propose `~/.localberth/` (leases + optional SQLite scan cache). Repo `data/` only for dev fixtures.
 
 ---
 
@@ -68,7 +70,7 @@ _Proposed to match Engram / DictaWhisper muscle memory. **Not locked.**_
 | App shape | CLI + local web dashboard | **proposed** | CLI is the lookup API; dashboard is the harbor board |
 | Language | TypeScript (ESM, strict) | **proposed** | Same as Engram |
 | Package manager | pnpm | **proposed** | Same as Engram |
-| CLI runner | `tsx` / compiled bin | **proposed** | `berth` in `package.json` bin |
+| CLI runner | `tsx` / compiled bin | **proposed** | `localberth` in `package.json` bin |
 | Dashboard | SvelteKit 5 + Tailwind + adapter-node | **proposed** | Same workbench as Engram |
 | DB | SQLite (`better-sqlite3`) | **proposed** | Leases + observed snapshots; human-readable export (`leases.toml`) optional |
 | Auth | None | **proposed** | Single operator |
@@ -114,20 +116,20 @@ Conflict: lease port in use by a process that is not the expected app → dashbo
 ## 6. CLI (v1)
 
 ```text
-berth get <name>              # stdout: port number only (scripts)
-berth claim <name> [--port N] [--bind ADDR] [--ephemeral]
-berth ls
-berth scan
-berth firewall sync           # apply wanted rules
+localberth get <name>              # stdout: port number only (scripts)
+localberth claim <name> [--port N] [--bind ADDR] [--ephemeral]
+localberth ls
+localberth scan
+localberth firewall sync           # apply wanted rules
 ```
 
-Apps: `PORT=$(berth get engram)`. Vite often ignores `PORT` — a small `--port` helper or documented `vite.config` `loadEnv` is in scope.
+Apps: `PORT=$(localberth get engram)`. Vite often ignores `PORT` — a small `--port` helper or documented `vite.config` `loadEnv` is in scope.
 
 ---
 
 ## 7. Firewall (Windows)
 
-On claim/move: upsert inbound TCP allow named `Berth <name> <port>` (e.g. `Berth engram 5193`). Remove or disable the previous port’s Berth-managed rule.
+On claim/move: upsert inbound TCP allow named `LocalBerth <name> <port>` (e.g. `LocalBerth engram 5193`). Remove or disable the previous port’s LocalBerth-managed rule.
 
 If not elevated: print the `netsh` line (today’s Engram 5193 situation) and mark `needs-elevation`.
 
@@ -135,9 +137,14 @@ Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 517
 
 ---
 
-## 8. Name collisions (keep Berth anyway)
+## 8. Naming
 
-The **folder and product name** are fine. The **global CLI name `berth`** is crowded:
+**Public:** LocalBerth · intended site `localberth.com`  
+**Pairing:** localhost = the machine; LocalBerth = the slip (addition, not a replacement).  
+**Repo:** `berth`  
+**CLI:** `localberth` (avoids the crowded global `berth` binary)
+
+The bare name **berth** is crowded:
 
 | Who | What | Binary |
 | --- | --- | --- |
@@ -149,11 +156,9 @@ The **folder and product name** are fine. The **global CLI name `berth`** is cro
 
 Closest **product** prior art under a different name: [PortHub](https://github.com/Jason-Vaughan/PortHub) (“DHCP for developers”).
 
-**Why we still use Berth:** local sibling path, private package, metaphor matches (stable berth vs their ephemeral/worktree/MCP). Risk is `PATH`: if someone `cargo install berth` or `npm i -g @whenlabs/berth`, `berth` is not us.
+**Why LocalBerth:** same metaphor, pairs with localhost, `localberth.com` is free, CLI does not collide with cargo/`@whenlabs/berth`. Folder stays `/berth`.
 
-**Mitigation (v1):** `package.json` `"name": "berth"` + `"private": true`; invoke via `pnpm berth` from this repo. Do not publish an unscoped global until we pick `@<scope>/berth` or a second bin alias.
-
-No serious trademark (English nautical word). No need to rename the folder.
+**Mitigation (v1):** `package.json` `"name": "localberth"` + `"bin": { "localberth": "…" }`; `"private": true` until publish. Optional later alias `lb`.
 
 ---
 
@@ -180,6 +185,6 @@ No serious trademark (English nautical word). No need to rename the folder.
 ## 11. Open (must lock before Phase 2)
 
 1. Stack table in §4 — confirm or change.
-2. Data home: `~/.berth/` vs repo `data/`.
+2. Data home: `~/.localberth/` vs repo `data/`.
 3. License: Apache-2.0 vs private-only.
 4. Dashboard default port **3999** — or pick another unused number.
