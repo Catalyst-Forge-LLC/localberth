@@ -9,6 +9,9 @@
   "bin": {
     "localberth": "./bin/localberth.mjs"
   },
+  "exports": {
+    "./port": "./src/lib/port.ts"
+  },
   "files": [
     "bin",
     "src",

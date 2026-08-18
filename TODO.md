@@ -12,7 +12,9 @@
 
 ## After the spine
 
-- Vite/`loadEnv` helper so apps pick up `localberth get`
+- [x] `release` + `serve`
+- [x] Hide system/RPC observed ports (toggle / `scan --all`)
+- [x] Vite helper `localberthPort()` (`localberth/port`)
 - Harden firewall backends (pf anchors, firewalld zones)
 - Public site + GitHub URLs on npm when those are public
 - Publish a real CLI version off `0.0.2`

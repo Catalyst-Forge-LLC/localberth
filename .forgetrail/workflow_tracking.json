@@ -201,6 +201,14 @@
       "decision": "Root README is the public npm page: product one-liner + install tease. Process, phase, and sibling notes stay in docs/ and .forgetrail/.",
       "rationale": "0.0.0 README overshared Phase 1 internals on npmjs.com.",
       "alternatives_considered": ["Separate README.npm.md", "Keep operator status on the package page"]
+    },
+    {
+      "id": "D15",
+      "timestamp": "2026-08-18",
+      "phase": "2-scaffolding",
+      "decision": "localberth serve is a built-in Node dashboard (no Vite required) so a global npm install can open :54321. pnpm dev stays the SvelteKit board for checkout work.",
+      "rationale": "Vite is a devDependency; the installed CLI must still show the harbor board.",
+      "alternatives_considered": ["Move Vite/SvelteKit to dependencies", "Dashboard only via pnpm dev"]
     }
   ],
   "gotchas": [
@@ -243,6 +251,10 @@
     {
       "date": "2026-08-18",
       "summary": "Phase 2 spine: CLI, SQLite registry in ~/.localberth/, dashboard :54321, firewall backends, FilePress site/."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Added release, serve, system-port filter, and localberthPort() Vite helper."
     }
   ],
   "openQuestions": []

@@ -1,14 +1,18 @@
 import { scanListeners } from './observe.js';
 import { listLeases } from './registry.js';
+import { isSystemPort } from './system-ports.js';
 import type { BoardRow, Lease, Observed } from './types.js';
 
 export type Board = {
-	rows: BoardRow[];
+	leaseRows: BoardRow[];
+	observedRows: BoardRow[];
+	hiddenSystem: number;
 	leases: Lease[];
 	observed: Observed[];
 };
 
-export async function getBoard(): Promise<Board> {
+export async function getBoard(opts: { showSystem?: boolean } = {}): Promise<Board> {
+	const showSystem = Boolean(opts.showSystem);
 	const leases = listLeases();
 	const observed = await scanListeners();
 	const byPort = new Map<number, Observed[]>();
@@ -19,7 +23,7 @@ export async function getBoard(): Promise<Board> {
 	}
 
 	const used = new Set<string>();
-	const rows: BoardRow[] = [];
+	const leaseRows: BoardRow[] = [];
 
 	for (const lease of leases) {
 		const hits = byPort.get(lease.port) ?? [];
@@ -28,7 +32,7 @@ export async function getBoard(): Promise<Board> {
 			hits[0] ??
 			null;
 		if (match) used.add(`${match.bind}:${match.port}:${match.pid ?? ''}`);
-		rows.push({
+		leaseRows.push({
 			lease,
 			observed: match,
 			listening: Boolean(match),
@@ -36,11 +40,17 @@ export async function getBoard(): Promise<Board> {
 		});
 	}
 
+	const observedRows: BoardRow[] = [];
+	let hiddenSystem = 0;
 	for (const row of observed) {
 		const key = `${row.bind}:${row.port}:${row.pid ?? ''}`;
 		if (used.has(key)) continue;
 		if (row.leaseName) continue;
-		rows.push({
+		if (!showSystem && isSystemPort(row.port)) {
+			hiddenSystem += 1;
+			continue;
+		}
+		observedRows.push({
 			lease: null,
 			observed: row,
 			listening: true,
@@ -48,5 +58,5 @@ export async function getBoard(): Promise<Board> {
 		});
 	}
 
-	return { rows, leases, observed };
+	return { leaseRows, observedRows, hiddenSystem, leases, observed };
 }

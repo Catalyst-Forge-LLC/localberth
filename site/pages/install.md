@@ -29,4 +29,10 @@ On Windows PowerShell:
 $env:PORT = localberth get engram
 ```
 
-Open the harbor board at `http://127.0.0.1:54321` while the dashboard is running (`pnpm dev` from a checkout, or the installed app’s serve path once published).
+Open the harbor board:
+
+```text
+localberth serve
+```
+
+Then visit `http://127.0.0.1:54321`.

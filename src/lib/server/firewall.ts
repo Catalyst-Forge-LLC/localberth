@@ -124,3 +124,31 @@ export async function syncAll(): Promise<FirewallAttempt[]> {
 	}
 	return out;
 }
+
+export async function removeLeaseRule(lease: Lease): Promise<FirewallAttempt> {
+	const command = firewallCommand(lease, 'delete');
+	try {
+		if (process.platform === 'win32') {
+			await run('netsh', ['advfirewall', 'firewall', 'delete', 'rule', `name=${ruleName(lease)}`]);
+		} else if (process.platform === 'darwin') {
+			await applyDarwin(listLeases());
+		} else {
+			await run('ufw', ['delete', 'allow', `${lease.port}/tcp`]).catch(async () => {
+				await run('firewall-cmd', ['--permanent', `--remove-port=${lease.port}/tcp`]);
+				await run('firewall-cmd', ['--reload']);
+			});
+		}
+		return { lease, ok: true, status: 'skipped', command };
+	} catch (err) {
+		const missing = /not found|ENOENT|No rules match/i.test(
+			err instanceof Error ? err.message : String(err)
+		);
+		return {
+			lease,
+			ok: missing,
+			status: missing ? 'skipped' : 'needs-elevation',
+			command,
+			detail: err instanceof Error ? err.message : String(err)
+		};
+	}
+}

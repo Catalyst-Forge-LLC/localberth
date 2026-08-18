@@ -1,5 +1,5 @@
 import { getDb } from './db.js';
-import { DASHBOARD_PORT } from './paths.js';
+import { DASHBOARD_NAME, DASHBOARD_PORT } from './paths.js';
 import type { FirewallStatus, Lease, LeaseKind } from './types.js';
 
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
@@ -124,4 +124,15 @@ export function claim(input: ClaimInput): ClaimResult {
 	).run(name, port, bind, kind, notes || previous?.notes || '', now);
 
 	return { lease: getLease(name)!, previous };
+}
+
+export function release(name: string, opts: { force?: boolean } = {}): Lease {
+	const n = assertName(name);
+	if (n === DASHBOARD_NAME && !opts.force) {
+		throw new Error('refusing to release localberth (the dashboard). pass --force if you mean it');
+	}
+	const lease = getLease(n);
+	if (!lease) throw new Error(`no lease named "${n}"`);
+	getDb().prepare('DELETE FROM leases WHERE name = ?').run(n);
+	return lease;
 }

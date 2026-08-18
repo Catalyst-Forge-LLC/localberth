@@ -1,7 +1,9 @@
-import { syncAll, syncLease, firewallCommand } from '../lib/server/firewall.js';
+import { firewallCommand, removeLeaseRule, syncAll, syncLease } from '../lib/server/firewall.js';
 import { scanListeners } from '../lib/server/observe.js';
-import { claim, getLease, listLeases } from '../lib/server/registry.js';
+import { isSystemPort } from '../lib/server/system-ports.js';
+import { claim, getLease, listLeases, release } from '../lib/server/registry.js';
 import { getDb } from '../lib/server/db.js';
+import { serveDashboard } from '../lib/server/serve.js';
 
 function usage(): string {
 	return `localberth — named TCP port leases
@@ -9,9 +11,11 @@ function usage(): string {
 Usage:
   localberth get <name>
   localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]
+  localberth release <name> [--force]
   localberth ls
-  localberth scan
+  localberth scan [--all]
   localberth firewall sync
+  localberth serve [--host ADDR] [--port N]
 `;
 }
 
@@ -61,7 +65,9 @@ async function main(): Promise<void> {
 		const bind = takeOpt(args, '--bind');
 		const notes = takeOpt(args, '--notes');
 		const name = args[0];
-		if (!name || args.length !== 1) fail('usage: localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]');
+		if (!name || args.length !== 1) {
+			fail('usage: localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]');
+		}
 		const port = portRaw !== undefined ? Number(portRaw) : undefined;
 		if (portRaw !== undefined && !Number.isInteger(port)) fail(`invalid --port ${portRaw}`);
 		const { lease, previous } = claim({ name, port, bind, ephemeral, notes });
@@ -69,6 +75,20 @@ async function main(): Promise<void> {
 		process.stdout.write(`${lease.name}\t${lease.port}\t${lease.bind}\t${fw.status}\n`);
 		if (!fw.ok) {
 			console.error(`firewall ${fw.status}. run as admin/sudo, or paste:\n${fw.command}`);
+		}
+		return;
+	}
+
+	if (cmd === 'release') {
+		const args = [...argv];
+		const force = takeFlag(args, '--force');
+		const name = args[0];
+		if (!name || args.length !== 1) fail('usage: localberth release <name> [--force]');
+		const lease = release(name, { force });
+		const fw = await removeLeaseRule(lease);
+		process.stdout.write(`${lease.name}\t${lease.port}\treleased\n`);
+		if (!fw.ok) {
+			console.error(`firewall ${fw.status}. paste to remove the rule:\n${fw.command}`);
 		}
 		return;
 	}
@@ -88,17 +108,21 @@ async function main(): Promise<void> {
 	}
 
 	if (cmd === 'scan') {
+		const all = takeFlag(argv, '--all');
 		const rows = await scanListeners();
-		if (rows.length === 0) {
-			console.error('no listening TCP sockets');
+		const shown = all ? rows : rows.filter((row) => row.leaseName || !isSystemPort(row.port));
+		const hidden = rows.length - shown.length;
+		if (shown.length === 0) {
+			console.error(hidden ? `no listening sockets (hid ${hidden} system ports; try --all)` : 'no listening TCP sockets');
 			return;
 		}
-		for (const row of rows) {
+		for (const row of shown) {
 			const name = row.leaseName ?? '-';
 			process.stdout.write(
 				`${row.port}\t${row.bind}\t${row.pid ?? '-'}\t${row.process ?? '-'}\t${name}\n`
 			);
 		}
+		if (hidden) console.error(`(${hidden} system ports hidden; localberth scan --all)`);
 		return;
 	}
 
@@ -110,6 +134,15 @@ async function main(): Promise<void> {
 			process.stdout.write(`${r.lease.name}\t${r.lease.port}\t${r.status}\n`);
 			if (!r.ok) console.error(`  ${firewallCommand(r.lease)}\n  ${r.detail ?? ''}`);
 		}
+		return;
+	}
+
+	if (cmd === 'serve') {
+		const host = takeOpt(argv, '--host');
+		const portRaw = takeOpt(argv, '--port');
+		const port = portRaw !== undefined ? Number(portRaw) : undefined;
+		if (portRaw !== undefined && !Number.isInteger(port)) fail(`invalid --port ${portRaw}`);
+		await serveDashboard({ host, port });
 		return;
 	}
 

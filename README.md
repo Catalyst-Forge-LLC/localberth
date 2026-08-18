@@ -8,7 +8,7 @@ Named TCP port leases for a local box. You still open the port. LocalBerth remem
 npm i -g localberth
 localberth claim engram --port 5193 --bind 0.0.0.0
 localberth get engram
-localberth ls
+localberth serve
 ```
 
 Dashboard: `http://127.0.0.1:54321`
