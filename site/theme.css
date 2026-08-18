@@ -16,7 +16,7 @@ header.site-header .wrap {
 }
 
 header.site-header .site-logo {
-	height: 8.5rem;
+	height: calc(8.5rem * 0.85);
 	width: auto;
 	max-width: none;
 	object-fit: contain;
@@ -50,6 +50,6 @@ main.wrap > header.post-header {
 
 @media (width <= 40rem) {
 	header.site-header .site-logo {
-		height: 5.5rem;
+		height: calc(5.5rem * 0.85);
 	}
 }
