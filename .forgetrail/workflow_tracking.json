@@ -248,6 +248,14 @@
       "decision": "Public explainer metaphor: LocalBerth is local DNS for ports. Names resolve to TCP numbers on this machine. Still not real DNS, not a reverse proxy, and not *.localhost URLs (D1 / D4).",
       "rationale": "DNS is the familiar name→number lookup. The gap people feel is ports, not hostnames.",
       "alternatives_considered": ["Registry-only wording", "Port name service without the DNS analogy"]
+    },
+    {
+      "id": "D20",
+      "timestamp": "2026-08-18",
+      "phase": "3-stabilization",
+      "decision": "Public copy follows aiBreze (core + landing). Overlay in docs/aibreze-overlay.md. Protected: localhost/slip pairing and Local DNS for ports. Public pages say dashboard, not harbor board.",
+      "rationale": "Same house voice as other Catalyst Forge pages. npm README is a brochure; checkout notes stay last.",
+      "alternatives_considered": ["Copy-only pass with no package", "Landing voice on the flag list"]
     }
   ],
   "gotchas": [
@@ -310,6 +318,10 @@
     {
       "date": "2026-08-18",
       "summary": "D19: public metaphor is local DNS for ports (not real DNS or *.localhost)."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "D20: aiBreze pass on public copy; overlay + cursor rule; aibreze as a devDependency."
     }
   ],
   "openQuestions": []

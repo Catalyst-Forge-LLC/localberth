@@ -33,6 +33,9 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
+      aibreze:
+        specifier: ^0.1.5
+        version: 0.1.5
       svelte:
         specifier: ^5.56.6
         version: 5.56.9
@@ -668,6 +671,10 @@ packages:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  aibreze@0.1.5:
+    resolution: {integrity: sha512-dZm08hAtUf2fKA0PXbtJSip+wlDl2zlF4Js2idmTypUajBBXhkqG5qm0/DIUidgjoLIg1D5j9fCzJ+eSsMtlcQ==}
+    engines: {node: '>=20'}
 
   aria-query@5.3.1:
     resolution: {integrity: sha512-Z/ZeOgVl7bcSYZ/u/rh0fOpvEpq//LZmdbkXyc7syVzjPAhfOa9ebsdTSjEBDU4vs5nC98Kfduj1uFo0qyET3g==}
@@ -1620,6 +1627,8 @@ snapshots:
   '@types/trusted-types@2.0.7': {}
 
   acorn@8.18.0: {}
+
+  aibreze@0.1.5: {}
 
   aria-query@5.3.1: {}
 

@@ -21,6 +21,7 @@ This repository uses **ForgeTrail Lite**. Full protocol: `.forgetrail/FORGETRAIL
 ## Conventions
 
 - Package manager: **pnpm**. Language: **TypeScript ESM**. Dashboard port **54321**. Live data **`~/.localberth/`**.
+- Public copy: **aiBreze** (`docs/aibreze-overlay.md`).
 
 ## Session start
 

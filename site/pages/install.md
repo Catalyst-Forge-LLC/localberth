@@ -29,7 +29,7 @@ On Windows PowerShell:
 $env:PORT = localberth get engram
 ```
 
-Open the harbor board:
+Open the dashboard:
 
 ```text
 localberth serve

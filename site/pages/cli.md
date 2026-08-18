@@ -17,7 +17,7 @@ localberth serve [--host ADDR] [--port N]
 
 ## claim
 
-Writes the lease, then tries to add an inbound firewall allow **only for non-loopback binds**. Loopback (`127.0.0.1`) is skipped — no WAN hole. Rules are named `LocalBerth <name> <port>` and only those are removed. If you are not admin/sudo, it prints the command to paste.
+Writes the lease, then tries to add an inbound firewall allow only for non-loopback binds. Loopback (`127.0.0.1`) is skipped: no WAN hole. Rules are named `LocalBerth <name> <port>` and only those are removed. If you are not admin/sudo, it prints the command to paste.
 
 | Flag | What it does |
 | ---- | ------------ |
@@ -27,7 +27,7 @@ Writes the lease, then tries to add an inbound firewall allow **only for non-loo
 | `--notes TEXT` | Stored on the lease. |
 | `--or-next` | If `--port` is already leased or something is already listening, take the next free pool port instead. |
 
-Without `--or-next` you can still claim a port that is already listening — that is how you name an app that is already up. A second name cannot take a port another lease already owns; pass `--or-next` to get a free port.
+Without `--or-next` you can still claim a port that is already listening. That is how you name an app that is already up. A second name cannot take a port another lease already owns; pass `--or-next` to get a free port.
 
 ```text
 localberth claim engram --port 5193 --bind 0.0.0.0
@@ -39,7 +39,7 @@ localberth release scratch
 
 `scan` lists listening sockets and hides common OS/RPC ports unless you pass `--all`. It never kills a process.
 
-`serve` opens the harbor board (default `127.0.0.1:54321`).
+`serve` opens the dashboard (default `127.0.0.1:54321`).
 
 Vite apps can set the port from a lease:
 

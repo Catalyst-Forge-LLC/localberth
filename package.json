@@ -64,6 +64,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.3.0",
+    "aibreze": "^0.1.5",
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "tailwindcss": "^4.3.3",

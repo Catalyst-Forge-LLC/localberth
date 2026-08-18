@@ -2,7 +2,9 @@
 
 **Local DNS for ports.**
 
-Named TCP port leases for a local box. A name on this machine resolves to a TCP number (`engram` → `5193`). You still open the port. **localhost** is the machine; **LocalBerth** is the slip. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall rule in sync — on Windows, macOS, and Linux.
+Named TCP port leases for a local box. `engram` is 5193 on this machine. You still open the port. **localhost** is the machine; **LocalBerth** is the slip.
+
+It records which name owns which number, shows what is listening, and updates the host firewall on Windows, macOS, and Linux.
 
 ## Install
 
@@ -27,11 +29,11 @@ localberth serve
 
 **claim**
 
-- `--port N` — request this TCP port. Omit it and LocalBerth picks the next free port from the always pool (`46000–46999`).
-- `--bind ADDR` — default `0.0.0.0`. Loopback (`127.0.0.1`) does not open a WAN firewall hole.
-- `--ephemeral` — scratch lease; default bind `127.0.0.1`; pool `47000–47999` if no `--port`.
-- `--notes TEXT` — stored on the lease.
-- `--or-next` — if `--port` is already leased or something is already listening, take the next free pool port instead. Without this flag you can still claim a listening port (you are naming what is there); a second name cannot take an already-leased port.
+- `--port N`: request this TCP port. Omit it and LocalBerth picks the next free port from the always pool (`46000–46999`).
+- `--bind ADDR`: default `0.0.0.0`. Loopback (`127.0.0.1`) does not open a WAN firewall hole.
+- `--ephemeral`: scratch lease; default bind `127.0.0.1`; pool `47000–47999` if no `--port`.
+- `--notes TEXT`: stored on the lease.
+- `--or-next`: if `--port` is already leased or something is already listening, take the next free pool port instead. Without this flag you can still claim a listening port (you are naming what is there). A second name cannot take an already-leased port.
 
 ```text
 localberth claim scratch --port 5193 --or-next
@@ -54,16 +56,8 @@ export default defineConfig({
 });
 ```
 
-## From this repo
+## Checkout
 
-Double-click `setup.bat` then `run.bat` (or `./setup.sh` && `./run.sh`) — or:
-
-```text
-pnpm install
-pnpm dev          # SvelteKit board on :54321
-pnpm exec tsx src/cli/main.ts ls
-```
-
-The FilePress explainer is `site/` (`pnpm site:dev`). That site is not the running dashboard.
+`setup.bat` then `run.bat`, or `pnpm install` and `pnpm dev`. CLI from the tree: `pnpm cli ls`.
 
 Apache-2.0 · Catalyst Forge, LLC
