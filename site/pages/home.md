@@ -15,6 +15,6 @@ localberth get foo
 
 **localhost** is the machine; **LocalBerth** is the slip.
 
-The dashboard is on this computer at port **54321**. This site is the explainer, not the running app.
+After you install, `localberth serve` opens the dashboard at `http://127.0.0.1:54321`.
 
 [Install](/install) · [CLI](/cli) · [Napkin math](/posts/napkin-math)
