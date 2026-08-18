@@ -2,7 +2,7 @@
 
 **Local DNS for ports.**
 
-Named TCP port leases for a local box. `engram` is 5193 on this machine. You still open the port. **localhost** is the machine; **LocalBerth** is the slip.
+Named TCP port leases for a local box. `fizzbuzz` is 5193 on this machine. You still open the port. **localhost** is the machine; **LocalBerth** is the slip.
 
 It records which name owns which number, shows what is listening, and updates the host firewall on Windows, macOS, and Linux.
 
@@ -19,15 +19,15 @@ or `pnpm add -g localberth`. Node.js 20+.
 ## Use
 
 ```text
-localberth claim engram --port 5193 --bind 0.0.0.0
-localberth release engram
-localberth get engram
+localberth claim fizzbuzz --port 5193 --bind 0.0.0.0
+localberth release fizzbuzz
+localberth get fizzbuzz
 localberth ls
 localberth scan
 localberth serve
 ```
 
-`get` prints only the port, for scripts (`PORT=$(localberth get engram)`).
+`get` prints only the port, for scripts (`PORT=$(localberth get fizzbuzz)`).
 
 **claim**
 
@@ -54,7 +54,7 @@ Leases live in `~/.localberth/` on the machine that ran the CLI.
 import { localberthPort } from 'localberth/port';
 
 export default defineConfig({
-	server: { port: localberthPort('engram', 5193) }
+	server: { port: localberthPort('fizzbuzz', 5193) }
 });
 ```
 

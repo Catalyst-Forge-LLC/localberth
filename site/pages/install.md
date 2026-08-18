@@ -19,14 +19,14 @@ pnpm add -g localberth
 Then claim a port and start your app with it:
 
 ```text
-localberth claim engram --port 5193 --bind 0.0.0.0
-PORT=$(localberth get engram)
+localberth claim fizzbuzz --port 5193 --bind 0.0.0.0
+PORT=$(localberth get fizzbuzz)
 ```
 
 On Windows PowerShell:
 
 ```text
-$env:PORT = localberth get engram
+$env:PORT = localberth get fizzbuzz
 ```
 
 Open the dashboard:
@@ -40,5 +40,5 @@ Then visit `http://127.0.0.1:54321`.
 When you are done with a name:
 
 ```text
-localberth release engram
+localberth release fizzbuzz
 ```

@@ -7,7 +7,7 @@ import { isLoopbackBind, ruleName, scopedBind, shouldOpenInbound } from './names
 
 describe('firewall names', () => {
 	it('names rules LocalBerth <name> <port>', () => {
-		assert.equal(ruleName({ name: 'engram', port: 5193 }), 'LocalBerth engram 5193');
+		assert.equal(ruleName({ name: 'fizzbuzz', port: 5193 }), 'LocalBerth fizzbuzz 5193');
 	});
 
 	it('skips inbound for loopback binds', () => {
@@ -27,7 +27,7 @@ describe('pf anchor', () => {
 	it('emits only inbound ports', () => {
 		const text = renderPfAnchor([
 			{ name: 'localberth', port: 54321, bind: '127.0.0.1' } as never,
-			{ name: 'engram', port: 5193, bind: '0.0.0.0' } as never
+			{ name: 'fizzbuzz', port: 5193, bind: '0.0.0.0' } as never
 		]);
 		assert.match(text, /port 5193/);
 		assert.doesNotMatch(text, /54321/);
@@ -52,7 +52,7 @@ describe('elevation', () => {
 describe('firewalld rich rule', () => {
 	it('comments with the LocalBerth rule name', () => {
 		const rich = firewalldRich({
-			name: 'engram',
+			name: 'fizzbuzz',
 			port: 5193,
 			bind: '0.0.0.0',
 			protocol: 'tcp',
@@ -61,7 +61,7 @@ describe('firewalld rich rule', () => {
 			firewall: 'wanted',
 			updatedAt: ''
 		});
-		assert.match(rich, /comment="LocalBerth engram 5193"/);
+		assert.match(rich, /comment="LocalBerth fizzbuzz 5193"/);
 		assert.match(rich, /port="5193"/);
 	});
 });

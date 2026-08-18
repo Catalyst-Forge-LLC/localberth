@@ -30,7 +30,7 @@ Writes the lease, then tries to add an inbound firewall allow only for non-loopb
 Without `--or-next` you can still claim a port that is already listening. That is how you name an app that is already up. A second name cannot take a port another lease already owns; pass `--or-next` to get a free port.
 
 ```text
-localberth claim engram --port 5193 --bind 0.0.0.0
+localberth claim fizzbuzz --port 5193 --bind 0.0.0.0
 localberth claim scratch --port 5193 --or-next
 localberth release scratch
 ```
@@ -47,7 +47,7 @@ Vite apps can set the port from a lease:
 import { localberthPort } from 'localberth/port';
 
 export default defineConfig({
-	server: { port: localberthPort('engram', 5193) }
+	server: { port: localberthPort('fizzbuzz', 5193) }
 });
 ```
 
