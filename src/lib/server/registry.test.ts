@@ -36,4 +36,43 @@ describe('registry sad paths', () => {
 		claim({ name: 'alpha', port: 5193, bind: '127.0.0.1' });
 		assert.throws(() => claim({ name: 'beta', port: 5193 }), /already leased by alpha/);
 	});
+
+	it('--or-next falls back when the port is leased', () => {
+		const { lease, fallbackFrom } = claim({
+			name: 'beta',
+			port: 5193,
+			bind: '127.0.0.1',
+			orNext: true
+		});
+		assert.equal(fallbackFrom, 5193);
+		assert.notEqual(lease.port, 5193);
+	});
+
+	it('--or-next falls back when the port is listening', () => {
+		const { lease, fallbackFrom } = claim({
+			name: 'gamma',
+			port: 3000,
+			bind: '127.0.0.1',
+			orNext: true,
+			occupied: [3000]
+		});
+		assert.equal(fallbackFrom, 3000);
+		assert.notEqual(lease.port, 3000);
+	});
+
+	it('pool allocation skips listening ports', () => {
+		const { lease } = claim({ name: 'delta', bind: '127.0.0.1', occupied: [46000] });
+		assert.notEqual(lease.port, 46000);
+	});
+
+	it('can claim a listening port without --or-next (name what is there)', () => {
+		const { lease, fallbackFrom } = claim({
+			name: 'echo',
+			port: 7777,
+			bind: '127.0.0.1',
+			occupied: [7777]
+		});
+		assert.equal(lease.port, 7777);
+		assert.equal(fallbackFrom, undefined);
+	});
 });

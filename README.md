@@ -25,14 +25,22 @@ localberth serve
 
 `get` prints only the port, for scripts (`PORT=$(localberth get engram)`).
 
+**claim**
+
+- `--port N` — request this TCP port. Omit it and LocalBerth picks the next free port from the always pool (`46000–46999`).
+- `--bind ADDR` — default `0.0.0.0`. Loopback (`127.0.0.1`) does not open a WAN firewall hole.
+- `--ephemeral` — scratch lease; default bind `127.0.0.1`; pool `47000–47999` if no `--port`.
+- `--notes TEXT` — stored on the lease.
+- `--or-next` — if `--port` is already leased or something is already listening, take the next free pool port instead. Without this flag you can still claim a listening port (you are naming what is there); a second name cannot take an already-leased port.
+
 ```text
-localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]
+localberth claim scratch --port 5193 --or-next
 localberth release <name> [--force]
 localberth firewall sync
 localberth firewall status
 ```
 
-Dashboard: `http://127.0.0.1:54321` (`localberth serve`). Loopback leases do not open a WAN firewall hole. If a claim is not elevated, LocalBerth prints the command to paste.
+Dashboard: `http://127.0.0.1:54321` (`localberth serve`). If a claim is not elevated, LocalBerth prints the command to paste.
 
 Leases live in `~/.localberth/` on the machine that ran the CLI.
 

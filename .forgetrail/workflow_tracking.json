@@ -51,7 +51,8 @@
       "completedAt": null,
       "exitCriteriaMet": [
         "README matches the real CLI (install, serve, firewall, Vite helper, checkout)",
-        "Sad paths: missing get, busy serve port, registry tests"
+        "Sad paths: missing get, busy serve port, registry tests",
+        "claim --or-next when port is leased or listening; claim flags documented"
       ],
       "exitCriteriaRemaining": [
         "Elevated firewall sync dogfood for non-loopback leases",
@@ -231,6 +232,14 @@
       "decision": "Phase 3 README is a public usage page (install, commands, serve, firewall/loopback, Vite helper, checkout). Still no ForgeTrail, siblings, or machine paths. Amends D14 “short tease”.",
       "rationale": "The spine exists; npm and git checkout readers need the real CLI. Process notes stay in CONTEXT_PROMPT.md / docs / .forgetrail/.",
       "alternatives_considered": ["Keep the 0.0.1 tease until Phase 6", "Separate README.npm.md"]
+    },
+    {
+      "id": "D18",
+      "timestamp": "2026-08-18",
+      "phase": "3-stabilization",
+      "decision": "claim --or-next: if --port is leased or listening, assign the next free pool port. Default still allows claiming a listening port (name what is there). Pool allocation always skips listening ports.",
+      "rationale": "Prefer-5193-else-free is a real start path; attaching a name to an already-running app is the hero path and must not require a free port.",
+      "alternatives_considered": ["Fail on any listening port", "Always auto-fallback with no flag"]
     }
   ],
   "gotchas": [
@@ -285,6 +294,10 @@
     {
       "date": "2026-08-18",
       "summary": "Phase 3 started: public README usage page, status launchers, clearer get/serve errors, registry sad-path tests."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "claim --or-next for leased or listening ports; documented claim flags on README and site CLI page."
     }
   ],
   "openQuestions": []

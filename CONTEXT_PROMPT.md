@@ -14,7 +14,7 @@ SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQ
 
 ## Architecture at a glance
 
-- `src/cli/main.ts` — `get` / `claim` / `release` / `ls` / `scan` / `firewall sync` / `serve`
+- `src/cli/main.ts` — `get` / `claim` (`--or-next`) / `release` / `ls` / `scan` / `firewall sync` / `serve`
 - `src/lib/port.ts` — `localberthPort(name, fallback)` for Vite configs
 - `src/lib/server/registry.ts` — lease persist + self-lease `localberth` → 54321
 - `src/lib/server/observe.ts` — OS listen table (read-only)

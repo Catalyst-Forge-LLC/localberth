@@ -87,11 +87,16 @@ export type ClaimInput = {
 	bind?: string;
 	ephemeral?: boolean;
 	notes?: string;
+	/** If --port is leased or listening, take the next free pool port. */
+	orNext?: boolean;
+	/** Ports that are already listening (from scan). Pool allocation always skips these. */
+	occupied?: number[];
 };
 
 export type ClaimResult = {
 	lease: Lease;
 	previous: Lease | null;
+	fallbackFrom?: number;
 };
 
 export function claim(input: ClaimInput): ClaimResult {
@@ -103,11 +108,28 @@ export function claim(input: ClaimInput): ClaimResult {
 	const previous = getLease(name);
 
 	const taken = new Set(listLeases().filter((l) => l.name !== name).map((l) => l.port));
-	const port = input.port !== undefined ? assertPort(input.port) : nextFreePort(kind, taken);
+	const occupied = new Set(input.occupied ?? []);
+	const avoid = new Set([...taken, ...occupied]);
+	let fallbackFrom: number | undefined;
+	let port: number;
 
-	if (taken.has(port)) {
-		const owner = leaseByPort(port);
-		throw new Error(`port ${port} is already leased by ${owner?.name ?? 'another name'}`);
+	if (input.port !== undefined) {
+		port = assertPort(input.port);
+		const leased = taken.has(port);
+		const listening = occupied.has(port) && previous?.port !== port;
+		if (leased || (input.orNext && listening)) {
+			if (!input.orNext) {
+				const owner = leaseByPort(port);
+				throw new Error(
+					`port ${port} is already leased by ${owner?.name ?? 'another name'}` +
+						` — pass --or-next to take a free port`
+				);
+			}
+			fallbackFrom = port;
+			port = nextFreePort(kind, avoid);
+		}
+	} else {
+		port = nextFreePort(kind, avoid);
 	}
 
 	const now = new Date().toISOString();
@@ -123,7 +145,7 @@ export function claim(input: ClaimInput): ClaimResult {
 		   updated_at = excluded.updated_at`
 	).run(name, port, bind, kind, notes || previous?.notes || '', now);
 
-	return { lease: getLease(name)!, previous };
+	return { lease: getLease(name)!, previous, fallbackFrom };
 }
 
 export function release(name: string, opts: { force?: boolean } = {}): Lease {

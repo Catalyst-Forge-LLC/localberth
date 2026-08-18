@@ -21,6 +21,7 @@
 
 1. [x] README matches the real CLI (public/npm page, no process notes)
 2. [x] Sad-path messages: missing `get`, busy `serve` port
+2b. [x] `claim --or-next` when the requested port is leased or listening
 3. [ ] Dogfood: elevated `firewall sync` for non-loopback leases
 4. [ ] Public site + GitHub URLs on npm when those are public
 5. [ ] Publish a real CLI version off `0.0.2`

@@ -10,13 +10,20 @@ function usage(): string {
 
 Usage:
   localberth get <name>
-  localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]
+  localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT] [--or-next]
   localberth release <name> [--force]
   localberth ls
   localberth scan [--all]
   localberth firewall sync
   localberth firewall status
   localberth serve [--host ADDR] [--port N]
+
+claim flags:
+  --port N       request this TCP port (omit = next free from the pool)
+  --bind ADDR    listen address (default 0.0.0.0, or 127.0.0.1 with --ephemeral)
+  --ephemeral    scratch lease; pool 47000–47999 if no --port
+  --notes TEXT   stored on the lease
+  --or-next      if --port is leased or already listening, take the next free pool port
 `;
 }
 
@@ -61,17 +68,46 @@ async function main(): Promise<void> {
 
 	if (cmd === 'claim') {
 		const args = [...argv];
+		if (args.includes('-h') || args.includes('--help')) {
+			process.stdout.write(usage());
+			return;
+		}
 		const ephemeral = takeFlag(args, '--ephemeral');
+		const orNext = takeFlag(args, '--or-next');
 		const portRaw = takeOpt(args, '--port');
 		const bind = takeOpt(args, '--bind');
 		const notes = takeOpt(args, '--notes');
 		const name = args[0];
 		if (!name || args.length !== 1) {
-			fail('usage: localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT]');
+			fail(
+				'usage: localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT] [--or-next]'
+			);
 		}
 		const port = portRaw !== undefined ? Number(portRaw) : undefined;
 		if (portRaw !== undefined && !Number.isInteger(port)) fail(`invalid --port ${portRaw}`);
-		const { lease, previous } = claim({ name, port, bind, ephemeral, notes });
+		const listeners = await scanListeners();
+		const occupied = listeners.map((row) => row.port);
+		const { lease, previous, fallbackFrom } = claim({
+			name,
+			port,
+			bind,
+			ephemeral,
+			notes,
+			orNext,
+			occupied
+		});
+		if (fallbackFrom !== undefined) {
+			const who = listeners.find((row) => row.port === fallbackFrom);
+			const why = who?.process
+				? `in use (${who.process})`
+				: `already leased or listening`;
+			console.error(`port ${fallbackFrom} ${why}; claimed ${lease.port} instead`);
+		} else if (port !== undefined && occupied.includes(port) && previous?.port !== port) {
+			const who = listeners.find((row) => row.port === port);
+			console.error(
+				`port ${port} is already listening (${who?.process ?? 'unknown'}). lease recorded; --or-next would pick a free port`
+			);
+		}
 		const fw = await syncLease(lease, previous);
 		process.stdout.write(`${lease.name}\t${lease.port}\t${lease.bind}\t${fw.status}\n`);
 		if (!fw.ok) {
