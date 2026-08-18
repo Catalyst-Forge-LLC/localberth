@@ -10,7 +10,7 @@ localberth ls             → leases + observed listeners
 http://127.0.0.1:54321    → dashboard
 ```
 
-Intended site: [localberth.com](https://localberth.com). Repo folder stays `/berth`.
+Intended site: [localberth.com](https://localberth.com). Repo: `localberth`.
 
 ## Status
 
@@ -18,4 +18,4 @@ Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth
 
 ## Sibling
 
-Next to Engram, DictaWhisper, ChronoVault at `berth`.
+Next to Engram, DictaWhisper, ChronoVault at `localberth`.

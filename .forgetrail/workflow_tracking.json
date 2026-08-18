@@ -14,7 +14,7 @@
       "startedAt": "2026-08-18",
       "completedAt": null,
       "exitCriteriaMet": [
-        "Product shape locked (leases + dashboard + firewall, observed rows, LocalBerth, path /berth)",
+        "Product shape locked (leases + dashboard + firewall, observed rows, LocalBerth, path /localberth)",
         "PHASE_1_BRIEF.md locked (docs/)",
         "Name collisions researched and recorded",
         "Stack confirmed (same as Engram)",
@@ -102,8 +102,8 @@
       "id": "D3",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Repo path berth. CLI is localberth, not the crowded global berth binary.",
-      "rationale": "Folder is free. cargo/@whenlabs/berth already own `berth` on PATH.",
+      "decision": "Repo path localberth. CLI is localberth, not the crowded global berth binary.",
+      "rationale": "Folder matches the public name. cargo/@whenlabs/berth already own `berth` on PATH.",
       "alternatives_considered": ["Nomenclator", "Pharos", "PortHub clone name"]
     },
     {
@@ -145,6 +145,14 @@
       "decision": "Dashboard self-lease localberth → TCP 54321.",
       "rationale": "High, easy to type, not Postgres 5432.",
       "alternatives_considered": ["3999"]
+    },
+    {
+      "id": "D9",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Rename repo folder berth → localberth (localberth).",
+      "rationale": "Match public name and domain; /berth was only a short sibling path.",
+      "alternatives_considered": ["Keep /berth"]
     }
   ],
   "gotchas": [],

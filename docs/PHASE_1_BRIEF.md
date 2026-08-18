@@ -15,7 +15,7 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 **LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1.
 
-Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; intended domain `localberth.com`; repo folder `/berth`; CLI `localberth`.
+Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; intended domain `localberth.com`; repo folder `/localberth`; CLI `localberth`.
 
 **Project archetype:** `product` _(personal operator tool; Apache-2.0)_
 
@@ -83,7 +83,7 @@ _Same stack as Engram. Locked 2026-08-18._
 **Folder shape:**
 
 ```text
-berth/
+localberth/
   src/cli/           # get, claim, ls, scan, firewall
   src/lib/server/    # registry, observe, firewall
   src/routes/        # dashboard
@@ -145,7 +145,7 @@ Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 517
 
 **Public:** LocalBerth · intended site `localberth.com`  
 **Pairing:** localhost = the machine; LocalBerth = the slip (addition, not a replacement).  
-**Repo:** `berth`  
+**Repo:** `localberth`  
 **CLI:** `localberth` (avoids the crowded global `berth` binary)
 
 The bare name **berth** is crowded:
@@ -160,7 +160,7 @@ The bare name **berth** is crowded:
 
 Closest **product** prior art under a different name: [PortHub](https://github.com/Jason-Vaughan/PortHub) (“DHCP for developers”).
 
-**Why LocalBerth:** same metaphor, pairs with localhost, `localberth.com` is free, CLI does not collide with cargo/`@whenlabs/berth`. Folder stays `/berth`.
+**Why LocalBerth:** same metaphor, pairs with localhost, `localberth.com` is free, CLI does not collide with cargo/`@whenlabs/berth`. Folder is `/localberth`.
 
 **Mitigation (v1):** `package.json` `"name": "localberth"` + `"bin": { "localberth": "…" }`; `"private": true` until publish. Optional later alias `lb`.
 

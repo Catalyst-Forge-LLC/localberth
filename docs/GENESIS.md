@@ -6,6 +6,6 @@ On a machine with many always-on and throwaway local apps, the scarce resource i
 
 **LocalBerth** is a local registry: a name claims a stable port (or gets one from a pool). Apps look up their berth when they start. A dashboard shows leases next to what is actually listening. When a lease is created or moved, Windows inbound rules are updated so Tailscale/LAN clients do not time out on a stale port.
 
-Public home: `localberth.com` (intended). Folder stays `berth`. CLI: `localberth`.
+Public home: `localberth.com` (intended). Folder: `localberth`. CLI: `localberth`.
 
 Not in v1: hiding ports behind `app.localhost`, process supervision, or MagicDNS for app names. localhost stays localhost.
