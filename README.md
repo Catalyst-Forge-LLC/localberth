@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/static/logo.png" alt="LocalBerth" width="128" />
+  <img src="site/static/logo.png" alt="LocalBerth" width="256" />
 </p>
 
 # LocalBerth
