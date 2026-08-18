@@ -3,7 +3,7 @@
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
 **Status:** `locked`  
-**Last updated:** `2026-08-18` (amended: FilePress site + npm package)  
+**Last updated:** `2026-08-18` (amended: cross-platform firewall + public npm README)  
 **Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
 **Phase 1 exit:** Brief locked 2026-08-18. Await explicit approval before Phase 2 scaffolding.
 
@@ -13,7 +13,7 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 **What we are building:**
 
-**LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1.
+**LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and host firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1. Works on **Windows, macOS, and Linux**.
 
 Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; CLI and npm package **`localberth`**; repo folder `/localberth`.
 
@@ -34,18 +34,18 @@ The domain is **not** the running app. The dashboard stays on `http://127.0.0.1:
 - `localberth get <name>` prints the port (and fails clearly if missing).
 - `localberth claim` / `ls` / `scan` work from the CLI.
 - Dashboard shows **leases** and **observed** listening sockets (process name when available).
-- Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
+- Claiming or moving a lease creates/updates an inbound allow rule for that TCP port on the host OS (Windows / macOS / Linux). If not privileged, print a copy-paste command and mark `needs-elevation`.
 - LocalBerth’s own dashboard has a lease named `localberth` on **54321**.
 - FilePress site at **localberth.com** explains the product and install (`pages/` for what / how-to).
-- Package **`localberth`** is on npm (`bin.localberth`; not `private` at ship). Name reserved as `0.0.0` on 2026-08-18.
+- Package **`localberth`** is on npm (`bin.localberth`; not `private` at ship). Public README stays short.
 
-**Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a global `berth` binary (name is crowded).
+**Out of v1:** `*.localhost` proxy, process start/stop, publishing a global `berth` binary (name is crowded).
 
 ---
 
 ## 2. Users and hero flow
 
-**Primary user:** You — many local services, mix of always-on and test, Windows + Tailscale phone access.
+**Primary user:** You — many local services, mix of always-on and test, LAN/Tailscale phone access. Kickoff machine is Windows; the product is not.
 
 **Hero flow:**
 
@@ -64,7 +64,7 @@ Read localberth.com → `npm i -g localberth` (or `pnpm add -g localberth`) → 
 - **Local-only app.** No accounts, no telemetry, no hosted multi-user. The public site is static FilePress, not a hosted registry.
 - **Domain ≠ daemon.** `localberth.com` never serves leases. Leases live in `~/.localberth/` on the machine that installed the npm package.
 - **The port is the interface.** Do not hide it behind a name-only URL in v1.
-- **Windows-first** for firewall. CLI + scan should work on Win/macOS/Linux.
+- **Cross-platform.** CLI, scan, dashboard, and firewall sync on Windows, macOS, and Linux. Same lease model everywhere; OS-specific backends behind one command.
 - **Do not become Portless / Hotel.** No PAC file, no `app.localhost` front door in v1.
 - **Observed is read-only.** Never kill a process unless a later phase adds an explicit command.
 - **LocalBerth must lease itself** (`localberth` → 54321) so it does not become another mystery port.
@@ -126,7 +126,7 @@ localberth/                 # GitHub: Catalyst-Forge-LLC/localberth
 | `protocol` | `tcp` (udp later) |
 | `kind` | `always` \| `ephemeral` |
 | `notes` | Free text |
-| `firewall` | `wanted` / `applied` / `needs-elevation` / `skipped` |
+| `firewall` | `wanted` / `applied` / `needs-elevation` / `skipped` (`needs-elevation` = admin/sudo on that OS) |
 
 **Observed** (from OS listen table, not owned)
 
@@ -153,13 +153,19 @@ Apps: `PORT=$(localberth get engram)`. Vite often ignores `PORT` — a small `--
 
 ---
 
-## 7. Firewall (Windows)
+## 7. Firewall
 
-On claim/move: upsert inbound TCP allow named `LocalBerth <name> <port>` (e.g. `LocalBerth engram 5193`). Remove or disable the previous port’s LocalBerth-managed rule.
+On claim/move: upsert an inbound TCP allow named `LocalBerth <name> <port>` (e.g. `LocalBerth engram 5193`). Remove or disable the previous port’s LocalBerth-managed rule.
 
-If not elevated: print the `netsh` line (today’s Engram 5193 situation) and mark `needs-elevation`.
+| OS | Backend (v1) |
+| -- | ------------ |
+| Windows | `netsh advfirewall` |
+| macOS | `pf` |
+| Linux | `ufw` if present, else `firewalld` |
 
-Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 5173` unless we later add a janitor).
+If not privileged: print the copy-paste command for that backend and mark `needs-elevation`.
+
+Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 5173`, operator `ufw`/`pf` rules we did not create) unless a later janitor is added.
 
 ---
 
@@ -203,9 +209,9 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 ## 10. First feature batch (Phase 2 spine)
 
 1. Registry persist + `get` / `claim` / `ls`
-2. `scan` (Windows listen table)
+2. `scan` (OS listen table)
 3. Dashboard: leases + observed
-4. Firewall sync on claim (Windows)
+4. Firewall sync on claim (Windows / macOS / Linux)
 5. Self-lease `localberth` → 54321
 6. npm package shape (`name` / `bin` / files) so `localberth` can publish
 7. FilePress `site/` (home + install + how-to) for localberth.com
@@ -219,6 +225,7 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 3. License = Apache-2.0.
 4. Dashboard port = **54321**.
 5. **localberth.com** = FilePress explainer in `site/`; app is npm `localberth` running locally.
-6. **npm name reserved:** `localberth@0.0.0` published 2026-08-18. Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
+6. **npm:** `localberth` published; public README is short (no process notes). Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
+7. **Cross-platform:** CLI, scan, dashboard, and firewall on Windows, macOS, and Linux.
 
 **Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine + site).

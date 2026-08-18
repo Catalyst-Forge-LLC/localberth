@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-console.error('localberth 0.0.0 — name reserved. CLI is not published yet.');
+console.error('localberth: CLI is not ready yet.');
 process.exit(1);

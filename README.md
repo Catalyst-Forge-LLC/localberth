@@ -2,22 +2,13 @@
 
 **localhost** is the machine. **LocalBerth** is the slip.
 
-Named **port leases** for a box that runs a lot of local services. You still open `http://127.0.0.1:5193` (or the Tailscale IP). LocalBerth remembers which name owns which number, shows what’s listening, and keeps the Windows firewall rule in sync.
+Named TCP port leases for a local box. You still open the port. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall rule in sync — on Windows, macOS, and Linux.
 
 ```text
+npm i -g localberth
 localberth get engram     → 5193
-localberth ls             → leases + observed listeners
-http://127.0.0.1:54321    → dashboard
 ```
 
-App: published npm package `localberth`, runs locally. Site and source links will be added when they are public.
+The CLI is not ready yet.
 
-## Status
-
-npm `localberth@0.0.0` is a **name stake**. The CLI is not ready — `npx localberth` exits 1.
-
-Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth/`. License: Apache-2.0. Dashboard port: **54321**. Domain = explainer site; daemon = npm. Await go-ahead to scaffold.
-
-## Sibling
-
-Next to Engram, DictaWhisper, ChronoVault.
+Apache-2.0 · Catalyst Forge, LLC

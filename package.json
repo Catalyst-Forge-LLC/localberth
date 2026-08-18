@@ -1,6 +1,6 @@
 {
   "name": "localberth",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": false,
   "type": "module",
   "description": "Named TCP port leases for a local machine. localhost is the machine; LocalBerth is the slip.",

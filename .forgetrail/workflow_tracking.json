@@ -2,7 +2,7 @@
   "project": {
     "name": "LocalBerth",
     "created": "2026-08-18",
-    "description": "Local named TCP port leases, dashboard of leases + observed listeners, Windows firewall sync. Humans still use the port. Site: FilePress at localberth.com. App: npm package localberth.",
+    "description": "Local named TCP port leases, dashboard of leases + observed listeners, host firewall sync (Windows / macOS / Linux). Humans still use the port. Site: FilePress at localberth.com. App: npm package localberth.",
     "sourceControl": "git",
     "archetype": "product",
     "status": "active"
@@ -20,7 +20,9 @@
         "Stack confirmed (same as Engram)",
         "Data home ~/.localberth/ + dashboard port 54321 + Apache-2.0",
         "Public site = FilePress at site/ (localberth.com); app = published npm localberth",
-        "npm name reserved: localberth@0.0.0 (2026-08-18)"
+        "npm name reserved: localberth@0.0.0 (2026-08-18)",
+        "Cross-platform: CLI + scan + firewall on Windows / macOS / Linux",
+        "Public npm README is short (0.0.1)"
       ],
       "exitCriteriaRemaining": [
         "Explicit user approval to advance to Phase 2"
@@ -98,7 +100,7 @@
       "id": "D2",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "v1 = stable leases + dashboard + Windows firewall sync; observed listeners in the same board.",
+      "decision": "v1 = stable leases + dashboard + host firewall sync; observed listeners in the same board. Amended by D13 to all desktop OSes.",
       "rationale": "Engram timed out on Tailscale because the firewall rule was still on 5173 after the app moved to 5193.",
       "alternatives_considered": ["CLI-only", "Firewall later"]
     },
@@ -181,6 +183,22 @@
       "decision": "Publish localberth@0.0.0 as a name stake (placeholder bin, files whitelist). Human publishes; agent does not. Omit homepage, repository, and bugs until localberth.com is live and the GitHub repo is public.",
       "rationale": "Reserve the unscoped npm name before the spine exists. Dead or auth-walled links on the public npm page are worse than no links.",
       "alternatives_considered": ["Wait until Phase 2", "Scoped package only"]
+    },
+    {
+      "id": "D13",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "v1 is cross-platform. CLI, scan, dashboard, and firewall sync on Windows (netsh), macOS (pf), and Linux (ufw or firewalld). Kickoff was Windows; the product is not Windows-only.",
+      "rationale": "Same stale-port / firewall miss happens on any OS that filters inbound LAN or Tailscale.",
+      "alternatives_considered": ["Windows-first, other OS later", "Scan-only on non-Windows"]
+    },
+    {
+      "id": "D14",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Root README is the public npm page: product one-liner + install tease. Process, phase, and sibling notes stay in docs/ and .forgetrail/.",
+      "rationale": "0.0.0 README overshared Phase 1 internals on npmjs.com.",
+      "alternatives_considered": ["Separate README.npm.md", "Keep operator status on the package page"]
     }
   ],
   "gotchas": [],
@@ -204,6 +222,10 @@
     {
       "date": "2026-08-18",
       "summary": "Removed machine-specific workspace paths from docs and tracking before first push."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "D13 cross-platform firewall. D14 short public README. Bump stub to 0.0.1 for the user to publish."
     }
   ],
   "openQuestions": []
