@@ -1,14 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72" fill="none" role="img" aria-label="LocalBerth">
 	<title>LocalBerth</title>
+	<!-- Borderless mark: a named slip. The boat stays in its berth. -->
+	<!-- Water in the slip -->
 	<rect x="21" y="24" width="22" height="40" rx="2.2" fill="#3d8f88"/>
+	<path fill="#2f7a74" opacity="0.45" d="M24 38h16v3H24zm-1 8h18v2.2H23zm2 8h14v2H25z"/>
+
+	<!-- Dock: two fingers + the headwalk -->
 	<rect x="8" y="16" width="48" height="10" rx="2.2" fill="#1a2433"/>
 	<rect x="8" y="16" width="11" height="50" rx="2.2" fill="#1a2433"/>
 	<rect x="45" y="16" width="11" height="50" rx="2.2" fill="#1a2433"/>
+	<!-- Deck seams -->
+	<path stroke="#3a4a5c" stroke-width="1" opacity="0.7" d="M10.5 28h6M10.5 36h6M10.5 44h6M10.5 52h6M47.5 28h6M47.5 36h6M47.5 44h6M47.5 52h6"/>
+
+	<!-- Bollard + painter -->
 	<circle cx="13.5" cy="22" r="2.6" fill="#e8eef4"/>
-	<path stroke="#c9a24a" stroke-width="1.5" stroke-linecap="round" d="M15.6 23.2C20 28 22 34 26.5 40"/>
+	<circle cx="13.5" cy="22" r="1.15" fill="#1a2433"/>
+	<path stroke="#c9a24a" stroke-width="1.5" stroke-linecap="round"
+		d="M15.6 23.2C20 28 22 34 26.5 40"/>
+
+	<!-- Boat in the slip -->
 	<path fill="#f4efe6" stroke="#1a2433" stroke-width="1.45"
 		d="M32 30c4.2 0 8.6 3.2 9.4 8.2l1.1 14.2c.2 2.4-1.6 4.4-4 4.4H25.5c-2.4 0-4.2-2-4-4.4l1.1-14.2C23.4 33.2 27.8 30 32 30z"/>
 	<rect x="27.2" y="36.2" width="9.6" height="7.2" rx="1.4" fill="#1a2433"/>
 	<rect x="29.2" y="33.4" width="5.6" height="3.2" rx="0.8" fill="#1a2433"/>
+	<!-- Cabin window -->
 	<rect x="30.2" y="38" width="3.6" height="2.4" rx="0.4" fill="#7ec8c2"/>
 </svg>

@@ -7,6 +7,8 @@ export default defineFilepressConfig({
 	author: 'Catalyst Forge, LLC',
 	tagline: 'Local DNS for ports',
 	lede: 'Vite hands out 5173, then 5174. Reboot, and they swap. Name the port so they do not.',
+	logo: '/logo.svg',
+	ogImage: '/logo.svg',
 	homePage: 'home',
 	nav: [
 		{ label: 'Home', href: '/' },
