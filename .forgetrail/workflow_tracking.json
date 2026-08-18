@@ -103,7 +103,10 @@
       "phase": "1-architecture",
       "decision": "Model B: named port leases. Humans always use the numeric port.",
       "rationale": "Phone/Tailscale/bookmarks and firewall rules are port contracts. A localhost proxy does not fix that.",
-      "alternatives_considered": ["Portless/Hotel name front door", "DNS SRV only"]
+      "alternatives_considered": [
+        "Portless/Hotel name front door",
+        "DNS SRV only"
+      ]
     },
     {
       "id": "D2",
@@ -111,7 +114,10 @@
       "phase": "1-architecture",
       "decision": "v1 = stable leases + dashboard + host firewall sync; observed listeners in the same board. Amended by D13 to all desktop OSes.",
       "rationale": "Engram timed out on Tailscale because the firewall rule was still on 5173 after the app moved to 5193.",
-      "alternatives_considered": ["CLI-only", "Firewall later"]
+      "alternatives_considered": [
+        "CLI-only",
+        "Firewall later"
+      ]
     },
     {
       "id": "D3",
@@ -119,7 +125,11 @@
       "phase": "1-architecture",
       "decision": "Repo folder localberth. CLI is localberth, not the crowded global berth binary.",
       "rationale": "Folder matches the public name. cargo/@whenlabs/berth already own `berth` on PATH.",
-      "alternatives_considered": ["Nomenclator", "Pharos", "PortHub clone name"]
+      "alternatives_considered": [
+        "Nomenclator",
+        "Pharos",
+        "PortHub clone name"
+      ]
     },
     {
       "id": "D4",
@@ -127,7 +137,11 @@
       "phase": "1-architecture",
       "decision": "Public name LocalBerth; domain localberth.com is the FilePress explainer (what + how-to), not the running app. Pairing with localhost (machine vs slip), not a replacement for localhost URLs.",
       "rationale": "localhost + LocalBerth read as a pair. Domain is available. Avoids berth CLI/search collisions. Site vs daemon must stay distinct.",
-      "alternatives_considered": ["Berth only", "*.localberth hostnames in v1", "Host the dashboard at the domain"]
+      "alternatives_considered": [
+        "Berth only",
+        "*.localberth hostnames in v1",
+        "Host the dashboard at the domain"
+      ]
     },
     {
       "id": "D5",
@@ -135,7 +149,9 @@
       "phase": "1-architecture",
       "decision": "Stack matches Engram: SvelteKit 5 + Tailwind + pnpm + TypeScript ESM + adapter-node + SQLite (better-sqlite3).",
       "rationale": "Same machine, same muscle memory, Node needed for listen table and firewall.",
-      "alternatives_considered": ["CLI-only first"]
+      "alternatives_considered": [
+        "CLI-only first"
+      ]
     },
     {
       "id": "D6",
@@ -143,7 +159,9 @@
       "phase": "1-architecture",
       "decision": "Live state in ~/.localberth/. Repo data/ is fixtures only.",
       "rationale": "Leases must survive moving or deleting the git checkout.",
-      "alternatives_considered": ["Repo data/"]
+      "alternatives_considered": [
+        "Repo data/"
+      ]
     },
     {
       "id": "D7",
@@ -151,7 +169,9 @@
       "phase": "1-architecture",
       "decision": "License Apache-2.0.",
       "rationale": "Match Engram / ForgeTrail.",
-      "alternatives_considered": ["Private-only"]
+      "alternatives_considered": [
+        "Private-only"
+      ]
     },
     {
       "id": "D8",
@@ -159,7 +179,9 @@
       "phase": "1-architecture",
       "decision": "Dashboard self-lease localberth → TCP 54321.",
       "rationale": "High, easy to type, not Postgres 5432.",
-      "alternatives_considered": ["3999"]
+      "alternatives_considered": [
+        "3999"
+      ]
     },
     {
       "id": "D9",
@@ -167,7 +189,9 @@
       "phase": "1-architecture",
       "decision": "Rename repo folder berth → localberth.",
       "rationale": "Match public name and domain; /berth was only a short sibling path.",
-      "alternatives_considered": ["Keep /berth"]
+      "alternatives_considered": [
+        "Keep /berth"
+      ]
     },
     {
       "id": "D10",
@@ -175,7 +199,11 @@
       "phase": "1-architecture",
       "decision": "localberth.com is a FilePress site (in-repo site/). Explains what LocalBerth is and how to use it. Hosted static (Cloudflare Pages, root directory site).",
       "rationale": "Same FilePress pattern as getfilepress.com. Domain must not be mistaken for the local dashboard.",
-      "alternatives_considered": ["Sibling localberth-www repo", "Dashboard hosted at the domain", "GitHub README only"]
+      "alternatives_considered": [
+        "Sibling localberth-www repo",
+        "Dashboard hosted at the domain",
+        "GitHub README only"
+      ]
     },
     {
       "id": "D11",
@@ -183,7 +211,11 @@
       "phase": "1-architecture",
       "decision": "The app ships as a published unscoped npm package named localberth (bin localberth). It runs locally after install. Name reserved as localberth@0.0.0 on 2026-08-18.",
       "rationale": "Operator install path is npm/pnpm, not cloning this repo. Avoid the crowded berth bin.",
-      "alternatives_considered": ["private: true indefinitely", "@catalystforge/localberth only", "Global berth bin"]
+      "alternatives_considered": [
+        "private: true indefinitely",
+        "@catalystforge/localberth only",
+        "Global berth bin"
+      ]
     },
     {
       "id": "D12",
@@ -191,7 +223,10 @@
       "phase": "1-architecture",
       "decision": "Publish localberth@0.0.0 as a name stake (placeholder bin, files whitelist). Human publishes; agent does not. Omit homepage, repository, and bugs until localberth.com is live and the GitHub repo is public.",
       "rationale": "Reserve the unscoped npm name before the spine exists. Dead or auth-walled links on the public npm page are worse than no links.",
-      "alternatives_considered": ["Wait until Phase 2", "Scoped package only"]
+      "alternatives_considered": [
+        "Wait until Phase 2",
+        "Scoped package only"
+      ]
     },
     {
       "id": "D13",
@@ -199,7 +234,10 @@
       "phase": "1-architecture",
       "decision": "v1 is cross-platform. CLI, scan, dashboard, and firewall sync on Windows (netsh), macOS (pf), and Linux (ufw or firewalld). Kickoff was Windows; the product is not Windows-only.",
       "rationale": "Same stale-port / firewall miss happens on any OS that filters inbound LAN or Tailscale.",
-      "alternatives_considered": ["Windows-first, other OS later", "Scan-only on non-Windows"]
+      "alternatives_considered": [
+        "Windows-first, other OS later",
+        "Scan-only on non-Windows"
+      ]
     },
     {
       "id": "D14",
@@ -207,7 +245,10 @@
       "phase": "1-architecture",
       "decision": "Root README is the public npm page: product one-liner + install tease. Process, phase, and sibling notes stay in docs/ and .forgetrail/. Amended by D17.",
       "rationale": "0.0.0 README overshared Phase 1 internals on npmjs.com.",
-      "alternatives_considered": ["Separate README.npm.md", "Keep operator status on the package page"]
+      "alternatives_considered": [
+        "Separate README.npm.md",
+        "Keep operator status on the package page"
+      ]
     },
     {
       "id": "D15",
@@ -215,7 +256,10 @@
       "phase": "2-scaffolding",
       "decision": "localberth serve is a built-in Node dashboard (no Vite required) so a global npm install can open :54321. pnpm dev stays the SvelteKit board for checkout work.",
       "rationale": "Vite is a devDependency; the installed CLI must still show the harbor board.",
-      "alternatives_considered": ["Move Vite/SvelteKit to dependencies", "Dashboard only via pnpm dev"]
+      "alternatives_considered": [
+        "Move Vite/SvelteKit to dependencies",
+        "Dashboard only via pnpm dev"
+      ]
     },
     {
       "id": "D16",
@@ -223,7 +267,10 @@
       "phase": "2-scaffolding",
       "decision": "Firewall hardening: skip inbound for loopback binds; Windows/Linux only create or delete rules named LocalBerth <name> <port> (ufw by comment, firewalld rich rules). macOS writes a pf anchor file and loads anchor localberth.",
       "rationale": "A 127.0.0.1 dashboard must not punch a WAN hole. Never delete an operator rule that happens to share a port.",
-      "alternatives_considered": ["Always open the port on all interfaces", "firewalld default-zone add-port"]
+      "alternatives_considered": [
+        "Always open the port on all interfaces",
+        "firewalld default-zone add-port"
+      ]
     },
     {
       "id": "D17",
@@ -231,7 +278,10 @@
       "phase": "3-stabilization",
       "decision": "Phase 3 README is a public usage page (install, commands, serve, firewall/loopback, Vite helper, checkout). Still no ForgeTrail, siblings, or machine paths. Amends D14 “short tease”.",
       "rationale": "The spine exists; npm and git checkout readers need the real CLI. Process notes stay in CONTEXT_PROMPT.md / docs / .forgetrail/.",
-      "alternatives_considered": ["Keep the 0.0.1 tease until Phase 6", "Separate README.npm.md"]
+      "alternatives_considered": [
+        "Keep the 0.0.1 tease until Phase 6",
+        "Separate README.npm.md"
+      ]
     },
     {
       "id": "D18",
@@ -239,7 +289,10 @@
       "phase": "3-stabilization",
       "decision": "claim --or-next: if --port is leased or listening, assign the next free pool port. Default still allows claiming a listening port (name what is there). Pool allocation always skips listening ports.",
       "rationale": "Prefer-5193-else-free is a real start path; attaching a name to an already-running app is the hero path and must not require a free port.",
-      "alternatives_considered": ["Fail on any listening port", "Always auto-fallback with no flag"]
+      "alternatives_considered": [
+        "Fail on any listening port",
+        "Always auto-fallback with no flag"
+      ]
     },
     {
       "id": "D19",
@@ -247,7 +300,10 @@
       "phase": "3-stabilization",
       "decision": "Public explainer metaphor: LocalBerth is local DNS for ports. Names resolve to TCP numbers on this machine. Still not real DNS, not a reverse proxy, and not *.localhost URLs (D1 / D4).",
       "rationale": "DNS is the familiar name→number lookup. The gap people feel is ports, not hostnames.",
-      "alternatives_considered": ["Registry-only wording", "Port name service without the DNS analogy"]
+      "alternatives_considered": [
+        "Registry-only wording",
+        "Port name service without the DNS analogy"
+      ]
     },
     {
       "id": "D20",
@@ -255,7 +311,10 @@
       "phase": "3-stabilization",
       "decision": "Public copy follows aiBreze (core + landing). Overlay in docs/aibreze-overlay.md. Protected: localhost/slip pairing and Local DNS for ports. Public pages say dashboard, not harbor board.",
       "rationale": "Same house voice as other Catalyst Forge pages. npm README is a brochure; checkout notes stay last.",
-      "alternatives_considered": ["Copy-only pass with no package", "Landing voice on the flag list"]
+      "alternatives_considered": [
+        "Copy-only pass with no package",
+        "Landing voice on the flag list"
+      ]
     },
     {
       "id": "D21",
@@ -263,7 +322,10 @@
       "phase": "3-stabilization",
       "decision": "claim defaults to bind 127.0.0.1. --lan binds 0.0.0.0 and syncs inbound firewall. --bind ADDR still works. --lan and --bind together is an error. Ephemeral is no longer a special-case bind default.",
       "rationale": "Opening past loopback should be intentional, especially once agents invoke claim. Phone/LAN access stays one flag. Same issue raised on DictaWhisper.",
-      "alternatives_considered": ["Keep 0.0.0.0 default", "Require --bind 0.0.0.0 with no --lan shorthand"]
+      "alternatives_considered": [
+        "Keep 0.0.0.0 default",
+        "Require --bind 0.0.0.0 with no --lan shorthand"
+      ]
     }
   ],
   "gotchas": [
@@ -338,6 +400,10 @@
     {
       "date": "2026-08-18",
       "summary": "D21: claim defaults to 127.0.0.1; --lan opens 0.0.0.0 and the firewall. Package 0.2.0."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Drafted sibling adoption notes (local only)."
     }
   ],
   "openQuestions": []

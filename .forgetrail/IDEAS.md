@@ -4,6 +4,6 @@
 - Process start/stop from the dashboard
 - Auto-janitor for leftover firewall rules (e.g. Engram 5173)
 - Tailscale Serve integration
-- Vite/SvelteKit helper that sets `server.port` from `localberth get`
+- Vite/SvelteKit helper that sets `server.port` from `localberth get` — **shipped** (`localberth/port`). House rollout notes stay local.
 - Scoped npm alias `@catalystforge/localberth` pointing at the same unscoped `localberth` package
 - Optional `lb` bin alias
