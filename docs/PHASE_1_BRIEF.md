@@ -155,13 +155,13 @@ Apps: `PORT=$(localberth get engram)`. Vite often ignores `PORT` — a small `--
 
 ## 7. Firewall
 
-On claim/move: upsert an inbound TCP allow named `LocalBerth <name> <port>` (e.g. `LocalBerth engram 5193`). Remove or disable the previous port’s LocalBerth-managed rule.
+On claim/move: upsert an inbound TCP allow named `LocalBerth <name> <port>` (e.g. `LocalBerth engram 5193`). Remove or disable the previous port’s LocalBerth-managed rule. **Loopback binds (`127.0.0.1`) skip the firewall** — no inbound hole.
 
 | OS | Backend (v1) |
 | -- | ------------ |
-| Windows | `netsh advfirewall` |
-| macOS | `pf` |
-| Linux | `ufw` if present, else `firewalld` |
+| Windows | `netsh advfirewall` (optional `localip=` when bind is a specific address) |
+| macOS | `pf` anchor `localberth` written under `~/.localberth/pf/` |
+| Linux | `ufw` comment-matched rows, else firewalld **rich rules** with the same name |
 
 If not privileged: print the copy-paste command for that backend and mark `needs-elevation`.
 

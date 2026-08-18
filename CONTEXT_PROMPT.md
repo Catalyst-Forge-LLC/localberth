@@ -18,7 +18,7 @@ SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQ
 - `src/lib/port.ts` — `localberthPort(name, fallback)` for Vite configs
 - `src/lib/server/registry.ts` — lease persist + self-lease `localberth` → 54321
 - `src/lib/server/observe.ts` — OS listen table (read-only)
-- `src/lib/server/firewall.ts` — netsh / pf / ufw|firewalld
+- `src/lib/server/firewall/` — netsh (named rules), pf anchor, ufw comments / firewalld rich rules; loopback skips inbound
 - `src/routes/` — local harbor board (not localberth.com)
 - `site/` — FilePress explainer
 

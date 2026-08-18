@@ -209,6 +209,14 @@
       "decision": "localberth serve is a built-in Node dashboard (no Vite required) so a global npm install can open :54321. pnpm dev stays the SvelteKit board for checkout work.",
       "rationale": "Vite is a devDependency; the installed CLI must still show the harbor board.",
       "alternatives_considered": ["Move Vite/SvelteKit to dependencies", "Dashboard only via pnpm dev"]
+    },
+    {
+      "id": "D16",
+      "timestamp": "2026-08-18",
+      "phase": "2-scaffolding",
+      "decision": "Firewall hardening: skip inbound for loopback binds; Windows/Linux only create or delete rules named LocalBerth <name> <port> (ufw by comment, firewalld rich rules). macOS writes a pf anchor file and loads anchor localberth.",
+      "rationale": "A 127.0.0.1 dashboard must not punch a WAN hole. Never delete an operator rule that happens to share a port.",
+      "alternatives_considered": ["Always open the port on all interfaces", "firewalld default-zone add-port"]
     }
   ],
   "gotchas": [
@@ -255,6 +263,10 @@
     {
       "date": "2026-08-18",
       "summary": "Added release, serve, system-port filter, and localberthPort() Vite helper."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Hardened firewall backends: loopback skip, named-rule only deletes, pf anchor, firewalld rich rules, firewall status."
     }
   ],
   "openQuestions": []

@@ -1,4 +1,4 @@
-import { firewallCommand, removeLeaseRule, syncAll, syncLease } from '../lib/server/firewall.js';
+import { detectBackend, removeLeaseRule, syncAll, syncLease } from '../lib/server/firewall.js';
 import { scanListeners } from '../lib/server/observe.js';
 import { isSystemPort } from '../lib/server/system-ports.js';
 import { claim, getLease, listLeases, release } from '../lib/server/registry.js';
@@ -15,6 +15,7 @@ Usage:
   localberth ls
   localberth scan [--all]
   localberth firewall sync
+  localberth firewall status
   localberth serve [--host ADDR] [--port N]
 `;
 }
@@ -128,11 +129,20 @@ async function main(): Promise<void> {
 
 	if (cmd === 'firewall') {
 		const sub = argv[0];
-		if (sub !== 'sync') fail('usage: localberth firewall sync');
+		if (sub === 'status') {
+			const backend = await detectBackend();
+			process.stdout.write(`backend\t${backend}\t${process.platform}\n`);
+			for (const lease of listLeases()) {
+				process.stdout.write(`${lease.name}\t${lease.port}\t${lease.bind}\t${lease.firewall}\n`);
+			}
+			return;
+		}
+		if (sub !== 'sync') fail('usage: localberth firewall sync|status');
 		const results = await syncAll();
 		for (const r of results) {
 			process.stdout.write(`${r.lease.name}\t${r.lease.port}\t${r.status}\n`);
-			if (!r.ok) console.error(`  ${firewallCommand(r.lease)}\n  ${r.detail ?? ''}`);
+			if (!r.ok) console.error(`  ${r.command}\n  ${r.detail ?? ''}`);
+			else if (r.detail) console.error(`  ${r.detail}`);
 		}
 		return;
 	}

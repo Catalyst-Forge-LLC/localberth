@@ -15,6 +15,6 @@
 - [x] `release` + `serve`
 - [x] Hide system/RPC observed ports (toggle / `scan --all`)
 - [x] Vite helper `localberthPort()` (`localberth/port`)
-- Harden firewall backends (pf anchors, firewalld zones)
+- [x] Harden firewall backends (pf anchors, firewalld rich rules, loopback skip)
 - Public site + GitHub URLs on npm when those are public
 - Publish a real CLI version off `0.0.2`
