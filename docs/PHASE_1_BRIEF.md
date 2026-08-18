@@ -219,6 +219,6 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 3. License = Apache-2.0.
 4. Dashboard port = **54321**.
 5. **localberth.com** = FilePress explainer in `site/`; app is npm `localberth` running locally.
-6. **npm name stake:** `localberth@0.0.0` (placeholder bin). Human publishes.
+6. **npm name stake:** `localberth@0.0.0` (placeholder bin). Human publishes. Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
 
 **Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine + site).

@@ -6,14 +6,6 @@
   "description": "Named TCP port leases for a local machine. localhost is the machine; LocalBerth is the slip.",
   "license": "Apache-2.0",
   "author": "Catalyst Forge, LLC",
-  "homepage": "https://localberth.com",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Catalyst-Forge-LLC/localberth.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Catalyst-Forge-LLC/localberth/issues"
-  },
   "bin": {
     "localberth": "./bin/localberth.mjs"
   },

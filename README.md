@@ -10,7 +10,7 @@ localberth ls             → leases + observed listeners
 http://127.0.0.1:54321    → dashboard
 ```
 
-Site: [localberth.com](https://localberth.com) (FilePress — what it is and how to use it). App: published npm package `localberth`, runs locally. Repo: `localberth`.
+App: published npm package `localberth`, runs locally. Site and source links will be added when they are public.
 
 ## Status
 

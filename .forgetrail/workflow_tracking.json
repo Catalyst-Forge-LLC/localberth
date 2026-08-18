@@ -177,8 +177,8 @@
       "id": "D12",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Publish localberth@0.0.0 as a name stake (placeholder bin, files whitelist). Human publishes; agent does not.",
-      "rationale": "Reserve the unscoped npm name before the spine exists.",
+      "decision": "Publish localberth@0.0.0 as a name stake (placeholder bin, files whitelist). Human publishes; agent does not. Omit homepage, repository, and bugs until localberth.com is live and the GitHub repo is public.",
+      "rationale": "Reserve the unscoped npm name before the spine exists. Dead or auth-walled links on the public npm page are worse than no links.",
       "alternatives_considered": ["Wait until Phase 2", "Scoped package only"]
     }
   ],
