@@ -23,6 +23,6 @@ override the default Essay theme.
 "getfilepress": "^0.1.1"
 ```
 
-**Cloudflare Pages (recommended):** build `pnpm install && pnpm build`, output `build`, Node 20+.
+**Cloudflare Pages:** from the repo root, `pnpm ship` (build + `wrangler pages deploy`, project `localberth`). Output is `site/build`, Node 20+.
 
 Any static host: publish the `build/` folder. Details: https://getfilepress.com/deploy
