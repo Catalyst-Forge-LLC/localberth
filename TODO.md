@@ -24,5 +24,6 @@
 2b. [x] `claim --or-next` when the requested port is leased or listening
 3. [ ] Dogfood: elevated `firewall sync` for non-loopback leases
 4. [ ] Public site + GitHub URLs on npm when those are public
-5. [ ] Publish `localberth@0.1.0` (you; agent does not)
+5. [x] Publish `localberth@0.1.0` (you; agent does not)
+6. [ ] Publish `localberth@0.1.1` so the README mark is in the tarball (you; agent does not)
 

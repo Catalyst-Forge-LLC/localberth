@@ -40,6 +40,7 @@ SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQ
 ## Recent gotchas (last 3–5)
 
 - npmjs.com Readme tab can show “no README” even when the tarball and `npm view readme` are correct (indexer / staged publish). Republish or wait.
+- Relative README images 404 on npm unless the file is in the `files` whitelist (0.1.0 logo).
 - Do not put machine paths (`z:/workspace/...`) in committed files.
 
 ## Pointers

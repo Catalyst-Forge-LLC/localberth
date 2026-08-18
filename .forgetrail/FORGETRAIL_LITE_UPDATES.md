@@ -12,8 +12,17 @@ Suggested Lite change: if Phase 1 decides the app is a **published package**, sa
 
 Project pointer: LocalBerth D14 / D17.
 
+## 2. README images must be in the npm `files` whitelist (§14)
+
+npmjs.com resolves relative `<img src>` from the **published tarball**, not the git tree. A logo at `site/static/logo.png` 404s on the package page if `files` only lists `README.md` and app paths.
+
+Suggested Lite change: when the root README is the public npm page, say that any relative image in it has to be listed in `package.json` `files` (or live under a directory that already is). `npm pack --dry-run` is the check.
+
+Project pointer: LocalBerth 0.1.0 README mark.
+
 ---
 
 | Topic | Lite § | Status |
 | ----- | ------ | ------ |
 | Published npm README vs operator dump | §14, §4.5 | candidate |
+| README images must ship in the tarball | §14 | candidate |

@@ -1,6 +1,6 @@
 {
   "name": "localberth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "type": "module",
   "description": "Local DNS for ports. Named TCP port leases for a local machine.",
@@ -21,7 +21,8 @@
     "tsconfig.json",
     "LICENSE",
     "NOTICE",
-    "README.md"
+    "README.md",
+    "site/static/logo.png"
   ],
   "scripts": {
     "dev": "vite dev",
