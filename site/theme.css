@@ -1,5 +1,55 @@
-/* filepress site theme — edit freely or use Genie Mode in dev */
+/* localberth.com — FilePress Essay chrome with a wide masthead, like dictawhisper.com */
 
-.site-logo {
+:root:root {
+	--measure: 42rem;
+	--measure-wide: 72rem;
+	--gap: clamp(1.25rem, 4vw, 2.75rem);
+}
+
+.wrap {
+	max-width: var(--measure-wide);
+	margin: 0 auto;
+}
+
+header.site-header .wrap {
+	align-items: center;
+}
+
+header.site-header .site-logo {
 	height: 8.5rem;
+	width: auto;
+	max-width: none;
+	object-fit: contain;
+}
+
+/* Reading column sits inside the 72rem shell */
+main.wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.home-page,
+.static-page,
+main.wrap > article,
+main.wrap > .hero,
+main.wrap > .featured,
+main.wrap > ul.post-list,
+main.wrap > header.post-header {
+	width: min(var(--measure), 100%);
+	max-width: var(--measure);
+}
+
+.static-page .page-header,
+.static-page .prose,
+.home-page .page-header,
+.home-page .prose,
+.prose {
+	max-width: none;
+}
+
+@media (width <= 40rem) {
+	header.site-header .site-logo {
+		height: 5.5rem;
+	}
 }
