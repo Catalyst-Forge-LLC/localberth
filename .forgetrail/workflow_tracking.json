@@ -240,6 +240,14 @@
       "decision": "claim --or-next: if --port is leased or listening, assign the next free pool port. Default still allows claiming a listening port (name what is there). Pool allocation always skips listening ports.",
       "rationale": "Prefer-5193-else-free is a real start path; attaching a name to an already-running app is the hero path and must not require a free port.",
       "alternatives_considered": ["Fail on any listening port", "Always auto-fallback with no flag"]
+    },
+    {
+      "id": "D19",
+      "timestamp": "2026-08-18",
+      "phase": "3-stabilization",
+      "decision": "Public explainer metaphor: LocalBerth is local DNS for ports. Names resolve to TCP numbers on this machine. Still not real DNS, not a reverse proxy, and not *.localhost URLs (D1 / D4).",
+      "rationale": "DNS is the familiar name→number lookup. The gap people feel is ports, not hostnames.",
+      "alternatives_considered": ["Registry-only wording", "Port name service without the DNS analogy"]
     }
   ],
   "gotchas": [
@@ -298,6 +306,10 @@
     {
       "date": "2026-08-18",
       "summary": "claim --or-next for leased or listening ports; documented claim flags on README and site CLI page."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "D19: public metaphor is local DNS for ports (not real DNS or *.localhost)."
     }
   ],
   "openQuestions": []

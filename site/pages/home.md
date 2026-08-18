@@ -3,7 +3,7 @@ title: LocalBerth
 description: localhost is the machine. LocalBerth is the slip.
 ---
 
-Named TCP port leases for a machine that runs a lot of local services. Apps look up their port by name. You still bookmark `http://127.0.0.1:5193` or the Tailscale address.
+Local DNS for ports. A name on this machine resolves to a TCP number (`engram` → `5193`). Apps look it up; you still bookmark `http://127.0.0.1:5193` or the Tailscale address.
 
 ```text
 localberth claim engram --port 5193 --bind 0.0.0.0

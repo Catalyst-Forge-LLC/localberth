@@ -2,7 +2,7 @@
 
 ## What this is
 
-Named TCP port leases for a local machine. **localhost** is the machine; **LocalBerth** is the slip. Apps look up a port by name; humans still use the number. Dashboard shows leases plus observed listeners. Claim/move updates the host firewall (Windows / macOS / Linux).
+**Local DNS for ports.** **localhost** is the machine; **LocalBerth** is the slip. Apps look up a port by name; humans still use the number. Not real DNS and not `*.localhost` URLs. Dashboard shows leases plus observed listeners. Claim/move updates the host firewall (Windows / macOS / Linux).
 
 ## Hero workflow
 

@@ -3,7 +3,7 @@
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
 **Status:** `locked`  
-**Last updated:** `2026-08-18` (amended: cross-platform firewall + public npm README)  
+**Last updated:** `2026-08-18` (amended: local DNS for ports metaphor)  
 **Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
 **Phase 1 exit:** Brief locked 2026-08-18. Await explicit approval before Phase 2 scaffolding.
 
@@ -13,7 +13,7 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 **What we are building:**
 
-**LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and host firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1. Works on **Windows, macOS, and Linux**.
+**LocalBerth** is **local DNS for ports**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and host firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not real DNS, not a replacement for localhost, and not `*.localberth` URLs in v1. Works on **Windows, macOS, and Linux**.
 
 Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; CLI and npm package **`localberth`**; repo folder `/localberth`.
 
