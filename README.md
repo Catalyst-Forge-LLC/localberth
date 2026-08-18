@@ -12,7 +12,7 @@ Name the port so that does not happen. `foo` stays on 5173. `bar` stays on 5174.
 
 **localhost** is the machine; **LocalBerth** is the slip.
 
-It records which name owns which number, shows what is listening, and updates the host firewall on Windows, macOS, and Linux.
+It records which name owns which number and shows what is listening. A claim stays on loopback. `--lan` binds `0.0.0.0` and syncs an inbound firewall allow on Windows, macOS, and Linux.
 
 ## Install
 
@@ -38,20 +38,21 @@ localberth serve
 **claim**
 
 - `--port N`: request this TCP port. Omit it and LocalBerth picks the next free port from the always pool (`46000–46999`).
-- `--bind ADDR`: default `0.0.0.0`. Loopback (`127.0.0.1`) does not open a WAN firewall hole.
-- `--ephemeral`: scratch lease; default bind `127.0.0.1`; pool `47000–47999` if no `--port`.
+- `--bind ADDR`: listen address. Default `127.0.0.1` (no WAN hole).
+- `--lan`: bind `0.0.0.0` and sync an inbound firewall allow. Do not pass `--bind` with this.
+- `--ephemeral`: scratch lease; pool `47000–47999` if no `--port`.
 - `--notes TEXT`: stored on the lease.
 - `--or-next`: if `--port` is already leased or something is already listening, take the next free pool port instead. Without this flag you can still claim a listening port (you are naming what is there). A second name cannot take an already-leased port.
 
 ```text
-localberth claim foo --port 5173 --bind 0.0.0.0
+localberth claim foo --port 5173 --lan
 localberth claim scratch --port 5173 --or-next
 localberth release <name> [--force]
 localberth firewall sync
 localberth firewall status
 ```
 
-After you install, `localberth serve` opens the dashboard at `http://127.0.0.1:54321`. Loopback leases skip the WAN hole. A non-loopback claim still saves the lease if you are not admin/root; LocalBerth prints the firewall command to paste. It does not prompt for UAC or sudo.
+After you install, `localberth serve` opens the dashboard at `http://127.0.0.1:54321`. Loopback leases skip the WAN hole. A `--lan` claim still saves the lease if you are not admin/root; LocalBerth prints the firewall command to paste. It does not prompt for UAC or sudo.
 
 Leases live in `~/.localberth/` on the machine that ran the CLI.
 

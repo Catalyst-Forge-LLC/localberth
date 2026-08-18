@@ -10,7 +10,7 @@ function usage(): string {
 
 Usage:
   localberth get <name>
-  localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT] [--or-next]
+  localberth claim <name> [--port N] [--bind ADDR] [--lan] [--ephemeral] [--notes TEXT] [--or-next]
   localberth release <name> [--force]
   localberth ls
   localberth scan [--all]
@@ -20,7 +20,8 @@ Usage:
 
 claim flags:
   --port N       request this TCP port (omit = next free from the pool)
-  --bind ADDR    listen address (default 0.0.0.0, or 127.0.0.1 with --ephemeral)
+  --bind ADDR    listen address (default 127.0.0.1)
+  --lan          bind 0.0.0.0 and sync an inbound firewall allow
   --ephemeral    scratch lease; pool 47000–47999 if no --port
   --notes TEXT   stored on the lease
   --or-next      if --port is leased or already listening, take the next free pool port
@@ -76,13 +77,14 @@ async function main(): Promise<void> {
 		}
 		const ephemeral = takeFlag(args, '--ephemeral');
 		const orNext = takeFlag(args, '--or-next');
+		const lan = takeFlag(args, '--lan');
 		const portRaw = takeOpt(args, '--port');
 		const bind = takeOpt(args, '--bind');
 		const notes = takeOpt(args, '--notes');
 		const name = args[0];
 		if (!name || args.length !== 1) {
 			fail(
-				'usage: localberth claim <name> [--port N] [--bind ADDR] [--ephemeral] [--notes TEXT] [--or-next]'
+				'usage: localberth claim <name> [--port N] [--bind ADDR] [--lan] [--ephemeral] [--notes TEXT] [--or-next]'
 			);
 		}
 		const port = portRaw !== undefined ? Number(portRaw) : undefined;
@@ -93,6 +95,7 @@ async function main(): Promise<void> {
 			name,
 			port,
 			bind,
+			lan,
 			ephemeral,
 			notes,
 			orNext,

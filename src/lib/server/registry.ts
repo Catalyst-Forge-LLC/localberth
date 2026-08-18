@@ -85,6 +85,8 @@ export type ClaimInput = {
 	name: string;
 	port?: number;
 	bind?: string;
+	/** Shorthand for bind 0.0.0.0 (LAN + inbound firewall). */
+	lan?: boolean;
 	ephemeral?: boolean;
 	notes?: string;
 	/** If --port is leased or listening, take the next free pool port. */
@@ -92,6 +94,16 @@ export type ClaimInput = {
 	/** Ports that are already listening (from scan). Pool allocation always skips these. */
 	occupied?: number[];
 };
+
+/** Default is loopback. --lan opens 0.0.0.0. --bind and --lan together is an error. */
+export function resolveClaimBind(input: { bind?: string; lan?: boolean }): string {
+	const bind = input.bind?.trim();
+	if (input.lan && bind) {
+		throw new Error('use --lan or --bind, not both');
+	}
+	if (input.lan) return '0.0.0.0';
+	return bind || '127.0.0.1';
+}
 
 export type ClaimResult = {
 	lease: Lease;
@@ -102,7 +114,7 @@ export type ClaimResult = {
 export function claim(input: ClaimInput): ClaimResult {
 	const name = assertName(input.name);
 	const kind: LeaseKind = input.ephemeral ? 'ephemeral' : 'always';
-	const bind = (input.bind ?? (kind === 'ephemeral' ? '127.0.0.1' : '0.0.0.0')).trim();
+	const bind = resolveClaimBind(input);
 	const notes = input.notes?.trim() ?? '';
 	const db = getDb();
 	const previous = getLease(name);

@@ -15,7 +15,7 @@ Point at `aibreze` (`node_modules/aibreze/rules/core.md`). Do not fork core.
 - **slip / berth / lease** — the product metaphor. A name owns a TCP port. Do not swap for “slot” or “reservation.”
 - **localhost** — the loopback name and the pairing word. Not a metaphor to flatten.
 - **Local DNS for ports** — the explainer line. Not real DNS. Do not “correct” it into “port registry” on public pages.
-- **claim / get / release / scan / serve** — CLI verbs.
+- **claim / get / release / scan / serve** — CLI verbs. **`--lan`** is the explicit open-past-loopback flag.
 - **dashboard / board** — the local UI on 54321. Prefer these over “harbor board” on public pages (cozy machinery).
 - **Tailscale, Vite, netsh, pf, ufw, firewalld** — other products or tools. Name them when they do a job.
 

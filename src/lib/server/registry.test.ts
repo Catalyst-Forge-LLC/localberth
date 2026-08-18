@@ -8,7 +8,7 @@ const home = mkdtempSync(join(tmpdir(), 'localberth-test-'));
 process.env.LOCALBERTH_HOME = home;
 
 const { resetDb } = await import('./db.js');
-const { claim, getLease, release } = await import('./registry.js');
+const { claim, getLease, release, resolveClaimBind } = await import('./registry.js');
 
 describe('registry sad paths', () => {
 	before(() => {
@@ -18,6 +18,17 @@ describe('registry sad paths', () => {
 	after(() => {
 		resetDb();
 		rmSync(home, { recursive: true, force: true });
+	});
+
+	it('defaults bind to loopback; --lan opens all interfaces', () => {
+		assert.equal(resolveClaimBind({}), '127.0.0.1');
+		assert.equal(resolveClaimBind({ lan: true }), '0.0.0.0');
+		assert.equal(resolveClaimBind({ bind: '100.74.12.14' }), '100.74.12.14');
+		assert.throws(() => resolveClaimBind({ lan: true, bind: '0.0.0.0' }), /not both/);
+		const { lease } = claim({ name: 'private', port: 5180 });
+		assert.equal(lease.bind, '127.0.0.1');
+		const lan = claim({ name: 'open', port: 5181, lan: true });
+		assert.equal(lan.lease.bind, '0.0.0.0');
 	});
 
 	it('rejects invalid names', () => {

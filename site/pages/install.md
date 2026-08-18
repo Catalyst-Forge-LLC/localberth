@@ -19,7 +19,7 @@ pnpm add -g localberth
 Then claim a port and start your app with it:
 
 ```text
-localberth claim fizzbuzz --port 5193 --bind 0.0.0.0
+localberth claim fizzbuzz --port 5193
 PORT=$(localberth get fizzbuzz)
 ```
 
@@ -36,6 +36,12 @@ localberth serve
 ```
 
 Then visit `http://127.0.0.1:54321`.
+
+From a phone on the LAN, claim with `--lan` (binds `0.0.0.0` and syncs the firewall):
+
+```text
+localberth claim fizzbuzz --port 5193 --lan
+```
 
 When you are done with a name:
 

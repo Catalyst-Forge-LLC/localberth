@@ -6,7 +6,7 @@
 
 ## Hero workflow
 
-Vite 5173/5174 swap after reboot is the common story. Public examples use `fizzbuzz`, not sibling app names. Hero: `localberth claim fizzbuzz --port 5193 --bind 0.0.0.0` → firewall rule → `PORT=$(localberth get fizzbuzz)` → dashboard at `:54321` → phone uses `http://100.x.x.x:5193`.
+Vite 5173/5174 swap after reboot is the common story. Public examples use `fizzbuzz`, not sibling app names. Hero: `localberth claim fizzbuzz --port 5193` is loopback. Phone/LAN: add `--lan` (binds `0.0.0.0`, firewall). Then `PORT=$(localberth get fizzbuzz)` → dashboard at `:54321` → phone uses `http://100.x.x.x:5193`.
 
 ## Stack
 

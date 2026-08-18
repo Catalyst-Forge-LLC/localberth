@@ -3,7 +3,7 @@
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
 **Status:** `locked`  
-**Last updated:** `2026-08-18` (amended: local DNS for ports metaphor)  
+**Last updated:** `2026-08-18` (amended: D21 claim defaults to loopback; `--lan` opens 0.0.0.0)  
 **Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
 **Phase 1 exit:** Brief locked 2026-08-18. Await explicit approval before Phase 2 scaffolding.
 
@@ -30,7 +30,7 @@ The domain is **not** the running app. The dashboard stays on `http://127.0.0.1:
 
 **What “done” looks like for v1:**
 
-- Named leases persist (`engram` → `5193`, bind `0.0.0.0`, always-on).
+- Named leases persist (`engram` → `5193`, bind `127.0.0.1` by default; `--lan` is `0.0.0.0`).
 - `localberth get <name>` prints the port (and fails clearly if missing).
 - `localberth claim` / `ls` / `scan` work from the CLI.
 - Dashboard shows **leases** and **observed** listening sockets (process name when available).
@@ -49,7 +49,7 @@ The domain is **not** the running app. The dashboard stays on `http://127.0.0.1:
 
 **Hero flow:**
 
-Read localberth.com → `npm i -g localberth` (or `pnpm add -g localberth`) → `localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(localberth get engram)` (or Vite helper) → dashboard at `:54321` shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
+Read localberth.com → `npm i -g localberth` (or `pnpm add -g localberth`) → `localberth claim engram --port 5193` (loopback) or `… --lan` for phone → firewall rule only on `--lan` → app starts with `PORT=$(localberth get engram)` (or Vite helper) → dashboard at `:54321` shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
 
 **Secondary (v1):**
 

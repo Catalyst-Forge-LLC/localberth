@@ -256,6 +256,14 @@
       "decision": "Public copy follows aiBreze (core + landing). Overlay in docs/aibreze-overlay.md. Protected: localhost/slip pairing and Local DNS for ports. Public pages say dashboard, not harbor board.",
       "rationale": "Same house voice as other Catalyst Forge pages. npm README is a brochure; checkout notes stay last.",
       "alternatives_considered": ["Copy-only pass with no package", "Landing voice on the flag list"]
+    },
+    {
+      "id": "D21",
+      "timestamp": "2026-08-18",
+      "phase": "3-stabilization",
+      "decision": "claim defaults to bind 127.0.0.1. --lan binds 0.0.0.0 and syncs inbound firewall. --bind ADDR still works. --lan and --bind together is an error. Ephemeral is no longer a special-case bind default.",
+      "rationale": "Opening past loopback should be intentional, especially once agents invoke claim. Phone/LAN access stays one flag. Same issue raised on DictaWhisper.",
+      "alternatives_considered": ["Keep 0.0.0.0 default", "Require --bind 0.0.0.0 with no --lan shorthand"]
     }
   ],
   "gotchas": [
@@ -326,6 +334,10 @@
     {
       "date": "2026-08-18",
       "summary": "Bumped package to 0.1.0 for the first real CLI publish."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "D21: claim defaults to 127.0.0.1; --lan opens 0.0.0.0 and the firewall. Package 0.2.0."
     }
   ],
   "openQuestions": []

@@ -26,5 +26,6 @@
 4. [ ] Public site + GitHub URLs on npm when those are public
 5. [x] Publish `localberth@0.1.0` (you; agent does not)
 6. [x] Publish `localberth@0.1.1` so the README mark is in the tarball (you; agent does not)
-7. [ ] Publish `localberth@0.1.2` (README dashboard line; you; agent does not)
+7. [x] Publish `localberth@0.1.2` (README dashboard line; you; agent does not)
+8. [ ] Publish `localberth@0.2.0` (claim defaults to loopback, `--lan`; you; agent does not)
 

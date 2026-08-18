@@ -15,6 +15,8 @@ localberth get foo
 
 **localhost** is the machine; **LocalBerth** is the slip.
 
+A claim is loopback unless you pass `--lan`.
+
 After you install, `localberth serve` opens the dashboard at `http://127.0.0.1:54321`.
 
 [Install](/install) · [CLI](/cli) · [Napkin math](/posts/napkin-math)
