@@ -1,0 +1,185 @@
+# Berth — Phase 1 architecture brief
+
+_Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
+
+**Status:** `draft` — product shape locked 2026-08-18; **stack not locked**  
+**Last updated:** `2026-08-18`  
+**Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
+**Phase 1 exit:** Brief locked; explicit approval before Phase 2 scaffolding.
+
+---
+
+## 1. Problem and outcome
+
+**What we are building:**
+
+Berth is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Apps look up their port at start (`berth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). This is not DNS and not a reverse proxy.
+
+**Project archetype:** `product` _(personal operator tool; license TBD — propose Apache-2.0 to match Engram)_
+
+**What “done” looks like for v1:**
+
+- Named leases persist (`engram` → `5193`, bind `0.0.0.0`, always-on).
+- `berth get <name>` prints the port (and fails clearly if missing).
+- `berth claim` / `berth ls` / `berth scan` work from the CLI.
+- Dashboard shows **leases** and **observed** listening sockets (process name when available).
+- Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
+- Berth’s own dashboard has a lease named `berth` (proposed default **3999**).
+
+**Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a public global `berth` npm/cargo binary.
+
+---
+
+## 2. Users and hero flow
+
+**Primary user:** You — many local services, mix of always-on and test, Windows + Tailscale phone access.
+
+**Hero flow:**
+
+Need a port for an app → `berth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(berth get engram)` (or Vite helper) → dashboard shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
+
+**Secondary (v1):**
+
+- Scan: see Postgres, Ollama, mystery Node on a port with no lease (observed-only rows).
+- Move: `berth claim engram --port 5200` updates lease **and** firewall (old 5193 rule removed or left documented).
+- Ephemeral: `berth claim scratch --ephemeral` assigns a free port from a pool.
+
+---
+
+## 3. Constraints
+
+- **Local-only.** No accounts, no telemetry, no hosted multi-user.
+- **The port is the interface.** Do not hide it behind a name-only URL in v1.
+- **Windows-first** for firewall. CLI + scan should work on Win/macOS/Linux.
+- **Do not become Portless / Hotel.** No PAC file, no `app.localhost` front door in v1.
+- **Observed is read-only.** Never kill a process unless a later phase adds an explicit command.
+- **Berth must lease itself** so it does not become another mystery port.
+
+**State persistence:** A-local. Propose `~/.berth/` (leases + optional SQLite scan cache). Repo `data/` only for dev fixtures.
+
+---
+
+## 4. Stack and tooling
+
+_Proposed to match Engram / DictaWhisper muscle memory. **Not locked.**_
+
+| Area | Choice | Status | Notes |
+| ---- | ------ | ------ | ----- |
+| App shape | CLI + local web dashboard | **proposed** | CLI is the lookup API; dashboard is the harbor board |
+| Language | TypeScript (ESM, strict) | **proposed** | Same as Engram |
+| Package manager | pnpm | **proposed** | Same as Engram |
+| CLI runner | `tsx` / compiled bin | **proposed** | `berth` in `package.json` bin |
+| Dashboard | SvelteKit 5 + Tailwind + adapter-node | **proposed** | Same workbench as Engram |
+| DB | SQLite (`better-sqlite3`) | **proposed** | Leases + observed snapshots; human-readable export (`leases.toml`) optional |
+| Auth | None | **proposed** | Single operator |
+| Deploy | Local only | **proposed** | Bind `127.0.0.1` for dashboard by default; `0.0.0.0` if you want the board on the phone |
+
+**Folder shape (proposed):**
+
+```text
+berth/
+  src/cli/           # get, claim, ls, scan, firewall
+  src/lib/server/    # registry, observe, firewall
+  src/routes/        # dashboard
+  data/              # dev-only
+```
+
+---
+
+## 5. Data model (v1)
+
+**Lease**
+
+| Field | Meaning |
+| ----- | ------- |
+| `name` | Stable id (`engram`, `dictawhisper`, `berth`) |
+| `port` | TCP port |
+| `bind` | `127.0.0.1` / `0.0.0.0` / Tailscale IP |
+| `protocol` | `tcp` (udp later) |
+| `kind` | `always` \| `ephemeral` |
+| `notes` | Free text |
+| `firewall` | `wanted` / `applied` / `needs-elevation` / `skipped` |
+
+**Observed** (from OS listen table, not owned)
+
+| Field | Meaning |
+| ----- | ------- |
+| `port`, `bind`, `pid`, `process`, `seen_at` | Snapshot |
+| `lease_name` | Matched lease or null |
+
+Conflict: lease port in use by a process that is not the expected app → dashboard flag, do not auto-kill.
+
+---
+
+## 6. CLI (v1)
+
+```text
+berth get <name>              # stdout: port number only (scripts)
+berth claim <name> [--port N] [--bind ADDR] [--ephemeral]
+berth ls
+berth scan
+berth firewall sync           # apply wanted rules
+```
+
+Apps: `PORT=$(berth get engram)`. Vite often ignores `PORT` — a small `--port` helper or documented `vite.config` `loadEnv` is in scope.
+
+---
+
+## 7. Firewall (Windows)
+
+On claim/move: upsert inbound TCP allow named `Berth <name> <port>` (e.g. `Berth engram 5193`). Remove or disable the previous port’s Berth-managed rule.
+
+If not elevated: print the `netsh` line (today’s Engram 5193 situation) and mark `needs-elevation`.
+
+Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 5173` unless we later add a janitor).
+
+---
+
+## 8. Name collisions (keep Berth anyway)
+
+The **folder and product name** are fine. The **global CLI name `berth`** is crowded:
+
+| Who | What | Binary |
+| --- | --- | --- |
+| [berth-mcp/berth](https://github.com/berth-mcp/berth) | MCP server package manager | `cargo install berth`, npm `@berth/cli` → `berth` |
+| [@whenlabs/berth](https://github.com/WhenLabs-org/when) | Port **conflict resolver** (scan/kill/reassign) | `@whenlabs/berth` → `berth` |
+| [zoltanersek/berth](https://github.com/zoltanersek/berth) | Agent **worktree** isolation + ephemeral ports | `berth up/down/dashboard` |
+| [tofa84/berth](https://github.com/tofa84/berth) | Mac GUI for Apple containers | app name, not this domain |
+| npm `berth` (unscoped) | **Deprecated**, unused |
+
+Closest **product** prior art under a different name: [PortHub](https://github.com/Jason-Vaughan/PortHub) (“DHCP for developers”).
+
+**Why we still use Berth:** local sibling path, private package, metaphor matches (stable berth vs their ephemeral/worktree/MCP). Risk is `PATH`: if someone `cargo install berth` or `npm i -g @whenlabs/berth`, `berth` is not us.
+
+**Mitigation (v1):** `package.json` `"name": "berth"` + `"private": true`; invoke via `pnpm berth` from this repo. Do not publish an unscoped global until we pick `@<scope>/berth` or a second bin alias.
+
+No serious trademark (English nautical word). No need to rename the folder.
+
+---
+
+## 9. Non-goals (v1)
+
+- Reverse proxy / `engram.localhost` / PAC
+- Process manager (start/stop Engram)
+- Killing observed processes
+- MagicDNS app names
+- Multi-user / remote registry
+
+---
+
+## 10. First feature batch (Phase 2 spine)
+
+1. Registry persist + `get` / `claim` / `ls`
+2. `scan` (Windows listen table)
+3. Dashboard: leases + observed
+4. Firewall sync on claim (Windows)
+5. Self-lease `berth`
+
+---
+
+## 11. Open (must lock before Phase 2)
+
+1. Stack table in §4 — confirm or change.
+2. Data home: `~/.berth/` vs repo `data/`.
+3. License: Apache-2.0 vs private-only.
+4. Dashboard default port **3999** — or pick another unused number.

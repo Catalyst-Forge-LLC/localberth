@@ -1,0 +1,124 @@
+{
+  "project": {
+    "name": "Berth",
+    "created": "2026-08-18",
+    "description": "Local named TCP port leases, dashboard of leases + observed listeners, Windows firewall sync. Humans still use the port.",
+    "sourceControl": "git",
+    "archetype": "product",
+    "status": "active"
+  },
+  "currentPhase": "1-architecture",
+  "phases": {
+    "1-architecture": {
+      "status": "in_progress",
+      "startedAt": "2026-08-18",
+      "completedAt": null,
+      "exitCriteriaMet": [
+        "Product shape locked (leases + dashboard + firewall, observed rows, name Berth, path /berth)",
+        "PHASE_1_BRIEF.md drafted (docs/)",
+        "Name collisions researched and recorded"
+      ],
+      "exitCriteriaRemaining": [
+        "Stack confirmed",
+        "Data home + dashboard port + license confirmed",
+        "PHASE_1_BRIEF.md status locked",
+        "Explicit user approval to advance to Phase 2"
+      ],
+      "notes": [
+        "Kickoff from Engram Tailscale/firewall session. Model B only — not a reverse proxy."
+      ]
+    },
+    "2-scaffolding": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [
+        "App runs with pnpm",
+        "Hero flow: claim → get → dashboard → firewall",
+        "CONTEXT_PROMPT.md / README / TODO from brief"
+      ],
+      "notes": []
+    },
+    "3-stabilization": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [],
+      "notes": []
+    },
+    "4-feature-iteration": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [],
+      "notes": [],
+      "iterations": []
+    },
+    "5-refactoring": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [],
+      "notes": []
+    },
+    "6-strategic-review": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [],
+      "notes": []
+    },
+    "7-hardening": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCriteriaMet": [],
+      "exitCriteriaRemaining": [],
+      "notes": []
+    }
+  },
+  "decisions": [
+    {
+      "id": "D1",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Model B: named port leases. Humans always use the numeric port.",
+      "rationale": "Phone/Tailscale/bookmarks and firewall rules are port contracts. A localhost proxy does not fix that.",
+      "alternatives_considered": ["Portless/Hotel name front door", "DNS SRV only"]
+    },
+    {
+      "id": "D2",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "v1 = stable leases + dashboard + Windows firewall sync; observed listeners in the same board.",
+      "rationale": "Engram timed out on Tailscale because the firewall rule was still on 5173 after the app moved to 5193.",
+      "alternatives_considered": ["CLI-only", "Firewall later"]
+    },
+    {
+      "id": "D3",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Product name Berth; repo path berth. Keep the berth CLI name locally; do not publish unscoped global until PATH collisions are decided.",
+      "rationale": "Metaphor fits. Folder is free. Global `berth` binary is already used by MCP/WhenLabs/worktree tools.",
+      "alternatives_considered": ["Nomenclator", "Pharos", "PortHub clone name"]
+    }
+  ],
+  "gotchas": [],
+  "sessions": [
+    {
+      "date": "2026-08-18",
+      "summary": "Sibling kickoff. Product shape locked. Brief drafted. Waiting on stack/data-home/license/port lock."
+    }
+  ],
+  "openQuestions": [
+    "Stack: SvelteKit + SQLite + pnpm vs CLI-first",
+    "Data home: ~/.berth vs repo data/",
+    "License: Apache-2.0 vs private-only",
+    "Dashboard default port 3999"
+  ]
+}
