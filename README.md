@@ -14,6 +14,8 @@ Site: [localberth.com](https://localberth.com) (FilePress — what it is and how
 
 ## Status
 
+npm `localberth@0.0.0` is a **name stake**. The CLI is not ready — `npx localberth` exits 1.
+
 Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth/`. License: Apache-2.0. Dashboard port: **54321**. Domain = explainer site; daemon = npm. Await go-ahead to scaffold.
 
 ## Sibling

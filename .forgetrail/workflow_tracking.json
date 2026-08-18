@@ -172,6 +172,14 @@
       "decision": "The app ships as a published unscoped npm package named localberth (bin localberth). It runs locally after install. Unscoped name was unpublished as of 2026-08-18.",
       "rationale": "Operator install path is npm/pnpm, not cloning this repo. Avoid the crowded berth bin.",
       "alternatives_considered": ["private: true indefinitely", "@catalystforge/localberth only", "Global berth bin"]
+    },
+    {
+      "id": "D12",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Publish localberth@0.0.0 as a name stake (placeholder bin, files whitelist). Human publishes; agent does not.",
+      "rationale": "Reserve the unscoped npm name before the spine exists.",
+      "alternatives_considered": ["Wait until Phase 2", "Scoped package only"]
     }
   ],
   "gotchas": [],
@@ -183,6 +191,10 @@
     {
       "date": "2026-08-18",
       "summary": "Amended brief: FilePress site at site/ → localberth.com; app is published npm package localberth. Origin set to Catalyst-Forge-LLC/localberth. Still waiting on Phase 2 go-ahead."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Prepared localberth@0.0.0 publish stub (package.json + placeholder bin). User will publish."
     }
   ],
   "openQuestions": []
