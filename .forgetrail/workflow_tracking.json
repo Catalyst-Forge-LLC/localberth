@@ -226,6 +226,10 @@
     {
       "date": "2026-08-18",
       "summary": "D13 cross-platform firewall. D14 short public README. Bump stub to 0.0.1 for the user to publish."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Bump stub to 0.0.2 so user can republish and reindex the npmjs.com README tab."
     }
   ],
   "openQuestions": []
