@@ -1,8 +1,8 @@
 # LocalBerth
 
-**localhost** is the machine. **LocalBerth** is the slip.
+**Local DNS for ports.**
 
-Local DNS for ports: a name on this box resolves to a TCP number (`engram` → `5193`). You still open the port. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall rule in sync — on Windows, macOS, and Linux.
+Named TCP port leases for a local box. A name on this machine resolves to a TCP number (`engram` → `5193`). You still open the port. **localhost** is the machine; **LocalBerth** is the slip. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall rule in sync — on Windows, macOS, and Linux.
 
 ## Install
 

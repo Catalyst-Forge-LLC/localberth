@@ -53,9 +53,9 @@ a { color:var(--ok); }
 <main>
 <header>
 <div>
-<p class="lede">localhost is the machine</p>
+<p class="lede">Local DNS for ports</p>
 <h1>LocalBerth</h1>
-<p class="muted">Local DNS for ports — and what’s actually listening.</p>
+<p class="muted">Named port leases and what’s actually listening.</p>
 </div>
 <p class="muted">dashboard :${DASHBOARD_PORT}<br/>${toggle}</p>
 </header>

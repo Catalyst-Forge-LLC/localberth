@@ -15,9 +15,9 @@
 
 <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
 	<div>
-		<p class="text-sm tracking-wide text-[var(--accent)]">localhost is the machine</p>
+		<p class="text-sm tracking-wide text-[var(--accent)]">Local DNS for ports</p>
 		<h1 class="text-3xl font-semibold">LocalBerth</h1>
-		<p class="mt-1 text-[var(--muted)]">Local DNS for ports — and what’s actually listening.</p>
+		<p class="mt-1 text-[var(--muted)]">Named port leases and what’s actually listening.</p>
 	</div>
 	<p class="text-sm text-[var(--muted)]">
 		dashboard :54321
