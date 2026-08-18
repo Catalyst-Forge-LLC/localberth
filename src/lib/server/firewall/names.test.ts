@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { renderPfAnchor } from './darwin.js';
 import { firewalldRich } from './linux.js';
+import { isElevated, needsElevation, resetElevatedCache } from './run.js';
 import { isLoopbackBind, ruleName, scopedBind, shouldOpenInbound } from './names.js';
 
 describe('firewall names', () => {
@@ -30,6 +31,21 @@ describe('pf anchor', () => {
 		]);
 		assert.match(text, /port 5193/);
 		assert.doesNotMatch(text, /54321/);
+	});
+});
+
+describe('elevation', () => {
+	it('classifies access-denied text as needs elevation', () => {
+		assert.equal(
+			needsElevation({ ok: false, code: 1, stdout: '', stderr: 'The requested operation requires elevation.' }),
+			true
+		);
+	});
+
+	it('isElevated returns a boolean and does not throw', async () => {
+		resetElevatedCache();
+		const v = await isElevated();
+		assert.equal(typeof v, 'boolean');
 	});
 });
 

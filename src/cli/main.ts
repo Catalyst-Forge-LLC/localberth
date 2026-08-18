@@ -24,6 +24,8 @@ claim flags:
   --ephemeral    scratch lease; pool 47000–47999 if no --port
   --notes TEXT   stored on the lease
   --or-next      if --port is leased or already listening, take the next free pool port
+
+Firewall changes need admin/root. Without that, the lease still saves and the command to paste is printed. No UAC or sudo prompt.
 `;
 }
 
@@ -111,7 +113,9 @@ async function main(): Promise<void> {
 		const fw = await syncLease(lease, previous);
 		process.stdout.write(`${lease.name}\t${lease.port}\t${lease.bind}\t${fw.status}\n`);
 		if (!fw.ok) {
-			console.error(`firewall ${fw.status}. run as admin/sudo, or paste:\n${fw.command}`);
+			console.error(
+				`lease saved. firewall ${fw.status} (not admin/root). paste:\n${fw.command}`
+			);
 		}
 		return;
 	}

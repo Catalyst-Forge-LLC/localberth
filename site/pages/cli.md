@@ -17,7 +17,7 @@ localberth serve [--host ADDR] [--port N]
 
 ## claim
 
-Writes the lease, then tries to add an inbound firewall allow only for non-loopback binds. Loopback (`127.0.0.1`) is skipped: no WAN hole. Rules are named `LocalBerth <name> <port>` and only those are removed. If you are not admin/sudo, it prints the command to paste.
+Writes the lease, then tries to add an inbound firewall allow only for non-loopback binds. Loopback (`127.0.0.1`) is skipped: no WAN hole. Rules are named `LocalBerth <name> <port>` and only those are removed. Firewall writes need admin or root. Without that, the lease still saves and LocalBerth prints the command to paste. It does not prompt for UAC or sudo.
 
 | Flag | What it does |
 | ---- | ------------ |

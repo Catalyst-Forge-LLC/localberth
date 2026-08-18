@@ -42,7 +42,7 @@ localberth firewall sync
 localberth firewall status
 ```
 
-Dashboard: `http://127.0.0.1:54321` (`localberth serve`). If a claim is not elevated, LocalBerth prints the command to paste.
+Dashboard: `http://127.0.0.1:54321` (`localberth serve`). Loopback leases skip the WAN hole. A non-loopback claim still saves the lease if you are not admin/root; LocalBerth prints the firewall command to paste. It does not prompt for UAC or sudo.
 
 Leases live in `~/.localberth/` on the machine that ran the CLI.
 

@@ -38,9 +38,14 @@ export function darwinCommands(leases: Lease[]): string {
 	);
 }
 
-export async function applyDarwin(leases: Lease[]): Promise<void> {
+export function writePfAnchor(leases: Lease[]): string {
 	const file = pfAnchorPath();
 	writeFileSync(file, renderPfAnchor(leases), 'utf8');
+	return file;
+}
+
+export async function applyDarwin(leases: Lease[]): Promise<void> {
+	const file = writePfAnchor(leases);
 	const loaded = await run('pfctl', ['-a', 'localberth', '-f', file]);
 	if (loaded.ok) return;
 	throw new Error(

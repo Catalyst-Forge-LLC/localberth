@@ -46,6 +46,35 @@ export function needsElevation(result: RunResult): boolean {
 	);
 }
 
+export class UnelevatedError extends Error {
+	constructor() {
+		super('not running as admin or root');
+		this.name = 'UnelevatedError';
+	}
+}
+
+let elevatedCache: boolean | null = null;
+
+/** True when this process can change the host firewall. Never prompts for UAC/sudo. */
+export async function isElevated(): Promise<boolean> {
+	if (elevatedCache !== null) return elevatedCache;
+	if (process.platform === 'win32') {
+		try {
+			const r = await run('whoami', ['/groups']);
+			elevatedCache = /S-1-16-12288|S-1-16-16384/.test(r.stdout);
+		} catch {
+			elevatedCache = false;
+		}
+		return elevatedCache;
+	}
+	elevatedCache = typeof process.getuid === 'function' && process.getuid() === 0;
+	return elevatedCache;
+}
+
+export function resetElevatedCache(): void {
+	elevatedCache = null;
+}
+
 export function whichExists(cmd: string): Promise<boolean> {
 	const probe = process.platform === 'win32' ? ['where', [cmd]] : ['sh', ['-c', `command -v ${cmd}`]];
 	return run(probe[0] as string, probe[1] as string[]).then((r) => r.ok);
