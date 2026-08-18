@@ -20,4 +20,4 @@ Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth
 
 ## Sibling
 
-Next to Engram, DictaWhisper, ChronoVault at `localberth`.
+Next to Engram, DictaWhisper, ChronoVault.

@@ -106,7 +106,7 @@
       "id": "D3",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Repo path localberth. CLI is localberth, not the crowded global berth binary.",
+      "decision": "Repo folder localberth. CLI is localberth, not the crowded global berth binary.",
       "rationale": "Folder matches the public name. cargo/@whenlabs/berth already own `berth` on PATH.",
       "alternatives_considered": ["Nomenclator", "Pharos", "PortHub clone name"]
     },
@@ -154,7 +154,7 @@
       "id": "D9",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Rename repo folder berth → localberth (localberth).",
+      "decision": "Rename repo folder berth → localberth.",
       "rationale": "Match public name and domain; /berth was only a short sibling path.",
       "alternatives_considered": ["Keep /berth"]
     },
@@ -200,6 +200,10 @@
     {
       "date": "2026-08-18",
       "summary": "User published localberth@0.0.0 to npm. Name is reserved."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Removed machine-specific workspace paths from docs and tracking before first push."
     }
   ],
   "openQuestions": []

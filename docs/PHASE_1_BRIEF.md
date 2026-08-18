@@ -168,7 +168,7 @@ Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 517
 **Public:** LocalBerth · site `localberth.com` (FilePress explainer)  
 **Package:** npm `localberth` · bin `localberth`  
 **Pairing:** localhost = the machine; LocalBerth = the slip (addition, not a replacement).  
-**Repo:** `localberth` (`git@github.com:Catalyst-Forge-LLC/localberth.git`)  
+**Repo:** [Catalyst-Forge-LLC/localberth](https://github.com/Catalyst-Forge-LLC/localberth)  
 **CLI:** `localberth` (avoids the crowded global `berth` binary)
 
 The bare name **berth** is crowded:
