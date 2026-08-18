@@ -6,7 +6,7 @@ export default defineFilepressConfig({
 	url: 'https://localberth.com',
 	author: 'Catalyst Forge, LLC',
 	tagline: 'Local DNS for ports',
-	lede: 'Named port leases for a local box. You still open the port.',
+	lede: 'Vite hands out 5173, then 5174. Reboot, and they swap. Name the port so they do not.',
 	homePage: 'home',
 	nav: [
 		{ label: 'Home', href: '/' },

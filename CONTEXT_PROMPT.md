@@ -6,7 +6,7 @@
 
 ## Hero workflow
 
-`localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule → `PORT=$(localberth get engram)` → dashboard at `:54321` → phone uses `http://100.x.x.x:5193`.
+Vite 5173/5174 swap after reboot is the common story. Hero: `localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule → `PORT=$(localberth get engram)` → dashboard at `:54321` → phone uses `http://100.x.x.x:5193`.
 
 ## Stack
 

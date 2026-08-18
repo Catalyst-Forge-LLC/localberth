@@ -6,6 +6,8 @@ Named TCP port leases for a local box. `engram` is 5193 on this machine. You sti
 
 It records which name owns which number, shows what is listening, and updates the host firewall on Windows, macOS, and Linux.
 
+Vite will hand the first Svelte app 5173 and the next one 5174. Reboot, start them in the other order, and the ports swap. Claim the name so `foo` stays on 5173 and `bar` stays on 5174. The agent or the app calls `localberth get foo`.
+
 ## Install
 
 ```text
