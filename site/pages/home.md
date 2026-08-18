@@ -7,6 +7,7 @@ Named TCP port leases for a machine that runs a lot of local services. Apps look
 
 ```text
 localberth claim engram --port 5193 --bind 0.0.0.0
+localberth release engram
 localberth get engram
 ```
 

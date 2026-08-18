@@ -36,3 +36,9 @@ localberth serve
 ```
 
 Then visit `http://127.0.0.1:54321`.
+
+When you are done with a name:
+
+```text
+localberth release engram
+```

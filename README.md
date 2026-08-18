@@ -16,6 +16,7 @@ or `pnpm add -g localberth`. Node.js 20+.
 
 ```text
 localberth claim engram --port 5193 --bind 0.0.0.0
+localberth release engram
 localberth get engram
 localberth ls
 localberth scan
