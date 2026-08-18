@@ -1,6 +1,6 @@
 # ForgeTrail progress — LocalBerth
 
-**Phase:** 2-scaffolding  
+**Phase:** 3-stabilization  
 **Updated:** 2026-08-18
 
-Spine: CLI (`get` / `claim` / `ls` / `scan` / `firewall sync`) + dashboard on `:54321` + FilePress `site/`. Live data in `~/.localberth/`.
+Spine is in. README matches the real CLI. Missing `get` and busy `serve` port now fail with a next step. Next: elevated firewall sync dogfood.

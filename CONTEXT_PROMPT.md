@@ -29,12 +29,12 @@ SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQ
 - Language: TypeScript (strict)
 - Do not hide ports behind name-only URLs
 - Observed is read-only (no process kill)
-- Public README stays short (no process notes)
+- Public README is the operator/npm page (no ForgeTrail or sibling notes)
 - Omit homepage / repository on npm until the site and GitHub repo are public
 
 ## Current phase
 
-`2-scaffolding`
+`3-stabilization`
 
 ## Recent gotchas (last 3–5)
 

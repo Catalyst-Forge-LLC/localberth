@@ -225,7 +225,8 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 3. License = Apache-2.0.
 4. Dashboard port = **54321**.
 5. **localberth.com** = FilePress explainer in `site/`; app is npm `localberth` running locally.
-6. **npm:** `localberth` published; public README is short (no process notes). Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
+6. **npm:** `localberth` published; public README is the usage page (no process notes). Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
 7. **Cross-platform:** CLI, scan, dashboard, and firewall on Windows, macOS, and Linux.
 
-**Phase 2 started:** 2026-08-18 (explicit go-ahead).
+**Phase 2 started:** 2026-08-18 (explicit go-ahead).  
+**Phase 2 complete / Phase 3 started:** 2026-08-18.

@@ -16,5 +16,12 @@
 - [x] Hide system/RPC observed ports (toggle / `scan --all`)
 - [x] Vite helper `localberthPort()` (`localberth/port`)
 - [x] Harden firewall backends (pf anchors, firewalld rich rules, loopback skip)
-- Public site + GitHub URLs on npm when those are public
-- Publish a real CLI version off `0.0.2`
+
+## Phase 3
+
+1. [x] README matches the real CLI (public/npm page, no process notes)
+2. [x] Sad-path messages: missing `get`, busy `serve` port
+3. [ ] Dogfood: elevated `firewall sync` for non-loopback leases
+4. [ ] Public site + GitHub URLs on npm when those are public
+5. [ ] Publish a real CLI version off `0.0.2`
+

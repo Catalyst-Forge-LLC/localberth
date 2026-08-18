@@ -54,7 +54,7 @@ async function main(): Promise<void> {
 		const name = argv[0];
 		if (!name) fail('usage: localberth get <name>');
 		const lease = getLease(name);
-		if (!lease) fail(`no lease named "${name}"`);
+		if (!lease) fail(`no lease named "${name}" — claim it first: localberth claim ${name}`);
 		process.stdout.write(`${lease.port}\n`);
 		return;
 	}

@@ -29,7 +29,7 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "cli": "tsx src/cli/main.ts",
-    "test": "tsx --test src/lib/server/firewall/names.test.ts",
+    "test": "tsx --test src/**/*.test.ts",
     "site:dev": "pnpm --dir site dev",
     "site:build": "pnpm --dir site build",
     "site:check": "pnpm --dir site check"

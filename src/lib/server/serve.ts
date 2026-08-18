@@ -96,7 +96,21 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 		}
 	});
 	await new Promise<void>((resolve, reject) => {
-		server.once('error', reject);
+		server.once('error', (err: NodeJS.ErrnoException) => {
+			if (err.code === 'EADDRINUSE') {
+				reject(
+					new Error(
+						`port ${port} is already in use. stop the other dashboard, or: localberth serve --port N`
+					)
+				);
+				return;
+			}
+			if (err.code === 'EACCES') {
+				reject(new Error(`cannot bind ${host}:${port} (permission denied)`));
+				return;
+			}
+			reject(err);
+		});
 		server.listen(port, host, () => {
 			console.error(`LocalBerth dashboard  http://${host}:${port}/`);
 			resolve();

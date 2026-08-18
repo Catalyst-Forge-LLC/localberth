@@ -14,6 +14,13 @@ export function getDb(): Database.Database {
 	return db;
 }
 
+/** Tests only — close the singleton so LOCALBERTH_HOME can change. */
+export function resetDb(): void {
+	if (!dbSingleton) return;
+	dbSingleton.close();
+	dbSingleton = null;
+}
+
 function migrate(db: Database.Database): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS leases (

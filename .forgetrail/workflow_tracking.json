@@ -7,7 +7,7 @@
     "archetype": "product",
     "status": "active"
   },
-  "currentPhase": "2-scaffolding",
+  "currentPhase": "3-stabilization",
   "phases": {
     "1-architecture": {
       "status": "complete",
@@ -31,29 +31,35 @@
       ]
     },
     "2-scaffolding": {
-      "status": "in_progress",
+      "status": "complete",
       "startedAt": "2026-08-18",
-      "completedAt": null,
+      "completedAt": "2026-08-18",
       "exitCriteriaMet": [
         "App runs with pnpm (dashboard :54321, CLI get/claim/ls/scan)",
         "Hero flow: claim → get → dashboard → firewall command on miss",
         "FilePress site/ builds",
         "CONTEXT_PROMPT.md / README / TODO from brief"
       ],
-      "exitCriteriaRemaining": [
-        "User review of the spine"
-      ],
+      "exitCriteriaRemaining": [],
       "notes": [
         "2026-08-18: spine up. Firewall marks needs-elevation and prints netsh/ufw/pf when not privileged."
       ]
     },
     "3-stabilization": {
-      "status": "not_started",
-      "startedAt": null,
+      "status": "in_progress",
+      "startedAt": "2026-08-18",
       "completedAt": null,
-      "exitCriteriaMet": [],
-      "exitCriteriaRemaining": [],
-      "notes": []
+      "exitCriteriaMet": [
+        "README matches the real CLI (install, serve, firewall, Vite helper, checkout)",
+        "Sad paths: missing get, busy serve port, registry tests"
+      ],
+      "exitCriteriaRemaining": [
+        "Elevated firewall sync dogfood for non-loopback leases",
+        "Critical bugs from further dogfood"
+      ],
+      "notes": [
+        "2026-08-18: user started Phase 3. README is the public/npm page — no process notes."
+      ]
     },
     "4-feature-iteration": {
       "status": "not_started",
@@ -198,7 +204,7 @@
       "id": "D14",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Root README is the public npm page: product one-liner + install tease. Process, phase, and sibling notes stay in docs/ and .forgetrail/.",
+      "decision": "Root README is the public npm page: product one-liner + install tease. Process, phase, and sibling notes stay in docs/ and .forgetrail/. Amended by D17.",
       "rationale": "0.0.0 README overshared Phase 1 internals on npmjs.com.",
       "alternatives_considered": ["Separate README.npm.md", "Keep operator status on the package page"]
     },
@@ -217,6 +223,14 @@
       "decision": "Firewall hardening: skip inbound for loopback binds; Windows/Linux only create or delete rules named LocalBerth <name> <port> (ufw by comment, firewalld rich rules). macOS writes a pf anchor file and loads anchor localberth.",
       "rationale": "A 127.0.0.1 dashboard must not punch a WAN hole. Never delete an operator rule that happens to share a port.",
       "alternatives_considered": ["Always open the port on all interfaces", "firewalld default-zone add-port"]
+    },
+    {
+      "id": "D17",
+      "timestamp": "2026-08-18",
+      "phase": "3-stabilization",
+      "decision": "Phase 3 README is a public usage page (install, commands, serve, firewall/loopback, Vite helper, checkout). Still no ForgeTrail, siblings, or machine paths. Amends D14 “short tease”.",
+      "rationale": "The spine exists; npm and git checkout readers need the real CLI. Process notes stay in CONTEXT_PROMPT.md / docs / .forgetrail/.",
+      "alternatives_considered": ["Keep the 0.0.1 tease until Phase 6", "Separate README.npm.md"]
     }
   ],
   "gotchas": [
@@ -267,6 +281,10 @@
     {
       "date": "2026-08-18",
       "summary": "Hardened firewall backends: loopback skip, named-rule only deletes, pf anchor, firewalld rich rules, firewall status."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Phase 3 started: public README usage page, status launchers, clearer get/serve errors, registry sad-path tests."
     }
   ],
   "openQuestions": []
