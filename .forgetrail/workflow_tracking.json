@@ -2,7 +2,7 @@
   "project": {
     "name": "LocalBerth",
     "created": "2026-08-18",
-    "description": "Local named TCP port leases, dashboard of leases + observed listeners, Windows firewall sync. Humans still use the port.",
+    "description": "Local named TCP port leases, dashboard of leases + observed listeners, Windows firewall sync. Humans still use the port. Site: FilePress at localberth.com. App: npm package localberth.",
     "sourceControl": "git",
     "archetype": "product",
     "status": "active"
@@ -18,13 +18,15 @@
         "PHASE_1_BRIEF.md locked (docs/)",
         "Name collisions researched and recorded",
         "Stack confirmed (same as Engram)",
-        "Data home ~/.localberth/ + dashboard port 54321 + Apache-2.0"
+        "Data home ~/.localberth/ + dashboard port 54321 + Apache-2.0",
+        "Public site = FilePress at site/ (localberth.com); app = published npm localberth"
       ],
       "exitCriteriaRemaining": [
         "Explicit user approval to advance to Phase 2"
       ],
       "notes": [
-        "Kickoff from Engram Tailscale/firewall session. Model B only — not a reverse proxy."
+        "Kickoff from Engram Tailscale/firewall session. Model B only — not a reverse proxy.",
+        "2026-08-18: domain is the FilePress explainer; daemon is the npm package."
       ]
     },
     "2-scaffolding": {
@@ -34,7 +36,8 @@
       "exitCriteriaMet": [],
       "exitCriteriaRemaining": [
         "App runs with pnpm",
-        "Hero flow: claim → get → dashboard → firewall",
+        "Hero flow: install npm → claim → get → dashboard → firewall",
+        "FilePress site/ builds (localberth.com pages)",
         "CONTEXT_PROMPT.md / README / TODO from brief"
       ],
       "notes": []
@@ -110,9 +113,9 @@
       "id": "D4",
       "timestamp": "2026-08-18",
       "phase": "1-architecture",
-      "decision": "Public name LocalBerth; intended domain localberth.com. Pairing with localhost (machine vs slip), not a replacement for localhost URLs.",
-      "rationale": "localhost + LocalBerth read as a pair. Domain is available. Avoids berth CLI/search collisions.",
-      "alternatives_considered": ["Berth only", "*.localberth hostnames in v1"]
+      "decision": "Public name LocalBerth; domain localberth.com is the FilePress explainer (what + how-to), not the running app. Pairing with localhost (machine vs slip), not a replacement for localhost URLs.",
+      "rationale": "localhost + LocalBerth read as a pair. Domain is available. Avoids berth CLI/search collisions. Site vs daemon must stay distinct.",
+      "alternatives_considered": ["Berth only", "*.localberth hostnames in v1", "Host the dashboard at the domain"]
     },
     {
       "id": "D5",
@@ -153,6 +156,22 @@
       "decision": "Rename repo folder berth → localberth (localberth).",
       "rationale": "Match public name and domain; /berth was only a short sibling path.",
       "alternatives_considered": ["Keep /berth"]
+    },
+    {
+      "id": "D10",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "localberth.com is a FilePress site (in-repo site/). Explains what LocalBerth is and how to use it. Hosted static (Cloudflare Pages, root directory site).",
+      "rationale": "Same FilePress pattern as getfilepress.com. Domain must not be mistaken for the local dashboard.",
+      "alternatives_considered": ["Sibling localberth-www repo", "Dashboard hosted at the domain", "GitHub README only"]
+    },
+    {
+      "id": "D11",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "The app ships as a published unscoped npm package named localberth (bin localberth). It runs locally after install. Unscoped name was unpublished as of 2026-08-18.",
+      "rationale": "Operator install path is npm/pnpm, not cloning this repo. Avoid the crowded berth bin.",
+      "alternatives_considered": ["private: true indefinitely", "@catalystforge/localberth only", "Global berth bin"]
     }
   ],
   "gotchas": [],
@@ -160,6 +179,10 @@
     {
       "date": "2026-08-18",
       "summary": "Phase 1 brief locked: Engram stack, ~/.localberth/, Apache-2.0, dashboard :54321. Waiting on go-ahead to scaffold."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Amended brief: FilePress site at site/ → localberth.com; app is published npm package localberth. Origin set to Catalyst-Forge-LLC/localberth. Still waiting on Phase 2 go-ahead."
     }
   ],
   "openQuestions": []

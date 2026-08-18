@@ -3,7 +3,7 @@
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
 **Status:** `locked`  
-**Last updated:** `2026-08-18`  
+**Last updated:** `2026-08-18` (amended: FilePress site + npm package)  
 **Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
 **Phase 1 exit:** Brief locked 2026-08-18. Await explicit approval before Phase 2 scaffolding.
 
@@ -15,7 +15,16 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 **LocalBerth** is a local **port name service**: stable named leases for TCP ports, a dashboard of leases plus observed listeners, and Windows firewall sync when a lease is assigned or moved. Pairing: **localhost** is the machine; **LocalBerth** is the slip — not a replacement for localhost, and not `*.localberth` URLs in v1.
 
-Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; intended domain `localberth.com`; repo folder `/localberth`; CLI `localberth`.
+Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; CLI and npm package **`localberth`**; repo folder `/localberth`.
+
+**Two surfaces (do not conflate):**
+
+| Surface | What it is | Where it lives |
+| ------- | ---------- | -------------- |
+| **localberth.com** | FilePress explainer: what it is and how to use it | In-repo `site/` → Cloudflare Pages |
+| **npm `localberth`** | The product: CLI + local dashboard | This repo root; runs on the operator’s machine |
+
+The domain is **not** the running app. The dashboard stays on `http://127.0.0.1:54321` after `localberth` is installed from npm.
 
 **Project archetype:** `product` _(personal operator tool; Apache-2.0)_
 
@@ -27,8 +36,10 @@ Apps look up their port at start (`localberth get engram` → `5193`). Humans st
 - Dashboard shows **leases** and **observed** listening sockets (process name when available).
 - Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
 - LocalBerth’s own dashboard has a lease named `localberth` on **54321**.
+- FilePress site at **localberth.com** explains the product and install (`pages/` for what / how-to).
+- Package **`localberth`** is publishable on npm (`bin.localberth`; not `private` at ship). Unscoped name was free as of 2026-08-18.
 
-**Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a public global `berth` npm/cargo binary.
+**Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a global `berth` binary (name is crowded).
 
 ---
 
@@ -38,7 +49,7 @@ Apps look up their port at start (`localberth get engram` → `5193`). Humans st
 
 **Hero flow:**
 
-Need a port for an app → `localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(localberth get engram)` (or Vite helper) → dashboard shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
+Read localberth.com → `npm i -g localberth` (or `pnpm add -g localberth`) → `localberth claim engram --port 5193 --bind 0.0.0.0` → firewall rule for 5193 → app starts with `PORT=$(localberth get engram)` (or Vite helper) → dashboard at `:54321` shows lease + “listening” → phone uses `http://100.x.x.x:5193`.
 
 **Secondary (v1):**
 
@@ -50,7 +61,8 @@ Need a port for an app → `localberth claim engram --port 5193 --bind 0.0.0.0` 
 
 ## 3. Constraints
 
-- **Local-only.** No accounts, no telemetry, no hosted multi-user.
+- **Local-only app.** No accounts, no telemetry, no hosted multi-user. The public site is static FilePress, not a hosted registry.
+- **Domain ≠ daemon.** `localberth.com` never serves leases. Leases live in `~/.localberth/` on the machine that installed the npm package.
 - **The port is the interface.** Do not hide it behind a name-only URL in v1.
 - **Windows-first** for firewall. CLI + scan should work on Win/macOS/Linux.
 - **Do not become Portless / Hotel.** No PAC file, no `app.localhost` front door in v1.
@@ -68,7 +80,11 @@ _Same stack as Engram. Locked 2026-08-18._
 | Area | Choice | Status | Notes |
 | ---- | ------ | ------ | ----- |
 | App shape | CLI + local web dashboard | **confirmed** | CLI is the lookup API; dashboard is the harbor board |
-| Framework | SvelteKit (Svelte 5) + Tailwind | **confirmed** | Same as Engram |
+| Distribution | Published npm package `localberth` | **confirmed** | Global `bin` `localberth`; app runs locally |
+| Public site | FilePress at `site/` | **confirmed** | Explainer + how-to; domain `localberth.com` |
+| Site engine | `getfilepress` | **confirmed** | Local: `link:../../filepress`; CI: npm or git pin |
+| Site host | Cloudflare Pages | **confirmed** | Root directory `site`; output `build/` |
+| Framework | SvelteKit (Svelte 5) + Tailwind | **confirmed** | Same as Engram (the **app**, not the site) |
 | Language | TypeScript (ESM, strict) | **confirmed** | Same as Engram |
 | Package manager | pnpm | **confirmed** | Same as Engram |
 | Adapter | `@sveltejs/adapter-node` | **confirmed** | SQLite + OS listen/firewall need Node |
@@ -76,18 +92,24 @@ _Same stack as Engram. Locked 2026-08-18._
 | CLI runner | `tsx` / `package.json` bin `localberth` | **confirmed** | |
 | DB | SQLite (`better-sqlite3`) | **confirmed** | Leases + observed snapshots under `~/.localberth/` |
 | Auth | None | **confirmed** | Single operator |
-| Deploy | Local only | **confirmed** | Dashboard default bind `127.0.0.1`; `0.0.0.0` optional for phone |
+| App deploy | Local only (npm install) | **confirmed** | Dashboard default bind `127.0.0.1`; `0.0.0.0` optional for phone |
 | License | Apache-2.0 | **confirmed** | Same as Engram / ForgeTrail |
 | Dashboard port | **54321** | **confirmed** | High, easy to remember (not Postgres 5432) |
 
 **Folder shape:**
 
 ```text
-localberth/
-  src/cli/           # get, claim, ls, scan, firewall
-  src/lib/server/    # registry, observe, firewall
-  src/routes/        # dashboard
-  data/              # dev fixtures only; live state is ~/.localberth/
+localberth/                 # GitHub: Catalyst-Forge-LLC/localberth
+  src/cli/                  # get, claim, ls, scan, firewall
+  src/lib/server/           # registry, observe, firewall
+  src/routes/               # local dashboard (not localberth.com)
+  data/                     # dev fixtures only; live state is ~/.localberth/
+  site/                     # FilePress content → localberth.com
+    filepress.config.ts
+    pages/                  # home, install, cli, dashboard, firewall
+    posts/                  # optional notes
+    static/
+    package.json            # getfilepress
 ```
 
 ---
@@ -143,9 +165,10 @@ Do not touch unrelated rules (`Node.js JavaScript Runtime`, leftover `Engram 517
 
 ## 8. Naming
 
-**Public:** LocalBerth · intended site `localberth.com`  
+**Public:** LocalBerth · site `localberth.com` (FilePress explainer)  
+**Package:** npm `localberth` · bin `localberth`  
 **Pairing:** localhost = the machine; LocalBerth = the slip (addition, not a replacement).  
-**Repo:** `localberth`  
+**Repo:** `localberth` (`git@github.com:Catalyst-Forge-LLC/localberth.git`)  
 **CLI:** `localberth` (avoids the crowded global `berth` binary)
 
 The bare name **berth** is crowded:
@@ -160,9 +183,9 @@ The bare name **berth** is crowded:
 
 Closest **product** prior art under a different name: [PortHub](https://github.com/Jason-Vaughan/PortHub) (“DHCP for developers”).
 
-**Why LocalBerth:** same metaphor, pairs with localhost, `localberth.com` is free, CLI does not collide with cargo/`@whenlabs/berth`. Folder is `/localberth`.
+**Why LocalBerth:** same metaphor, pairs with localhost, `localberth.com` is free, CLI and npm name do not collide with cargo/`@whenlabs/berth`. Folder is `/localberth`.
 
-**Mitigation (v1):** `package.json` `"name": "localberth"` + `"bin": { "localberth": "…" }`; `"private": true` until publish. Optional later alias `lb`.
+**Mitigation (v1):** `package.json` `"name": "localberth"` + `"bin": { "localberth": "…" }`; publish unscoped when the spine works. Optional later alias `lb`. Do not ship a `berth` bin.
 
 ---
 
@@ -173,6 +196,7 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 - Killing observed processes
 - MagicDNS app names
 - Multi-user / remote registry
+- Hosting the dashboard or lease store at localberth.com
 
 ---
 
@@ -183,6 +207,8 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 3. Dashboard: leases + observed
 4. Firewall sync on claim (Windows)
 5. Self-lease `localberth` → 54321
+6. npm package shape (`name` / `bin` / files) so `localberth` can publish
+7. FilePress `site/` (home + install + how-to) for localberth.com
 
 ---
 
@@ -192,5 +218,6 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 2. Live data = `~/.localberth/`.
 3. License = Apache-2.0.
 4. Dashboard port = **54321**.
+5. **localberth.com** = FilePress explainer in `site/`; app is npm `localberth` running locally.
 
-**Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine).
+**Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine + site).

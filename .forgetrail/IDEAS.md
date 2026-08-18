@@ -6,4 +6,5 @@
 - macOS `pf` / Linux `ufw` / `firewalld` backends
 - Tailscale Serve integration
 - Vite/SvelteKit helper that sets `server.port` from `localberth get`
-- Scoped npm publish (`@catalystforge/berth`) if the global `berth` bin stays crowded
+- Scoped npm alias `@catalystforge/localberth` pointing at the same unscoped `localberth` package
+- Optional `lb` bin alias

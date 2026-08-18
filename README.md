@@ -10,11 +10,11 @@ localberth ls             → leases + observed listeners
 http://127.0.0.1:54321    → dashboard
 ```
 
-Intended site: [localberth.com](https://localberth.com). Repo: `localberth`.
+Site: [localberth.com](https://localberth.com) (FilePress — what it is and how to use it). App: published npm package `localberth`, runs locally. Repo: `localberth`.
 
 ## Status
 
-Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth/`. License: Apache-2.0. Dashboard port: **54321**. Await go-ahead to scaffold.
+Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth/`. License: Apache-2.0. Dashboard port: **54321**. Domain = explainer site; daemon = npm. Await go-ahead to scaffold.
 
 ## Sibling
 
