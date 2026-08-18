@@ -6,11 +6,13 @@
 
 **Local DNS for ports.**
 
-Named TCP port leases for a local box. `fizzbuzz` is 5193 on this machine. You still open the port. **localhost** is the machine; **LocalBerth** is the slip.
+You start a Svelte app. Vite takes **5173**. You start a second one. It takes **5174**. After a reboot you start them in the other order. The ports swap. Bookmarks, firewall rules, and the phone now hit the wrong app.
+
+Name the port so that does not happen. `foo` stays on 5173. `bar` stays on 5174. An agent or the app asks the CLI instead of hoping Vite picked the same number again.
+
+**localhost** is the machine; **LocalBerth** is the slip.
 
 It records which name owns which number, shows what is listening, and updates the host firewall on Windows, macOS, and Linux.
-
-Vite will hand the first Svelte app 5173 and the next one 5174. Reboot, start them in the other order, and the ports swap. Claim the name so `foo` stays on 5173 and `bar` stays on 5174. The agent or the app calls `localberth get foo`.
 
 ## Install
 
@@ -23,15 +25,15 @@ or `pnpm add -g localberth`. Node.js 20+.
 ## Use
 
 ```text
-localberth claim fizzbuzz --port 5193 --bind 0.0.0.0
-localberth release fizzbuzz
-localberth get fizzbuzz
+localberth claim foo --port 5173
+localberth claim bar --port 5174
+localberth get foo
 localberth ls
 localberth scan
 localberth serve
 ```
 
-`get` prints only the port, for scripts (`PORT=$(localberth get fizzbuzz)`).
+`get` prints only the port, for scripts (`PORT=$(localberth get foo)`).
 
 **claim**
 
@@ -42,7 +44,8 @@ localberth serve
 - `--or-next`: if `--port` is already leased or something is already listening, take the next free pool port instead. Without this flag you can still claim a listening port (you are naming what is there). A second name cannot take an already-leased port.
 
 ```text
-localberth claim scratch --port 5193 --or-next
+localberth claim foo --port 5173 --bind 0.0.0.0
+localberth claim scratch --port 5173 --or-next
 localberth release <name> [--force]
 localberth firewall sync
 localberth firewall status
@@ -58,7 +61,7 @@ Leases live in `~/.localberth/` on the machine that ran the CLI.
 import { localberthPort } from 'localberth/port';
 
 export default defineConfig({
-	server: { port: localberthPort('fizzbuzz', 5193) }
+	server: { port: localberthPort('foo', 5173) }
 });
 ```
 
