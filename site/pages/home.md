@@ -17,4 +17,4 @@ localberth get foo
 
 The dashboard is on this computer at port **54321**. This site is the explainer, not the running app.
 
-[Install](/install) · [CLI](/cli)
+[Install](/install) · [CLI](/cli) · [Napkin math](/posts/napkin-math)
