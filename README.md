@@ -7,14 +7,14 @@ Named **port leases** for a box that runs a lot of local services. You still ope
 ```text
 localberth get engram     → 5193
 localberth ls             → leases + observed listeners
-http://127.0.0.1:3999     → dashboard (proposed default)
+http://127.0.0.1:54321    → dashboard
 ```
 
 Intended site: [localberth.com](https://localberth.com). Repo folder stays `/berth`.
 
 ## Status
 
-Phase 1 brief is in `docs/PHASE_1_BRIEF.md` (**draft** — lock stack before scaffolding).
+Phase 1 brief is **locked** (`docs/PHASE_1_BRIEF.md`). Live data: `~/.localberth/`. License: Apache-2.0. Dashboard port: **54321**. Await go-ahead to scaffold.
 
 ## Sibling
 

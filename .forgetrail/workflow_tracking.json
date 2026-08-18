@@ -1,6 +1,6 @@
 {
   "project": {
-    "name": "Berth",
+    "name": "LocalBerth",
     "created": "2026-08-18",
     "description": "Local named TCP port leases, dashboard of leases + observed listeners, Windows firewall sync. Humans still use the port.",
     "sourceControl": "git",
@@ -14,14 +14,13 @@
       "startedAt": "2026-08-18",
       "completedAt": null,
       "exitCriteriaMet": [
-        "Product shape locked (leases + dashboard + firewall, observed rows, name Berth, path /berth)",
-        "PHASE_1_BRIEF.md drafted (docs/)",
-        "Name collisions researched and recorded"
+        "Product shape locked (leases + dashboard + firewall, observed rows, LocalBerth, path /berth)",
+        "PHASE_1_BRIEF.md locked (docs/)",
+        "Name collisions researched and recorded",
+        "Stack confirmed (same as Engram)",
+        "Data home ~/.localberth/ + dashboard port 54321 + Apache-2.0"
       ],
       "exitCriteriaRemaining": [
-        "Stack confirmed",
-        "Data home + dashboard port + license confirmed",
-        "PHASE_1_BRIEF.md status locked",
         "Explicit user approval to advance to Phase 2"
       ],
       "notes": [
@@ -114,19 +113,46 @@
       "decision": "Public name LocalBerth; intended domain localberth.com. Pairing with localhost (machine vs slip), not a replacement for localhost URLs.",
       "rationale": "localhost + LocalBerth read as a pair. Domain is available. Avoids berth CLI/search collisions.",
       "alternatives_considered": ["Berth only", "*.localberth hostnames in v1"]
+    },
+    {
+      "id": "D5",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Stack matches Engram: SvelteKit 5 + Tailwind + pnpm + TypeScript ESM + adapter-node + SQLite (better-sqlite3).",
+      "rationale": "Same machine, same muscle memory, Node needed for listen table and firewall.",
+      "alternatives_considered": ["CLI-only first"]
+    },
+    {
+      "id": "D6",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Live state in ~/.localberth/. Repo data/ is fixtures only.",
+      "rationale": "Leases must survive moving or deleting the git checkout.",
+      "alternatives_considered": ["Repo data/"]
+    },
+    {
+      "id": "D7",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "License Apache-2.0.",
+      "rationale": "Match Engram / ForgeTrail.",
+      "alternatives_considered": ["Private-only"]
+    },
+    {
+      "id": "D8",
+      "timestamp": "2026-08-18",
+      "phase": "1-architecture",
+      "decision": "Dashboard self-lease localberth → TCP 54321.",
+      "rationale": "High, easy to type, not Postgres 5432.",
+      "alternatives_considered": ["3999"]
     }
   ],
   "gotchas": [],
   "sessions": [
     {
       "date": "2026-08-18",
-      "summary": "Sibling kickoff. LocalBerth public name + localberth.com pairing with localhost. Waiting on stack/data-home/license/port lock."
+      "summary": "Phase 1 brief locked: Engram stack, ~/.localberth/, Apache-2.0, dashboard :54321. Waiting on go-ahead to scaffold."
     }
   ],
-  "openQuestions": [
-    "Stack: SvelteKit + SQLite + pnpm vs CLI-first",
-    "Data home: ~/.localberth vs repo data/",
-    "License: Apache-2.0 vs private-only",
-    "Dashboard default port 3999"
-  ]
+  "openQuestions": []
 }

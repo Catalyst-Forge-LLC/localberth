@@ -18,9 +18,9 @@ This repository uses **ForgeTrail Lite**. Full protocol: `.forgetrail/FORGETRAIL
 - **Lists:** numbered = order; bullets = parallel; letters = pick-one.
 - **No interactive CLIs** without every flag.
 
-## Conventions (proposed until brief locks)
+## Conventions
 
-- Package manager: **pnpm**. Language: **TypeScript ESM**.
+- Package manager: **pnpm**. Language: **TypeScript ESM**. Dashboard port **54321**. Live data **`~/.localberth/`**.
 
 ## Session start
 

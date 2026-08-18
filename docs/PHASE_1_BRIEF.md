@@ -2,10 +2,10 @@
 
 _Structured capture before scaffolding. A later session should be able to start from this file + `.forgetrail/workflow_tracking.json`._
 
-**Status:** `draft` — product shape locked 2026-08-18; **stack not locked**  
+**Status:** `locked`  
 **Last updated:** `2026-08-18`  
 **Source:** Engram session (Tailscale :5193 firewall miss → port-lease idea)  
-**Phase 1 exit:** Brief locked; explicit approval before Phase 2 scaffolding.
+**Phase 1 exit:** Brief locked 2026-08-18. Await explicit approval before Phase 2 scaffolding.
 
 ---
 
@@ -17,7 +17,7 @@ _Structured capture before scaffolding. A later session should be able to start 
 
 Apps look up their port at start (`localberth get engram` → `5193`). Humans still use the port (phone, Tailscale `100.*`, bookmarks). Public name **LocalBerth**; intended domain `localberth.com`; repo folder `/berth`; CLI `localberth`.
 
-**Project archetype:** `product` _(personal operator tool; license TBD — propose Apache-2.0 to match Engram)_
+**Project archetype:** `product` _(personal operator tool; Apache-2.0)_
 
 **What “done” looks like for v1:**
 
@@ -26,7 +26,7 @@ Apps look up their port at start (`localberth get engram` → `5193`). Humans st
 - `localberth claim` / `ls` / `scan` work from the CLI.
 - Dashboard shows **leases** and **observed** listening sockets (process name when available).
 - Claiming or moving a lease creates/updates a Windows inbound allow rule for that TCP port (elevation documented; fail with a copy-paste `netsh` if not admin).
-- Berth’s own dashboard has a lease named `berth` (proposed default **3999**).
+- LocalBerth’s own dashboard has a lease named `localberth` on **54321**.
 
 **Out of v1:** `*.localhost` proxy, process start/stop, macOS/Linux firewall first-class (scan/CLI should still run), publishing a public global `berth` npm/cargo binary.
 
@@ -43,8 +43,8 @@ Need a port for an app → `localberth claim engram --port 5193 --bind 0.0.0.0` 
 **Secondary (v1):**
 
 - Scan: see Postgres, Ollama, mystery Node on a port with no lease (observed-only rows).
-- Move: `berth claim engram --port 5200` updates lease **and** firewall (old 5193 rule removed or left documented).
-- Ephemeral: `berth claim scratch --ephemeral` assigns a free port from a pool.
+- Move: `localberth claim engram --port 5200` updates lease **and** firewall (old 5193 rule removed or left documented).
+- Ephemeral: `localberth claim scratch --ephemeral` assigns a free port from a pool.
 
 ---
 
@@ -55,35 +55,39 @@ Need a port for an app → `localberth claim engram --port 5193 --bind 0.0.0.0` 
 - **Windows-first** for firewall. CLI + scan should work on Win/macOS/Linux.
 - **Do not become Portless / Hotel.** No PAC file, no `app.localhost` front door in v1.
 - **Observed is read-only.** Never kill a process unless a later phase adds an explicit command.
-- **Berth must lease itself** so it does not become another mystery port.
+- **LocalBerth must lease itself** (`localberth` → 54321) so it does not become another mystery port.
 
-**State persistence:** A-local. Propose `~/.localberth/` (leases + optional SQLite scan cache). Repo `data/` only for dev fixtures.
+**State persistence:** A-local. **`~/.localberth/`** (leases + SQLite). Repo `data/` only for dev fixtures.
 
 ---
 
 ## 4. Stack and tooling
 
-_Proposed to match Engram / DictaWhisper muscle memory. **Not locked.**_
+_Same stack as Engram. Locked 2026-08-18._
 
 | Area | Choice | Status | Notes |
 | ---- | ------ | ------ | ----- |
-| App shape | CLI + local web dashboard | **proposed** | CLI is the lookup API; dashboard is the harbor board |
-| Language | TypeScript (ESM, strict) | **proposed** | Same as Engram |
-| Package manager | pnpm | **proposed** | Same as Engram |
-| CLI runner | `tsx` / compiled bin | **proposed** | `localberth` in `package.json` bin |
-| Dashboard | SvelteKit 5 + Tailwind + adapter-node | **proposed** | Same workbench as Engram |
-| DB | SQLite (`better-sqlite3`) | **proposed** | Leases + observed snapshots; human-readable export (`leases.toml`) optional |
-| Auth | None | **proposed** | Single operator |
-| Deploy | Local only | **proposed** | Bind `127.0.0.1` for dashboard by default; `0.0.0.0` if you want the board on the phone |
+| App shape | CLI + local web dashboard | **confirmed** | CLI is the lookup API; dashboard is the harbor board |
+| Framework | SvelteKit (Svelte 5) + Tailwind | **confirmed** | Same as Engram |
+| Language | TypeScript (ESM, strict) | **confirmed** | Same as Engram |
+| Package manager | pnpm | **confirmed** | Same as Engram |
+| Adapter | `@sveltejs/adapter-node` | **confirmed** | SQLite + OS listen/firewall need Node |
+| Runtime | Node | **confirmed** | CLI + `pnpm dev` |
+| CLI runner | `tsx` / `package.json` bin `localberth` | **confirmed** | |
+| DB | SQLite (`better-sqlite3`) | **confirmed** | Leases + observed snapshots under `~/.localberth/` |
+| Auth | None | **confirmed** | Single operator |
+| Deploy | Local only | **confirmed** | Dashboard default bind `127.0.0.1`; `0.0.0.0` optional for phone |
+| License | Apache-2.0 | **confirmed** | Same as Engram / ForgeTrail |
+| Dashboard port | **54321** | **confirmed** | High, easy to remember (not Postgres 5432) |
 
-**Folder shape (proposed):**
+**Folder shape:**
 
 ```text
 berth/
   src/cli/           # get, claim, ls, scan, firewall
   src/lib/server/    # registry, observe, firewall
   src/routes/        # dashboard
-  data/              # dev-only
+  data/              # dev fixtures only; live state is ~/.localberth/
 ```
 
 ---
@@ -94,7 +98,7 @@ berth/
 
 | Field | Meaning |
 | ----- | ------- |
-| `name` | Stable id (`engram`, `dictawhisper`, `berth`) |
+| `name` | Stable id (`engram`, `dictawhisper`, `localberth`) |
 | `port` | TCP port |
 | `bind` | `127.0.0.1` / `0.0.0.0` / Tailscale IP |
 | `protocol` | `tcp` (udp later) |
@@ -178,13 +182,15 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 2. `scan` (Windows listen table)
 3. Dashboard: leases + observed
 4. Firewall sync on claim (Windows)
-5. Self-lease `berth`
+5. Self-lease `localberth` → 54321
 
 ---
 
-## 11. Open (must lock before Phase 2)
+## 11. Locked 2026-08-18
 
-1. Stack table in §4 — confirm or change.
-2. Data home: `~/.localberth/` vs repo `data/`.
-3. License: Apache-2.0 vs private-only.
-4. Dashboard default port **3999** — or pick another unused number.
+1. Stack = Engram (SvelteKit 5 + Tailwind + pnpm + TypeScript ESM + SQLite).
+2. Live data = `~/.localberth/`.
+3. License = Apache-2.0.
+4. Dashboard port = **54321**.
+
+**Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine).
