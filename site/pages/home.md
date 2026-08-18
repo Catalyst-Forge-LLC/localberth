@@ -3,8 +3,6 @@ title: LocalBerth
 description: Local DNS for ports.
 ---
 
-**Local DNS for ports.**
-
 Named TCP port leases for a machine that runs a lot of local services. A name resolves to a TCP number (`engram` → `5193`). Apps look it up; you still bookmark `http://127.0.0.1:5193` or the Tailscale address. **localhost** is the machine; **LocalBerth** is the slip.
 
 ```text

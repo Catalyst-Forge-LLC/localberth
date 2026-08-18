@@ -2,11 +2,11 @@ import { defineFilepressConfig } from 'getfilepress';
 
 export default defineFilepressConfig({
 	title: 'LocalBerth',
-	description: 'localhost is the machine. LocalBerth is the slip.',
+	description: 'Local DNS for ports.',
 	url: 'https://localberth.com',
 	author: 'Catalyst Forge, LLC',
-	tagline: 'Named port leases for a local box',
-	lede: 'You still open the port. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall in sync.',
+	tagline: 'Local DNS for ports',
+	lede: 'Named port leases for a local box. You still open the port. LocalBerth remembers which name owns which number, shows what’s listening, and keeps the firewall in sync.',
 	homePage: 'home',
 	nav: [
 		{ label: 'Home', href: '/' },
