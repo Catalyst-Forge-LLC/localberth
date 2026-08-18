@@ -6,9 +6,11 @@ Named TCP port leases for a local box. You still open the port. LocalBerth remem
 
 ```text
 npm i -g localberth
-localberth get engram     → 5193
+localberth claim engram --port 5193 --bind 0.0.0.0
+localberth get engram
+localberth ls
 ```
 
-The CLI is not ready yet.
+Dashboard: `http://127.0.0.1:54321`
 
 Apache-2.0 · Catalyst Forge, LLC

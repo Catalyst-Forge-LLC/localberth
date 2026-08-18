@@ -11,10 +11,25 @@
   },
   "files": [
     "bin",
+    "src",
+    "static",
+    "svelte.config.js",
+    "vite.config.ts",
+    "tsconfig.json",
     "LICENSE",
     "NOTICE",
     "README.md"
   ],
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "cli": "tsx src/cli/main.ts",
+    "site:dev": "pnpm --dir site dev",
+    "site:build": "pnpm --dir site build",
+    "site:check": "pnpm --dir site check"
+  },
   "keywords": [
     "ports",
     "localhost",
@@ -27,5 +42,28 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "tsx": "^4.20.5"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/kit": "^2.70.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.3.0",
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5"
   }
 }

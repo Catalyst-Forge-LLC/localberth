@@ -7,12 +7,12 @@
     "archetype": "product",
     "status": "active"
   },
-  "currentPhase": "1-architecture",
+  "currentPhase": "2-scaffolding",
   "phases": {
     "1-architecture": {
-      "status": "in_progress",
+      "status": "complete",
       "startedAt": "2026-08-18",
-      "completedAt": null,
+      "completedAt": "2026-08-18",
       "exitCriteriaMet": [
         "Product shape locked (leases + dashboard + firewall, observed rows, LocalBerth, path /localberth)",
         "PHASE_1_BRIEF.md locked (docs/)",
@@ -24,26 +24,28 @@
         "Cross-platform: CLI + scan + firewall on Windows / macOS / Linux",
         "Public npm README is short (0.0.1)"
       ],
-      "exitCriteriaRemaining": [
-        "Explicit user approval to advance to Phase 2"
-      ],
+      "exitCriteriaRemaining": [],
       "notes": [
         "Kickoff from Engram Tailscale/firewall session. Model B only — not a reverse proxy.",
         "2026-08-18: domain is the FilePress explainer; daemon is the npm package."
       ]
     },
     "2-scaffolding": {
-      "status": "not_started",
-      "startedAt": null,
+      "status": "in_progress",
+      "startedAt": "2026-08-18",
       "completedAt": null,
-      "exitCriteriaMet": [],
-      "exitCriteriaRemaining": [
-        "App runs with pnpm",
-        "Hero flow: install npm → claim → get → dashboard → firewall",
-        "FilePress site/ builds (localberth.com pages)",
+      "exitCriteriaMet": [
+        "App runs with pnpm (dashboard :54321, CLI get/claim/ls/scan)",
+        "Hero flow: claim → get → dashboard → firewall command on miss",
+        "FilePress site/ builds",
         "CONTEXT_PROMPT.md / README / TODO from brief"
       ],
-      "notes": []
+      "exitCriteriaRemaining": [
+        "User review of the spine"
+      ],
+      "notes": [
+        "2026-08-18: spine up. Firewall marks needs-elevation and prints netsh/ufw/pf when not privileged."
+      ]
     },
     "3-stabilization": {
       "status": "not_started",
@@ -201,7 +203,14 @@
       "alternatives_considered": ["Separate README.npm.md", "Keep operator status on the package page"]
     }
   ],
-  "gotchas": [],
+  "gotchas": [
+    {
+      "date": "2026-08-18",
+      "phase": "2-scaffolding",
+      "gotcha": "FilePress adapter-static build fails with no posts: Routes marked prerenderable but not prerendered: /posts/[slug]",
+      "fix": "Keep at least one posts/*.md in site/."
+    }
+  ],
   "sessions": [
     {
       "date": "2026-08-18",
@@ -230,6 +239,10 @@
     {
       "date": "2026-08-18",
       "summary": "Bump stub to 0.0.2 so user can republish and reindex the npmjs.com README tab."
+    },
+    {
+      "date": "2026-08-18",
+      "summary": "Phase 2 spine: CLI, SQLite registry in ~/.localberth/, dashboard :54321, firewall backends, FilePress site/."
     }
   ],
   "openQuestions": []

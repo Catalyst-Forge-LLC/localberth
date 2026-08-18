@@ -1,0 +1,41 @@
+import Database from 'better-sqlite3';
+import { DASHBOARD_NAME, DASHBOARD_PORT, dbPath } from './paths.js';
+
+let dbSingleton: Database.Database | null = null;
+
+export function getDb(): Database.Database {
+	if (dbSingleton) return dbSingleton;
+	const db = new Database(dbPath());
+	db.pragma('journal_mode = WAL');
+	db.pragma('foreign_keys = ON');
+	migrate(db);
+	ensureSelfLease(db);
+	dbSingleton = db;
+	return db;
+}
+
+function migrate(db: Database.Database): void {
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS leases (
+			name TEXT PRIMARY KEY,
+			port INTEGER NOT NULL UNIQUE,
+			bind TEXT NOT NULL DEFAULT '127.0.0.1',
+			protocol TEXT NOT NULL DEFAULT 'tcp',
+			kind TEXT NOT NULL DEFAULT 'always',
+			notes TEXT NOT NULL DEFAULT '',
+			firewall TEXT NOT NULL DEFAULT 'wanted',
+			updated_at TEXT NOT NULL
+		);
+	`);
+}
+
+function ensureSelfLease(db: Database.Database): void {
+	const row = db.prepare('SELECT name FROM leases WHERE name = ?').get(DASHBOARD_NAME);
+	if (row) return;
+	const taken = db.prepare('SELECT name FROM leases WHERE port = ?').get(DASHBOARD_PORT);
+	if (taken) return;
+	db.prepare(
+		`INSERT INTO leases (name, port, bind, protocol, kind, notes, firewall, updated_at)
+		 VALUES (?, ?, '127.0.0.1', 'tcp', 'always', 'LocalBerth dashboard', 'wanted', ?)`
+	).run(DASHBOARD_NAME, DASHBOARD_PORT, new Date().toISOString());
+}

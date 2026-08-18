@@ -228,4 +228,4 @@ Closest **product** prior art under a different name: [PortHub](https://github.c
 6. **npm:** `localberth` published; public README is short (no process notes). Omit homepage / repository / bugs until the site is live and the GitHub repo is public.
 7. **Cross-platform:** CLI, scan, dashboard, and firewall on Windows, macOS, and Linux.
 
-**Still needed:** explicit go-ahead to start Phase 2 (scaffold the spine + site).
+**Phase 2 started:** 2026-08-18 (explicit go-ahead).

@@ -1,0 +1,15 @@
+{
+	"name": "localberth-site",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "filepress dev",
+		"build": "filepress build",
+		"preview": "filepress preview",
+		"check": "filepress check"
+	},
+	"devDependencies": {
+		"getfilepress": "link:../../filepress"
+	}
+}

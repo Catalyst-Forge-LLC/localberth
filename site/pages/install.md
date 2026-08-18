@@ -1,0 +1,32 @@
+---
+title: Install
+description: Install LocalBerth from npm.
+order: 1
+---
+
+Node.js 20 or newer.
+
+```text
+npm i -g localberth
+```
+
+or
+
+```text
+pnpm add -g localberth
+```
+
+Then claim a port and start your app with it:
+
+```text
+localberth claim engram --port 5193 --bind 0.0.0.0
+PORT=$(localberth get engram)
+```
+
+On Windows PowerShell:
+
+```text
+$env:PORT = localberth get engram
+```
+
+Open the harbor board at `http://127.0.0.1:54321` while the dashboard is running (`pnpm dev` from a checkout, or the installed app’s serve path once published).
