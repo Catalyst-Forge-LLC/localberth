@@ -450,6 +450,10 @@
     {
       "date": "2026-08-19",
       "summary": "Dashboard row expands for lease facts plus a 300ms loopback HTTP peek. Port link still opens the app."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Peek skips 54321 and the serve listen port so the board does not HTTP-GET itself. Expand panel uses labeled fields."
     }
   ],
   "openQuestions": []

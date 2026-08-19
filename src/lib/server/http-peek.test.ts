@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createServer as createNet } from 'node:net';
 import { after, describe, it } from 'node:test';
-import { formatPeek, parsePeekPort, peekHttp } from './http-peek.js';
+import { formatPeek, parsePeekPort, peekHttp, peekPayload } from './http-peek.js';
 
 describe('parsePeekPort', () => {
 	it('accepts a real TCP port', () => {
@@ -34,6 +34,17 @@ describe('peekHttp', () => {
 		assert.equal(peek.contentType, 'text/html');
 		assert.equal(peek.title, 'Fizz');
 		assert.match(formatPeek(peek), /200 · text\/html · Fizz/);
+	});
+
+	it('does not fetch the reserved dashboard port', async () => {
+		const out = await peekPayload(54321);
+		assert.equal(out.line, 'This dashboard.');
+		assert.equal(out.http, true);
+	});
+
+	it('does not fetch a custom serve port', async () => {
+		const out = await peekPayload(9999, { selfPort: 9999 });
+		assert.equal(out.line, 'This dashboard.');
 	});
 
 	it('marks a non-HTTP listener', async () => {

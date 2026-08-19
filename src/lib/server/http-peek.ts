@@ -1,3 +1,5 @@
+import { DASHBOARD_PORT } from './paths.js';
+
 export type HttpPeek = {
 	http: boolean;
 	status?: number;
@@ -20,7 +22,13 @@ export function parsePeekPort(raw: string | null): number | null {
 }
 
 /** Loopback GET. Never follows a redirect. Times out at 300ms. */
-export async function peekPayload(port: number): Promise<HttpPeek & { line: string }> {
+export async function peekPayload(
+	port: number,
+	opts: { selfPort?: number } = {}
+): Promise<HttpPeek & { line: string }> {
+	if (port === DASHBOARD_PORT || (opts.selfPort !== undefined && port === opts.selfPort)) {
+		return { http: true, status: 200, contentType: 'text/html', title: 'LocalBerth', ms: 0, line: 'This dashboard.' };
+	}
 	const peek = await peekHttp(port);
 	return { ...peek, line: formatPeek(peek) };
 }

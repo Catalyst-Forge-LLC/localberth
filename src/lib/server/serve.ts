@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { dashboardHttpUrl } from '../dashboard-url.js';
+import { rowDetailFields } from '../row-detail.js';
 import { parsePeekPort, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -23,16 +24,14 @@ function rowKey(row: BoardRow): string {
 }
 
 function facts(row: BoardRow): string {
-	const bits: string[] = [];
-	if (row.lease) {
-		bits.push(esc(row.lease.kind));
-		if (row.lease.notes) bits.push(esc(row.lease.notes));
-		bits.push(`claimed ${esc(row.lease.updatedAt.slice(0, 19).replace('T', ' '))}`);
-		bits.push(`firewall ${esc(row.lease.firewall)}`);
-	}
-	if (row.observed?.process) bits.push(esc(row.observed.process));
-	if (row.observed?.pid) bits.push(`pid ${row.observed.pid}`);
-	return bits.join(' · ') || 'No extra notes.';
+	const fields = rowDetailFields(row);
+	const items = fields
+		.map((f) => {
+			const wide = f.label === 'Notes' ? ' class="wide"' : '';
+			return `<div${wide}><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`;
+		})
+		.join('');
+	return `<dl class="facts">${items}<div class="http"><dt>HTTP</dt><dd class="peek">${row.listening ? 'Peeking…' : 'Not listening.'}</dd></div></dl>`;
 }
 
 function rowPair(row: BoardRow): string {
@@ -47,7 +46,7 @@ function rowPair(row: BoardRow): string {
 	const fw = row.lease?.firewall ?? '—';
 	const key = esc(rowKey(row));
 	return `<tr class="row" data-key="${key}"><td>${esc(name)}${tag}</td><td class="num">${port || '—'}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td>${openCell(href)}</tr>
-<tr class="detail" data-for="${key}" data-port="${port}" data-listening="${row.listening ? '1' : ''}"><td colspan="7"><div class="panel"><div class="inner"><p class="muted">${facts(row)}</p><p class="peek muted">${row.listening ? 'Peeking…' : 'Not listening.'}</p></div></div></td></tr>`;
+<tr class="detail" data-for="${key}" data-port="${port}" data-listening="${row.listening ? '1' : ''}"><td colspan="7"><div class="panel"><div class="inner">${facts(row)}</div></div></td></tr>`;
 }
 
 function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean): string {
@@ -79,8 +78,8 @@ header .meta { color:var(--muted); font-size:.8rem; }
 section { margin-top:1.15rem; }
 h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
 table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-th,td { text-align:left; padding:.45rem .75rem; }
-th { color:var(--muted); font-weight:500; }
+th,td { text-align:left; padding:.55rem .85rem; }
+th { color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
 .go { width:2.1rem; text-align:right; padding-left:.25rem; padding-right:.65rem; }
 .go a { display:inline-flex; color:var(--ok); }
 tr.row td { border-top:1px solid var(--line); }
@@ -91,9 +90,14 @@ tr.detail td { padding:0; border:0; }
 tr.detail .panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows .18s ease; }
 tr.detail .inner { overflow:hidden; min-height:0; }
 tr.detail.open .panel { grid-template-rows:1fr; }
-tr.detail.open .inner { padding:.5rem .75rem .7rem; }
-tr.detail .inner p { margin:0; }
-tr.detail .peek { margin-top:.35rem; color:var(--ok); }
+tr.detail.open .inner { padding:.75rem 1rem .9rem; }
+.facts { display:grid; grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr)); gap:.7rem 1.75rem; margin:0; }
+.facts div { min-width:0; }
+.facts dt { color:var(--muted); font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
+.facts dd { margin:.2rem 0 0; }
+.facts .wide { grid-column:span 2; }
+.facts .http { grid-column:1 / -1; }
+.facts .peek { color:var(--ok); }
 a { color:var(--ok); }
 </style>
 </head>
@@ -173,7 +177,7 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 					return;
 				}
 				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-				res.end(JSON.stringify(await peekPayload(peekPort)));
+				res.end(JSON.stringify(await peekPayload(peekPort, { selfPort: port })));
 				return;
 			}
 			const showSystem = url.searchParams.get('system') === '1';
