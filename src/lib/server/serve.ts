@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { dashboardHttpUrl } from '../dashboard-url.js';
+import { parsePeekPort, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
 import type { BoardRow } from './types.js';
@@ -14,7 +15,25 @@ function linked(label: string, href: string | null): string {
 	return `<a href="${esc(href)}" target="_blank" rel="noreferrer">${text}</a>`;
 }
 
-function rowCells(row: BoardRow): string {
+function rowKey(row: BoardRow): string {
+	if (row.lease) return `lease:${row.lease.name}`;
+	return `obs:${row.observed?.port ?? ''}:${row.observed?.bind ?? ''}`;
+}
+
+function facts(row: BoardRow): string {
+	const bits: string[] = [];
+	if (row.lease) {
+		bits.push(esc(row.lease.kind));
+		if (row.lease.notes) bits.push(esc(row.lease.notes));
+		bits.push(`claimed ${esc(row.lease.updatedAt.slice(0, 19).replace('T', ' '))}`);
+		bits.push(`firewall ${esc(row.lease.firewall)}`);
+	}
+	if (row.observed?.process) bits.push(esc(row.observed.process));
+	if (row.observed?.pid) bits.push(`pid ${row.observed.pid}`);
+	return bits.join(' · ') || 'No extra notes.';
+}
+
+function rowPair(row: BoardRow): string {
 	const name = row.lease?.name ?? '—';
 	const tag = row.lease ? '' : ' <span class="warn">observed</span>';
 	const port = row.lease?.port ?? row.observed?.port ?? 0;
@@ -24,12 +43,14 @@ function rowCells(row: BoardRow): string {
 	const proc = row.observed?.process ?? '—';
 	const pid = row.observed?.pid ? ` <span class="muted">(${row.observed.pid})</span>` : '';
 	const fw = row.lease?.firewall ?? '—';
-	return `<tr><td>${linked(name, href)}${tag}</td><td class="num">${linked(String(port || '—'), href)}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td></tr>`;
+	const key = esc(rowKey(row));
+	return `<tr class="row" data-key="${key}"><td>${esc(name)}${tag}</td><td class="num">${linked(String(port || '—'), href)}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td></tr>
+<tr class="detail" data-for="${key}" data-port="${port}" data-listening="${row.listening ? '1' : ''}"><td colspan="6"><div class="panel"><div class="inner"><p class="muted">${facts(row)}</p><p class="peek muted">${row.listening ? 'Peeking…' : 'Not listening.'}</p></div></div></td></tr>`;
 }
 
 function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean): string {
-	const leases = board.leaseRows.map(rowCells).join('');
-	const observed = board.observedRows.map(rowCells).join('') ||
+	const leases = board.leaseRows.map(rowPair).join('');
+	const observed = board.observedRows.map(rowPair).join('') ||
 		'<tr><td colspan="6" class="muted">Nothing extra listening (system ports hidden).</td></tr>';
 	const toggle = showSystem
 		? '<a href="/">Hide system ports</a>'
@@ -58,9 +79,17 @@ h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
 table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
 th,td { text-align:left; padding:.45rem .75rem; }
 th { color:var(--muted); font-weight:500; }
-tr + tr td { border-top:1px solid var(--line); }
-tbody tr:nth-child(even) { background:rgba(255,255,255,.035); }
-tbody tr:hover { background:rgba(255,255,255,.07); }
+tr.row td { border-top:1px solid var(--line); }
+tr.row { cursor:pointer; }
+tr.row:nth-child(4n+3) { background:rgba(255,255,255,.035); }
+tr.row:hover, tr.row.open { background:rgba(255,255,255,.07); }
+tr.detail td { padding:0; border:0; }
+tr.detail .panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows .18s ease; }
+tr.detail .inner { overflow:hidden; min-height:0; }
+tr.detail.open .panel { grid-template-rows:1fr; }
+tr.detail.open .inner { padding:.5rem .75rem .7rem; }
+tr.detail .inner p { margin:0; }
+tr.detail .peek { margin-top:.35rem; color:var(--ok); }
 a { color:var(--ok); }
 </style>
 </head>
@@ -82,6 +111,46 @@ a { color:var(--ok); }
 </section>
 <p class="muted" style="margin-top:1.5rem"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
 </main>
+<script>
+(function () {
+	function closeAll() {
+		document.querySelectorAll('tr.detail.open').forEach(function (el) { el.classList.remove('open'); });
+		document.querySelectorAll('tr.row.open').forEach(function (el) { el.classList.remove('open'); });
+	}
+	function openKey(key) {
+		var row = document.querySelector('tr.row[data-key="' + key + '"]');
+		var detail = document.querySelector('tr.detail[data-for="' + key + '"]');
+		if (!row || !detail) return;
+		closeAll();
+		row.classList.add('open');
+		detail.classList.add('open');
+		location.hash = encodeURIComponent(key);
+		var peek = detail.querySelector('.peek');
+		if (!detail.getAttribute('data-listening')) {
+			if (peek) peek.textContent = 'Not listening.';
+			return;
+		}
+		if (peek) peek.textContent = 'Peeking…';
+		fetch('/api/peek?port=' + encodeURIComponent(detail.getAttribute('data-port') || ''))
+			.then(function (r) { return r.json(); })
+			.then(function (j) { if (peek) peek.textContent = j.line || 'Not HTTP.'; });
+	}
+	document.querySelectorAll('tr.row').forEach(function (row) {
+		row.addEventListener('click', function (e) {
+			if (e.target.closest('a')) return;
+			var key = row.getAttribute('data-key');
+			var detail = document.querySelector('tr.detail[data-for="' + key + '"]');
+			if (detail && detail.classList.contains('open')) {
+				closeAll();
+				location.hash = '';
+				return;
+			}
+			openKey(key);
+		});
+	});
+	if (location.hash.length > 1) openKey(decodeURIComponent(location.hash.slice(1)));
+})();
+</script>
 </body>
 </html>`;
 }
@@ -92,6 +161,17 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 	const server = createServer(async (req, res) => {
 		try {
 			const url = new URL(req.url ?? '/', `http://${host}:${port}`);
+			if (url.pathname === '/api/peek') {
+				const peekPort = parsePeekPort(url.searchParams.get('port'));
+				if (peekPort === null) {
+					res.writeHead(400, { 'content-type': 'application/json; charset=utf-8' });
+					res.end(JSON.stringify({ http: false, error: 'invalid port', ms: 0, line: 'Invalid port.' }));
+					return;
+				}
+				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+				res.end(JSON.stringify(await peekPayload(peekPort)));
+				return;
+			}
 			const showSystem = url.searchParams.get('system') === '1';
 			const board = await getBoard({ showSystem });
 			if (url.pathname === '/api/board') {

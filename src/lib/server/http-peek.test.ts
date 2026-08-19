@@ -1,0 +1,62 @@
+import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { createServer as createNet } from 'node:net';
+import { after, describe, it } from 'node:test';
+import { formatPeek, parsePeekPort, peekHttp } from './http-peek.js';
+
+describe('parsePeekPort', () => {
+	it('accepts a real TCP port', () => {
+		assert.equal(parsePeekPort('5193'), 5193);
+	});
+
+	it('rejects junk', () => {
+		assert.equal(parsePeekPort('0'), null);
+		assert.equal(parsePeekPort('nope'), null);
+	});
+});
+
+describe('peekHttp', () => {
+	const servers: { close(): void }[] = [];
+	after(() => {
+		for (const s of servers) s.close();
+	});
+
+	it('reads status, type, and title', async () => {
+		const server = createServer((_req, res) => {
+			res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', server: 'testkit' });
+			res.end('<html><head><title>Fizz</title></head><body>ok</body></html>');
+		});
+		servers.push(server);
+		const port = await listen(server);
+		const peek = await peekHttp(port);
+		assert.equal(peek.http, true);
+		assert.equal(peek.status, 200);
+		assert.equal(peek.contentType, 'text/html');
+		assert.equal(peek.title, 'Fizz');
+		assert.match(formatPeek(peek), /200 · text\/html · Fizz/);
+	});
+
+	it('marks a non-HTTP listener', async () => {
+		const server = createNet((socket) => {
+			socket.end();
+		});
+		servers.push(server);
+		const port = await listen(server);
+		const peek = await peekHttp(port);
+		assert.equal(peek.http, false);
+		assert.equal(formatPeek(peek), 'Not HTTP.');
+	});
+});
+
+function listen(server: { listen(port: number, host: string, cb: () => void): void; address(): unknown }): Promise<number> {
+	return new Promise((resolve, reject) => {
+		server.listen(0, '127.0.0.1', () => {
+			const addr = server.address();
+			if (!addr || typeof addr === 'string') {
+				reject(new Error('expected a TCP address'));
+				return;
+			}
+			resolve(addr.port);
+		});
+	});
+}

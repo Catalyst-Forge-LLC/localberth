@@ -446,6 +446,10 @@
     {
       "date": "2026-08-19",
       "summary": "Dashboard: compact header, zebra rows, http links on name/port (wildcard bind → loopback)."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Dashboard row expands for lease facts plus a 300ms loopback HTTP peek. Port link still opens the app."
     }
   ],
   "openQuestions": []
