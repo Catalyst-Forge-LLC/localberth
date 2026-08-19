@@ -59,12 +59,16 @@ Leases live in `~/.localberth/` on the machine that ran the CLI.
 ## Vite
 
 ```ts
-import { localberthPort } from 'localberth/port';
+import { localberthListen } from 'localberth/port';
+
+const listen = localberthListen('foo', 5173);
 
 export default defineConfig({
-	server: { port: localberthPort('foo', 5173) }
+	server: { host: listen.host, port: listen.port, strictPort: true }
 });
 ```
+
+Pin `host`. Vite’s default is `localhost`, which on Windows is often `[::1]` only. The claim is `127.0.0.1`. Same port, two sockets. `localberthPort(name, fallback)` still returns just the number.
 
 ## Checkout
 

@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { normalizeBind } from './firewall/names.js';
 import { leaseByPort } from './registry.js';
 import type { Observed } from './types.js';
 
@@ -57,7 +58,7 @@ function parseListenAddr(local: string): { bind: string; port: number } | null {
 	const bind = local.slice(0, colon).replace(/^\[|\]$/g, '');
 	const port = Number(local.slice(colon + 1));
 	if (!Number.isInteger(port) || port < 1 || port > 65535) return null;
-	return { bind: bind === '*' ? '0.0.0.0' : bind, port };
+	return { bind: normalizeBind(bind === '*' ? '0.0.0.0' : bind), port };
 }
 
 async function scanWindows(): Promise<Omit<Observed, 'seenAt' | 'leaseName'>[]> {
@@ -148,15 +149,14 @@ function parseSs(stdout: string): Omit<Observed, 'seenAt' | 'leaseName'>[] {
 	const rows: Omit<Observed, 'seenAt' | 'leaseName'>[] = [];
 	for (const line of stdout.split(/\n/)) {
 		if (!/LISTEN/i.test(line)) continue;
-		const local = line.trim().split(/\s+/).find((p) => /:\d+$/.test(p));
+		const addr = line.trim().split(/\s+/).find((p) => /:\d+$/.test(p));
+		if (!addr) continue;
+		const local = parseListenAddr(addr);
 		if (!local) continue;
-		const colon = local.lastIndexOf(':');
-		const bind = local.slice(0, colon).replace(/^\[|\]$/g, '') || '0.0.0.0';
-		const port = Number(local.slice(colon + 1));
 		const users = line.match(/users:\(\("([^"]+)",pid=(\d+)/);
 		rows.push({
-			port,
-			bind: bind === '*' ? '0.0.0.0' : bind,
+			port: local.port,
+			bind: local.bind,
 			process: users?.[1] ?? null,
 			pid: users ? Number(users[2]) : null
 		});

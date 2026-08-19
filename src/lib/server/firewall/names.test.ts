@@ -3,7 +3,15 @@ import { describe, it } from 'node:test';
 import { renderPfAnchor } from './darwin.js';
 import { firewalldRich } from './linux.js';
 import { isElevated, needsElevation, resetElevatedCache } from './run.js';
-import { bindsOverlap, isLoopbackBind, ruleName, scopedBind, shouldOpenInbound } from './names.js';
+import {
+	bindRelation,
+	bindsOverlap,
+	isLoopbackBind,
+	normalizeBind,
+	ruleName,
+	scopedBind,
+	shouldOpenInbound
+} from './names.js';
 
 describe('firewall names', () => {
 	it('names rules LocalBerth <name> <port>', () => {
@@ -20,6 +28,11 @@ describe('firewall names', () => {
 	it('treats IPv4 and IPv6 loopback as the same slip', () => {
 		assert.equal(bindsOverlap('127.0.0.1', '::1'), true);
 		assert.equal(bindsOverlap('127.0.0.1', '192.168.1.10'), false);
+		assert.equal(normalizeBind('::ffff:127.0.0.1'), '127.0.0.1');
+		assert.equal(isLoopbackBind('::ffff:127.0.0.1'), true);
+		assert.equal(bindRelation('127.0.0.1', '::1'), 'equivalent');
+		assert.equal(bindRelation('127.0.0.1', '0.0.0.0'), 'wider');
+		assert.equal(bindRelation('0.0.0.0', '127.0.0.1'), 'narrower');
 	});
 
 	it('scopes Tailscale/LAN binds and leaves 0.0.0.0 open', () => {

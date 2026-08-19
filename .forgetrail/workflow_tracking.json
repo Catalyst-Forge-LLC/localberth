@@ -338,6 +338,17 @@
         "Document --allow-scripts=better-sqlite3 as the hero install",
         "Switch the store to node:sqlite or JSON"
       ]
+    },
+    {
+      "id": "D24",
+      "timestamp": "2026-08-19",
+      "phase": "3-stabilization",
+      "decision": "Dashboard Bind column shows the listen address when the port is up. Expand panel keeps Claim vs Listen. localberthListen() returns host+port so Vite pins the claim bind.",
+      "rationale": "Vite default host localhost binds [::1] on Windows. The lease is 127.0.0.1. Showing the claim as the bind hid the miss. Port-only helper left host to Vite.",
+      "alternatives_considered": [
+        "Keep showing claim bind only",
+        "Change claim default to ::1"
+      ]
     }
   ],
   "gotchas": [
@@ -464,6 +475,10 @@
     {
       "date": "2026-08-19",
       "summary": "Windows scan missed Vite on [::1]; netstat -p TCP is IPv4-only. Also scan TCPv6 and treat ::1 as loopback."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "D24: Bind column is the listen address. Claim vs Listen in the panel. localberthListen() for Vite host+port."
     }
   ],
   "openQuestions": []

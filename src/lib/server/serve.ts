@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { rowOpenUrl } from '../dashboard-url.js';
-import { rowDetailFields } from '../row-detail.js';
+import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
 import { parsePeekPort, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -27,8 +27,11 @@ function facts(row: BoardRow): string {
 	const fields = rowDetailFields(row);
 	const items = fields
 		.map((f) => {
-			const wide = f.label === 'Notes' ? ' class="wide"' : '';
-			return `<div${wide}><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`;
+			const cls = [f.wide || f.label === 'Notes' ? 'wide' : '', f.warn ? 'warn-field' : '']
+				.filter(Boolean)
+				.join(' ');
+			const attr = cls ? ` class="${cls}"` : '';
+			return `<div${attr}><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`;
 		})
 		.join('');
 	return `<dl class="facts">${items}<div class="http"><dt>HTTP</dt><dd class="peek">${row.listening ? 'Peeking…' : 'Not listening.'}</dd></div></dl>`;
@@ -38,7 +41,7 @@ function rowPair(row: BoardRow): string {
 	const name = row.lease?.name ?? '—';
 	const tag = row.lease ? '' : ' <span class="warn">observed</span>';
 	const port = row.lease?.port ?? row.observed?.port ?? 0;
-	const bind = row.lease?.bind ?? row.observed?.bind ?? '';
+	const bind = rowBindDisplay(row);
 	const href = rowOpenUrl(row);
 	const listening = row.listening ? '<span class="ok">yes</span>' : '<span class="muted">no</span>';
 	const proc = row.observed?.process ?? '—';
@@ -96,6 +99,7 @@ tr.detail.open .inner { padding:.75rem 1rem .9rem; }
 .facts dt { color:var(--muted); font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
 .facts dd { margin:.2rem 0 0; }
 .facts .wide { grid-column:span 2; }
+.facts .warn-field dd { color:var(--warn); }
 .facts .http { grid-column:1 / -1; }
 .facts .peek { color:var(--ok); }
 a { color:var(--ok); }

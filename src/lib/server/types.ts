@@ -26,4 +26,6 @@ export type BoardRow = {
 	observed: Observed | null;
 	listening: boolean;
 	conflict: boolean;
+	/** Other listeners on the same port (different process). */
+	also: Observed[];
 };

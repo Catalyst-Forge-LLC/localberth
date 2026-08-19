@@ -1,4 +1,4 @@
-import { bindsOverlap } from './firewall/names.js';
+import { bindRelation, bindsOverlap } from './firewall/names.js';
 import { scanListeners } from './observe.js';
 import { listLeases } from './registry.js';
 import { isSystemPort } from './system-ports.js';
@@ -30,11 +30,16 @@ export async function getBoard(opts: { showSystem?: boolean } = {}): Promise<Boa
 		const hits = byPort.get(lease.port) ?? [];
 		const match = hits.find((h) => bindsOverlap(lease.bind, h.bind)) ?? hits[0] ?? null;
 		if (match) used.add(`${match.bind}:${match.port}:${match.pid ?? ''}`);
+		const also = extrasOnPort(hits, match);
+		for (const extra of also) used.add(`${extra.bind}:${extra.port}:${extra.pid ?? ''}`);
+		const relation = match ? bindRelation(lease.bind, match.bind) : 'same';
 		leaseRows.push({
 			lease,
 			observed: match,
 			listening: Boolean(match),
-			conflict: false
+			conflict:
+				relation === 'wider' || relation === 'narrower' || relation === 'other' || also.length > 0,
+			also
 		});
 	}
 
@@ -52,9 +57,19 @@ export async function getBoard(opts: { showSystem?: boolean } = {}): Promise<Boa
 			lease: null,
 			observed: row,
 			listening: true,
-			conflict: false
+			conflict: false,
+			also: []
 		});
 	}
 
 	return { leaseRows, observedRows, hiddenSystem, leases, observed };
+}
+
+function extrasOnPort(hits: Observed[], match: Observed | null): Observed[] {
+	if (!match) return [];
+	return hits.filter((h) => {
+		if (h.bind === match.bind && h.pid === match.pid) return false;
+		if (h.pid && h.pid === match.pid && bindsOverlap(h.bind, match.bind)) return false;
+		return true;
+	});
 }

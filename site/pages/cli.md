@@ -42,14 +42,18 @@ localberth release scratch
 
 `serve` opens the dashboard (default `127.0.0.1:54321`).
 
-Vite apps can set the port from a lease:
+Vite apps should set host and port from the lease. Pin `host` or Vite binds `localhost` (`[::1]` on many Windows machines) while the claim stays `127.0.0.1`.
 
 ```ts
-import { localberthPort } from 'localberth/port';
+import { localberthListen } from 'localberth/port';
+
+const listen = localberthListen('fizzbuzz', 5193);
 
 export default defineConfig({
-	server: { port: localberthPort('fizzbuzz', 5193) }
+	server: { host: listen.host, port: listen.port, strictPort: true }
 });
 ```
+
+`localberthPort(name, fallback)` still returns only the number.
 
 Leases are stored on the machine under `~/.localberth/`.

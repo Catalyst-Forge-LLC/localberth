@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
 	import { rowOpenUrl } from '$lib/dashboard-url';
+	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/server/types';
 	import type { PageData } from './$types';
 
@@ -87,7 +88,7 @@
 					>
 						<td class="px-3.5 py-2.5 font-medium">{row.lease?.name}</td>
 						<td class="px-3.5 py-2.5 tabular-nums">{row.lease?.port}</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.lease?.bind}</td>
+						<td class="px-3.5 py-2.5 text-[var(--muted)]">{rowBindDisplay(row)}</td>
 						<td class="px-3.5 py-2.5">
 							{#if row.listening}
 								<span class="text-[var(--accent)]">yes</span>
