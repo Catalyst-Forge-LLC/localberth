@@ -20,9 +20,22 @@ Suggested Lite change: when the root README is the public npm page, say that any
 
 Project pointer: LocalBerth 0.1.0 README mark.
 
+## 3. npm 12 blocks native install scripts (global CLIs) (§4.1 / §13)
+
+Lite already covers **pnpm** ignoring `better-sqlite3` (`onlyBuiltDependencies`). **npm 12** (Node 24.17+ ships 12.0.2) does the same by default: `allowScripts` is off. `ignore-scripts` can still be `false`.
+
+`better-sqlite3` **12.x** has `"install": "prebuild-install || node-gyp rebuild"`. After `npm i -g <cli>`, the package is on disk with **no** `.node`. Runtime: `Could not locate the bindings file`. Global installs cannot use `package.json#allowScripts`; the escape is `npm i -g pkg --allow-scripts=better-sqlite3`.
+
+**13.x** publishes N-API `prebuilds/*.node` in the tarball and has **no** install script. A published CLI that needs SQLite on `npm i -g` should depend on **^13**, not 12. Do **not** list 13.x in `pnpm.onlyBuiltDependencies`: pnpm then runs implicit `node-gyp rebuild` (because `binding.gyp` is present) and can fail on Windows even though the prebuild is already in the package.
+
+Suggested Lite change: next to the pnpm native-addon note, say npm 12 global installs skip dep install scripts; prefer addons that ship prebuilds (or document `--allow-scripts=`).
+
+Project pointer: LocalBerth 0.2.1 / D23.
+
 ---
 
 | Topic | Lite § | Status |
 | ----- | ------ | ------ |
 | Published npm README vs operator dump | §14, §4.5 | candidate |
 | README images must ship in the tarball | §14 | candidate |
+| npm 12 + native addons on `npm i -g` | §4.1, §13 | candidate |

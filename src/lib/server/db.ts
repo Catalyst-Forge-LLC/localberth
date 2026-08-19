@@ -5,13 +5,28 @@ let dbSingleton: Database.Database | null = null;
 
 export function getDb(): Database.Database {
 	if (dbSingleton) return dbSingleton;
-	const db = new Database(dbPath());
+	let db: Database.Database;
+	try {
+		db = new Database(dbPath());
+	} catch (err) {
+		throw rewriteSqliteBindingsError(err);
+	}
 	db.pragma('journal_mode = WAL');
 	db.pragma('foreign_keys = ON');
 	migrate(db);
 	ensureSelfLease(db);
 	dbSingleton = db;
 	return db;
+}
+
+function rewriteSqliteBindingsError(err: unknown): Error {
+	const raw = err instanceof Error ? err.message : String(err);
+	if (!/locate the bindings file|better_sqlite3\.node/i.test(raw)) {
+		return err instanceof Error ? err : new Error(raw);
+	}
+	return new Error(
+		'SQLite native bindings are missing. npm 12 does not run dependency install scripts, so better-sqlite3 12 never downloads a binary. Use localberth 0.2.1 or newer, or reinstall with: npm i -g localberth --allow-scripts=better-sqlite3'
+	);
 }
 
 /** Tests only — close the singleton so LOCALBERTH_HOME can change. */

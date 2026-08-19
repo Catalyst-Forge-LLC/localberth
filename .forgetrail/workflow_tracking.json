@@ -59,7 +59,8 @@
         "Critical bugs from further dogfood"
       ],
       "notes": [
-        "2026-08-18: user started Phase 3. README is the public/npm page — no process notes."
+        "2026-08-18: user started Phase 3. README is the public/npm page — no process notes.",
+        "2026-08-19: D23 npm 12 + better-sqlite3 12 global install. Package 0.2.1."
       ]
     },
     "4-feature-iteration": {
@@ -326,6 +327,17 @@
         "Keep 0.0.0.0 default",
         "Require --bind 0.0.0.0 with no --lan shorthand"
       ]
+    },
+    {
+      "id": "D23",
+      "timestamp": "2026-08-19",
+      "phase": "3-stabilization",
+      "decision": "better-sqlite3 ^13 (N-API prebuilds in the npm tarball). Do not stay on 12.x for the published CLI.",
+      "rationale": "npm 12 (Node 24) blocks dependency install scripts. better-sqlite3 12 never downloads a .node on npm i -g localberth. Global installs cannot use package.json allowScripts. 13 ships prebuilds/win32-x64.node and has no install script.",
+      "alternatives_considered": [
+        "Document --allow-scripts=better-sqlite3 as the hero install",
+        "Switch the store to node:sqlite or JSON"
+      ]
     }
   ],
   "gotchas": [
@@ -334,6 +346,12 @@
       "phase": "2-scaffolding",
       "gotcha": "FilePress adapter-static build fails with no posts: Routes marked prerenderable but not prerendered: /posts/[slug]",
       "fix": "Keep at least one posts/*.md in site/."
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "3-stabilization",
+      "gotcha": "npm i -g localberth@0.2.0 on Node 24 / npm 12: Could not locate the bindings file (better-sqlite3). ignore-scripts is false; allowScripts default is off, so 12.x never runs prebuild-install.",
+      "fix": "Depend on better-sqlite3 ^13. Workaround on 0.2.0: npm i -g localberth --allow-scripts=better-sqlite3."
     }
   ],
   "sessions": [
@@ -412,6 +430,10 @@
     {
       "date": "2026-08-19",
       "summary": "Wave 2: remaining house FilePress sites claimed unique local ports. Lease name follows package.json name."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "D23: npm 12 skips better-sqlite3 12 install scripts on global install. Bump to ^13 and package 0.2.1."
     }
   ],
   "openQuestions": []

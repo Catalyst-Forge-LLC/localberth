@@ -52,7 +52,11 @@ function takeOpt(args: string[], name: string): string | undefined {
 }
 
 async function main(): Promise<void> {
-	getDb();
+	try {
+		getDb();
+	} catch (err) {
+		fail(err instanceof Error ? err.message : String(err));
+	}
 	const argv = process.argv.slice(2);
 	const cmd = argv.shift();
 	if (!cmd || cmd === '-h' || cmd === '--help') {

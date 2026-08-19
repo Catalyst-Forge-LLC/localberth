@@ -10,7 +10,7 @@ Vite 5173/5174 swap after reboot is the common story. Public examples use `fizzb
 
 ## Stack
 
-SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQLite (`better-sqlite3`). CLI via `tsx`. Live data: `~/.localberth/`. Dashboard port **54321**. FilePress site in `site/` → localberth.com.
+SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQLite (`better-sqlite3` **^13**, N-API prebuilds in the tarball; do **not** put it in `pnpm.onlyBuiltDependencies` or pnpm runs node-gyp). CLI via `tsx`. Live data: `~/.localberth/`. Dashboard port **54321**. FilePress site in `site/` → localberth.com.
 
 ## Architecture at a glance
 
@@ -39,6 +39,7 @@ SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQ
 
 ## Recent gotchas (last 3–5)
 
+- npm 12 blocks dependency install scripts. `better-sqlite3` 12 needs `prebuild-install` and dies at runtime after `npm i -g`. Use **^13** (ships `prebuilds/*.node`) or `--allow-scripts=better-sqlite3`.
 - npmjs.com Readme tab can show “no README” even when the tarball and `npm view readme` are correct (indexer / staged publish). Republish or wait.
 - Relative README images 404 on npm unless the file is in the `files` whitelist (0.1.0 logo).
 - Do not put machine paths (`z:/workspace/...`) in committed files.
