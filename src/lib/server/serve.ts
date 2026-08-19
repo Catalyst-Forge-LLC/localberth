@@ -1,7 +1,8 @@
 import { createServer } from 'node:http';
+import { isLoopbackClient } from '../binds.js';
 import { rowOpenUrl } from '../dashboard-url.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
-import { parsePeekPort, peekPayload } from './http-peek.js';
+import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
 import type { BoardRow } from './types.js';
@@ -174,6 +175,11 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 		try {
 			const url = new URL(req.url ?? '/', `http://${host}:${port}`);
 			if (url.pathname === '/api/peek') {
+				if (!isLoopbackClient(req.socket.remoteAddress)) {
+					res.writeHead(403, { 'content-type': 'application/json; charset=utf-8' });
+					res.end(JSON.stringify(peekLoopbackDenied()));
+					return;
+				}
 				const peekPort = parsePeekPort(url.searchParams.get('port'));
 				if (peekPort === null) {
 					res.writeHead(400, { 'content-type': 'application/json; charset=utf-8' });

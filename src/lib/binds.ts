@@ -27,6 +27,17 @@ export function isLoopbackBind(bind: string): boolean {
 	return b === '127.0.0.1' || b === '::1' || b === 'localhost';
 }
 
+/** Socket peer for peek. Uses the TCP address only — do not pass X-Forwarded-For. */
+export function isLoopbackClient(addr: string | null | undefined): boolean {
+	if (!addr) return false;
+	const noZone = addr.trim().replace(/^\[|\]$/g, '').split('%')[0] ?? '';
+	const b = normalizeBind(noZone).toLowerCase();
+	if (b === '::1' || b === 'localhost') return true;
+	const parts = b.split('.');
+	if (parts.length !== 4 || parts[0] !== '127') return false;
+	return parts.every((p) => /^\d{1,3}$/.test(p) && Number(p) <= 255);
+}
+
 export function isWildcardBind(bind: string): boolean {
 	const b = normalizeBind(bind);
 	return !b || b === '0.0.0.0' || b === '::' || b === '*';

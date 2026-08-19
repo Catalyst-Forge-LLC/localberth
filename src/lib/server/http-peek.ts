@@ -21,6 +21,10 @@ export function parsePeekPort(raw: string | null): number | null {
 	return port;
 }
 
+export function peekLoopbackDenied(): HttpPeek & { line: string } {
+	return { http: false, error: 'loopback only', ms: 0, line: 'Peek is loopback-only.' };
+}
+
 /** Loopback GET. Never follows a redirect. Times out at 300ms. */
 export async function peekPayload(
 	port: number,
