@@ -6,8 +6,12 @@
 
 	let { data }: { data: PageData } = $props();
 
-	function hrefFor(bind: string | undefined, port: number | undefined): string | null {
-		if (!bind || !port) return null;
+	function hrefFor(
+		bind: string | undefined,
+		port: number | undefined,
+		listening: boolean
+	): string | null {
+		if (!listening || !bind || !port) return null;
 		return dashboardHttpUrl(bind, port);
 	}
 
@@ -49,7 +53,7 @@
 			</thead>
 			<tbody>
 				{#each data.leaseRows as row}
-					{@const href = hrefFor(row.lease?.bind, row.lease?.port)}
+					{@const href = hrefFor(row.lease?.bind, row.lease?.port, row.listening)}
 					<tr class="border-t border-[var(--line)] even:bg-white/[0.035]">
 						<td class="px-3 py-2 font-medium">
 							{#if href}
@@ -100,7 +104,7 @@
 			</thead>
 			<tbody>
 				{#each data.observedRows as row}
-					{@const href = hrefFor(row.observed?.bind, row.observed?.port)}
+					{@const href = hrefFor(row.observed?.bind, row.observed?.port, row.listening)}
 					<tr class="border-t border-[var(--line)] even:bg-white/[0.035]">
 						<td class="px-3 py-2 tabular-nums">
 							{#if href}

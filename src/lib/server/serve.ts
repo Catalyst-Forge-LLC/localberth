@@ -19,7 +19,7 @@ function rowCells(row: BoardRow): string {
 	const tag = row.lease ? '' : ' <span class="warn">observed</span>';
 	const port = row.lease?.port ?? row.observed?.port ?? 0;
 	const bind = row.lease?.bind ?? row.observed?.bind ?? '';
-	const href = dashboardHttpUrl(bind, port);
+	const href = row.listening ? dashboardHttpUrl(bind, port) : null;
 	const listening = row.listening ? '<span class="ok">yes</span>' : '<span class="muted">no</span>';
 	const proc = row.observed?.process ?? '—';
 	const pid = row.observed?.pid ? ` <span class="muted">(${row.observed.pid})</span>` : '';
