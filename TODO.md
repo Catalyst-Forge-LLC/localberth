@@ -32,4 +32,5 @@
 10. [ ] Publish `localberth@0.2.1` (better-sqlite3 13 for npm 12 global install; you; agent does not)
 11. [ ] Publish `localberth@0.2.2` (IPv6 scan, `localberthListen`, peek loopback-only; you; agent does not)
 12. [ ] Publish `localberth@0.2.3` (Open icon reuses one tab; you; agent does not)
+13. [ ] Publish `localberth@0.2.4` (compiled CLI, no runtime tsx/esbuild; you; agent does not)
 

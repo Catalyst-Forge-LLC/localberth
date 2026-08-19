@@ -1,6 +1,6 @@
 {
   "name": "localberth",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": false,
   "type": "module",
   "description": "Local DNS for ports. Named TCP port leases for a local machine.",
@@ -10,15 +10,14 @@
     "localberth": "./bin/localberth.mjs"
   },
   "exports": {
-    "./port": "./src/lib/port.ts"
+    "./port": {
+      "types": "./dist/lib/port.d.ts",
+      "default": "./dist/lib/port.js"
+    }
   },
   "files": [
     "bin",
-    "src",
-    "static",
-    "svelte.config.js",
-    "vite.config.ts",
-    "tsconfig.json",
+    "dist",
     "LICENSE",
     "NOTICE",
     "README.md",
@@ -27,6 +26,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "prepublishOnly": "tsc -p tsconfig.cli.json",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "cli": "tsx src/cli/main.ts",
@@ -56,8 +57,7 @@
     ]
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
-    "tsx": "^4.20.5"
+    "better-sqlite3": "^13.0.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.5.7",
@@ -70,6 +70,7 @@
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.3",
     "vite": "^8.1.5"
   }

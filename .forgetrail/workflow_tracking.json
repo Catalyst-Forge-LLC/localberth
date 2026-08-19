@@ -62,7 +62,8 @@
         "2026-08-18: user started Phase 3. README is the public/npm page — no process notes.",
         "2026-08-19: D23 npm 12 + better-sqlite3 12 global install. Package 0.2.1.",
         "2026-08-19: Package 0.2.2 — IPv6 scan, listen bind, localberthListen, peek loopback-only.",
-        "2026-08-19: Package 0.2.3 — Open icon reuses one tab."
+        "2026-08-19: Package 0.2.3 — Open icon reuses one tab.",
+        "2026-08-19: D26 compiled CLI. Package 0.2.4."
       ]
     },
     "4-feature-iteration": {
@@ -362,6 +363,18 @@
         "Disable peek entirely when serve bind is not loopback",
         "Add a dashboard token"
       ]
+    },
+    {
+      "id": "D26",
+      "timestamp": "2026-08-19",
+      "phase": "3-stabilization",
+      "decision": "Published CLI is tsc output (dist/). tsx is a repo/dev runner only. Runtime npm deps are better-sqlite3.",
+      "rationale": "tsx pulls esbuild. npm 12 blocks esbuild's postinstall. Compiled JS is the same on every OS; the only native addon is better-sqlite3, which already ships N-API prebuilds per platform.",
+      "alternatives_considered": [
+        "Keep tsx as a runtime dep and document --allow-scripts=esbuild",
+        "Bundle with esbuild at publish time",
+        "Node type-stripping (needs Node 22+, engines are >=20)"
+      ]
     }
   ],
   "gotchas": [
@@ -518,6 +531,10 @@
     {
       "date": "2026-08-19",
       "summary": "Bumped package to 0.2.3 for the user to publish."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "D26: published CLI is compiled JS. Package 0.2.4. tsx/esbuild stay in the repo only."
     }
   ],
   "openQuestions": []

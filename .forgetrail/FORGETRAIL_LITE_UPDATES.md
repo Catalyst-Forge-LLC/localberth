@@ -40,6 +40,14 @@ Suggested Lite change: in the SvelteKit / agent anti-pattern list, say: keep bin
 
 Project pointer: LocalBerth dashboard `row-detail` → `$lib/server/firewall/names`.
 
+## 5. Published npm CLI should not depend on tsx (§4.1 / §13)
+
+`tsx` pulls `esbuild`. `esbuild` has a `postinstall` and optional `@esbuild/<platform>-<arch>` packages. npm 12 blocks the script; the optional binary usually still lands, but the install warns and can fail if the optional package is skipped.
+
+Suggested Lite change: if Phase 1 says the app is a **published CLI**, compile with `tsc` (or a bundler) on publish (`prepublishOnly`). Keep `tsx` as a **devDependency** for tests and `pnpm cli`. Do not put the TS runner on the published runtime graph. Platform-native work stays in addons that ship prebuilds (see §3), not in the JS entry.
+
+Project pointer: LocalBerth D26 / 0.2.4.
+
 ---
 
 | Topic | Lite § | Status |
@@ -48,3 +56,4 @@ Project pointer: LocalBerth dashboard `row-detail` → `$lib/server/firewall/nam
 | README images must ship in the tarball | §14 | candidate |
 | npm 12 + native addons on `npm i -g` | §4.1, §13 | candidate |
 | Kit `$lib/server` via a shared helper → “impossible situation” | agent / Kit | candidate |
+| Published CLI: compile, do not runtime-depend on tsx | §4.1, §13 | candidate |

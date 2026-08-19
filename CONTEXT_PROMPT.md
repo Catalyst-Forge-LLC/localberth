@@ -10,7 +10,7 @@ Vite 5173/5174 swap after reboot is the common story. Public examples use `fizzb
 
 ## Stack
 
-SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQLite (`better-sqlite3` **^13**, N-API prebuilds in the tarball; do **not** put it in `pnpm.onlyBuiltDependencies` or pnpm runs node-gyp). CLI via `tsx`. Live data: `~/.localberth/`. Dashboard port **54321**. FilePress site in `site/` → localberth.com.
+SvelteKit 5 + Tailwind 4 + pnpm + TypeScript ESM + `@sveltejs/adapter-node` + SQLite (`better-sqlite3` **^13**, N-API prebuilds in the tarball; do **not** put it in `pnpm.onlyBuiltDependencies` or pnpm runs node-gyp). Published CLI is `tsc` output (`pnpm build:cli` / `prepublishOnly`). `tsx` is repo-only (`pnpm cli`, tests). Live data: `~/.localberth/`. Dashboard port **54321**. FilePress site in `site/` → localberth.com.
 
 ## Architecture at a glance
 
