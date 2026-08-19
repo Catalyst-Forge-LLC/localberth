@@ -54,7 +54,7 @@
 			<tbody>
 				{#each data.leaseRows as row}
 					{@const href = hrefFor(row.lease?.bind, row.lease?.port, row.listening)}
-					<tr class="border-t border-[var(--line)] even:bg-white/[0.035]">
+					<tr class="border-t border-[var(--line)] even:bg-white/[0.035] hover:bg-white/[0.07]">
 						<td class="px-3 py-2 font-medium">
 							{#if href}
 								<a class="text-[var(--accent)]" href={href} target="_blank" rel="noreferrer">{row.lease?.name}</a>
@@ -105,7 +105,7 @@
 			<tbody>
 				{#each data.observedRows as row}
 					{@const href = hrefFor(row.observed?.bind, row.observed?.port, row.listening)}
-					<tr class="border-t border-[var(--line)] even:bg-white/[0.035]">
+					<tr class="border-t border-[var(--line)] even:bg-white/[0.035] hover:bg-white/[0.07]">
 						<td class="px-3 py-2 tabular-nums">
 							{#if href}
 								<a class="text-[var(--accent)]" href={href} target="_blank" rel="noreferrer">{row.observed?.port}</a>

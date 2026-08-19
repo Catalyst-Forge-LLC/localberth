@@ -60,6 +60,7 @@ th,td { text-align:left; padding:.45rem .75rem; }
 th { color:var(--muted); font-weight:500; }
 tr + tr td { border-top:1px solid var(--line); }
 tbody tr:nth-child(even) { background:rgba(255,255,255,.035); }
+tbody tr:hover { background:rgba(255,255,255,.07); }
 a { color:var(--ok); }
 </style>
 </head>
