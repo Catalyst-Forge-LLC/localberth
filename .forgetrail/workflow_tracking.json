@@ -352,6 +352,12 @@
       "phase": "3-stabilization",
       "gotcha": "npm i -g localberth@0.2.0 on Node 24 / npm 12: Could not locate the bindings file (better-sqlite3). ignore-scripts is false; allowScripts default is off, so 12.x never runs prebuild-install.",
       "fix": "Depend on better-sqlite3 ^13. Workaround on 0.2.0: npm i -g localberth --allow-scripts=better-sqlite3."
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "3-stabilization",
+      "gotcha": "Windows netstat -ano -p TCP does not list IPv6. Vite default host localhost binds [::1] only; the lease on 127.0.0.1 looked dead while http://localhost:6173/ worked.",
+      "fix": "Scan TCPv6 too. bindsOverlap treats 127.0.0.1 and ::1 as the same slip. Peek and the open icon try [::1] when IPv4 is silent."
     }
   ],
   "sessions": [
@@ -454,6 +460,10 @@
     {
       "date": "2026-08-19",
       "summary": "Peek skips 54321 and the serve listen port so the board does not HTTP-GET itself. Expand panel uses labeled fields."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Windows scan missed Vite on [::1]; netstat -p TCP is IPv4-only. Also scan TCPv6 and treat ::1 as loopback."
     }
   ],
   "openQuestions": []

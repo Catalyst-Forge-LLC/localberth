@@ -31,23 +31,44 @@ export async function scanListeners(): Promise<Observed[]> {
 	return [...merged.values()].sort((a, b) => a.port - b.port || a.bind.localeCompare(b.bind));
 }
 
-async function scanWindows(): Promise<Omit<Observed, 'seenAt' | 'leaseName'>[]> {
-	const { stdout } = await run('netstat', ['-ano', '-p', 'TCP']);
+/** Windows `netstat -ano -p TCP` / `TCPv6` LISTENING lines. */
+export function parseNetstat(stdout: string): Omit<Observed, 'seenAt' | 'leaseName'>[] {
 	const rows: Omit<Observed, 'seenAt' | 'leaseName'>[] = [];
-	const pids = new Set<number>();
 	for (const line of stdout.split(/\r?\n/)) {
 		if (!/LISTENING/i.test(line)) continue;
 		const parts = line.trim().split(/\s+/);
 		if (parts.length < 4) continue;
-		const local = parts[1];
+		const local = parseListenAddr(parts[1] ?? '');
+		if (!local) continue;
 		const pid = Number(parts[parts.length - 1]);
-		const colon = local.lastIndexOf(':');
-		if (colon < 0) continue;
-		const bind = local.slice(0, colon).replace(/^\[|\]$/g, '');
-		const port = Number(local.slice(colon + 1));
-		if (!Number.isInteger(port)) continue;
-		rows.push({ port, bind, pid: Number.isInteger(pid) ? pid : null, process: null });
-		if (Number.isInteger(pid) && pid > 0) pids.add(pid);
+		rows.push({
+			port: local.port,
+			bind: local.bind,
+			pid: Number.isInteger(pid) ? pid : null,
+			process: null
+		});
+	}
+	return rows;
+}
+
+function parseListenAddr(local: string): { bind: string; port: number } | null {
+	const colon = local.lastIndexOf(':');
+	if (colon < 0) return null;
+	const bind = local.slice(0, colon).replace(/^\[|\]$/g, '');
+	const port = Number(local.slice(colon + 1));
+	if (!Number.isInteger(port) || port < 1 || port > 65535) return null;
+	return { bind: bind === '*' ? '0.0.0.0' : bind, port };
+}
+
+async function scanWindows(): Promise<Omit<Observed, 'seenAt' | 'leaseName'>[]> {
+	const [v4, v6] = await Promise.all([
+		run('netstat', ['-ano', '-p', 'TCP']),
+		run('netstat', ['-ano', '-p', 'TCPv6'])
+	]);
+	const rows = [...parseNetstat(v4.stdout), ...parseNetstat(v6.stdout)];
+	const pids = new Set<number>();
+	for (const row of rows) {
+		if (row.pid && row.pid > 0) pids.add(row.pid);
 	}
 	const names = await windowsProcessNames(pids);
 	for (const row of rows) {
@@ -111,13 +132,13 @@ function parseLsof(stdout: string): Omit<Observed, 'seenAt' | 'leaseName'>[] {
 		const process = parts[0];
 		const pid = Number(parts[1]);
 		const name = parts[parts.length - 2] ?? '';
-		const m = name.match(/([^:]+):(\d+)$/);
-		if (!m) continue;
+		const local = parseListenAddr(name);
+		if (!local) continue;
 		rows.push({
 			process,
 			pid: Number.isInteger(pid) ? pid : null,
-			bind: m[1] === '*' ? '0.0.0.0' : m[1],
-			port: Number(m[2])
+			bind: local.bind,
+			port: local.port
 		});
 	}
 	return rows;

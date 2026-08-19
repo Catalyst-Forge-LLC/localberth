@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { dashboardHttpUrl } from '../dashboard-url.js';
+import { rowOpenUrl } from '../dashboard-url.js';
 import { rowDetailFields } from '../row-detail.js';
 import { parsePeekPort, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
@@ -39,7 +39,7 @@ function rowPair(row: BoardRow): string {
 	const tag = row.lease ? '' : ' <span class="warn">observed</span>';
 	const port = row.lease?.port ?? row.observed?.port ?? 0;
 	const bind = row.lease?.bind ?? row.observed?.bind ?? '';
-	const href = row.listening ? dashboardHttpUrl(bind, port) : null;
+	const href = rowOpenUrl(row);
 	const listening = row.listening ? '<span class="ok">yes</span>' : '<span class="muted">no</span>';
 	const proc = row.observed?.process ?? '—';
 	const pid = row.observed?.pid ? ` <span class="muted">(${row.observed.pid})</span>` : '';

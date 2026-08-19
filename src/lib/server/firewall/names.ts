@@ -11,6 +11,19 @@ export function isLoopbackBind(bind: string): boolean {
 	return b === '127.0.0.1' || b === '::1' || b === 'localhost';
 }
 
+export function isWildcardBind(bind: string): boolean {
+	const b = bind.trim();
+	return !b || b === '0.0.0.0' || b === '::' || b === '*' || b === '[::]';
+}
+
+/** Same slip: exact bind, both loopback, or either side is all-interfaces. */
+export function bindsOverlap(leaseBind: string, observedBind: string): boolean {
+	if (leaseBind === observedBind) return true;
+	if (isLoopbackBind(leaseBind) && isLoopbackBind(observedBind)) return true;
+	if (isWildcardBind(leaseBind) || isWildcardBind(observedBind)) return true;
+	return false;
+}
+
 /** 0.0.0.0 / :: / empty → all interfaces. Otherwise pin the rule to that address. */
 export function scopedBind(bind: string): string | null {
 	const b = bind.trim();

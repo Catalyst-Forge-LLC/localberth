@@ -2,22 +2,13 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
-	import { dashboardHttpUrl } from '$lib/dashboard-url';
+	import { rowOpenUrl } from '$lib/dashboard-url';
 	import type { BoardRow } from '$lib/server/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	let expanded = $state<string | null>(null);
 	let peekLine = $state<Record<string, string>>({});
-
-	function hrefFor(
-		bind: string | undefined,
-		port: number | undefined,
-		listening: boolean
-	): string | null {
-		if (!listening || !bind || !port) return null;
-		return dashboardHttpUrl(bind, port);
-	}
 
 	function rowId(row: BoardRow): string {
 		if (row.lease) return `lease:${row.lease.name}`;
@@ -86,7 +77,7 @@
 			</thead>
 			<tbody>
 				{#each data.leaseRows as row, i}
-					{@const href = hrefFor(row.lease?.bind, row.lease?.port, row.listening)}
+					{@const href = rowOpenUrl(row)}
 					{@const key = rowId(row)}
 					<tr
 						class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1
@@ -164,7 +155,7 @@
 			</thead>
 			<tbody>
 				{#each data.observedRows as row, i}
-					{@const href = hrefFor(row.observed?.bind, row.observed?.port, row.listening)}
+					{@const href = rowOpenUrl(row)}
 					{@const key = rowId(row)}
 					<tr
 						class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1

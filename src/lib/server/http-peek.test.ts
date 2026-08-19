@@ -57,11 +57,26 @@ describe('peekHttp', () => {
 		assert.equal(peek.http, false);
 		assert.equal(formatPeek(peek), 'Not HTTP.');
 	});
+
+	it('falls back to IPv6 loopback', async () => {
+		const server = createServer((_req, res) => {
+			res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+			res.end('<html><head><title>V6</title></head></html>');
+		});
+		servers.push(server);
+		const port = await listen(server, '::1');
+		const peek = await peekHttp(port);
+		assert.equal(peek.http, true);
+		assert.equal(peek.title, 'V6');
+	});
 });
 
-function listen(server: { listen(port: number, host: string, cb: () => void): void; address(): unknown }): Promise<number> {
+function listen(
+	server: { listen(port: number, host: string, cb: () => void): void; address(): unknown },
+	host = '127.0.0.1'
+): Promise<number> {
 	return new Promise((resolve, reject) => {
-		server.listen(0, '127.0.0.1', () => {
+		server.listen(0, host, () => {
 			const addr = server.address();
 			if (!addr || typeof addr === 'string') {
 				reject(new Error('expected a TCP address'));

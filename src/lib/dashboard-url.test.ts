@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { dashboardHttpUrl } from './dashboard-url.js';
+import { dashboardHttpUrl, rowOpenUrl } from './dashboard-url.js';
 
 describe('dashboardHttpUrl', () => {
 	it('uses the bind as the host', () => {
@@ -18,5 +18,16 @@ describe('dashboardHttpUrl', () => {
 
 	it('rejects a bad port', () => {
 		assert.equal(dashboardHttpUrl('127.0.0.1', 0), null);
+	});
+
+	it('opens on the observed bind when Vite is IPv6-only', () => {
+		assert.equal(
+			rowOpenUrl({
+				listening: true,
+				lease: { bind: '127.0.0.1', port: 6173 },
+				observed: { bind: '::1', port: 6173 }
+			}),
+			'http://[::1]:6173/'
+		);
 	});
 });

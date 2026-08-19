@@ -34,8 +34,13 @@ export async function peekPayload(
 }
 
 export async function peekHttp(port: number): Promise<HttpPeek> {
+	const v4 = await peekUrl(`http://127.0.0.1:${port}/`);
+	if (v4.http || v4.error === 'timeout') return v4;
+	return peekUrl(`http://[::1]:${port}/`);
+}
+
+async function peekUrl(url: string): Promise<HttpPeek> {
 	const started = Date.now();
-	const url = `http://127.0.0.1:${port}/`;
 	try {
 		const res = await fetch(url, {
 			method: 'GET',

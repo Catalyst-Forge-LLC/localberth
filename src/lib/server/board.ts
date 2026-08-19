@@ -1,3 +1,4 @@
+import { bindsOverlap } from './firewall/names.js';
 import { scanListeners } from './observe.js';
 import { listLeases } from './registry.js';
 import { isSystemPort } from './system-ports.js';
@@ -27,10 +28,7 @@ export async function getBoard(opts: { showSystem?: boolean } = {}): Promise<Boa
 
 	for (const lease of leases) {
 		const hits = byPort.get(lease.port) ?? [];
-		const match =
-			hits.find((h) => h.bind === lease.bind || lease.bind === '0.0.0.0' || h.bind === '0.0.0.0') ??
-			hits[0] ??
-			null;
+		const match = hits.find((h) => bindsOverlap(lease.bind, h.bind)) ?? hits[0] ?? null;
 		if (match) used.add(`${match.bind}:${match.port}:${match.pid ?? ''}`);
 		leaseRows.push({
 			lease,
