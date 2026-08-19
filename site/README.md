@@ -10,6 +10,8 @@ cd ../../filepress && pnpm install
 pnpm install
 pnpm dev
 pnpm build    # → build/
+
+If LocalBerth is installed, this explainer stays on **5187** as `localberth-site` (not the dashboard on 54321).
 ```
 
 Optional: add `theme.css` next to `filepress.config.ts` to

@@ -28,5 +28,5 @@
 6. [x] Publish `localberth@0.1.1` so the README mark is in the tarball (you; agent does not)
 7. [x] Publish `localberth@0.1.2` (README dashboard line; you; agent does not)
 8. [ ] Publish `localberth@0.2.0` (claim defaults to loopback, `--lan`; you; agent does not)
-9. [ ] Sibling LocalBerth rollout
+9. [ ] Sibling LocalBerth rollout — wave 0–1 started (FilePress + Engram + DictaWhisper). Wave 2+ later.
 
