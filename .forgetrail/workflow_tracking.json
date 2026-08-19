@@ -408,6 +408,10 @@
     {
       "date": "2026-08-18",
       "summary": "Wave 0–1: FilePress reads leases; origin-story and inbox apps claimed. Ollama not claimed."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Wave 2: remaining house FilePress sites claimed unique local ports. Lease name follows package.json name."
     }
   ],
   "openQuestions": []
