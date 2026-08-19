@@ -2,7 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
-	import { rowOpenUrl } from '$lib/dashboard-url';
+	import { OPEN_TARGET, rowOpenUrl } from '$lib/dashboard-url';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
 	import type { PageData } from './$types';
@@ -108,8 +108,8 @@
 								<a
 									class="inline-flex text-[var(--accent)]"
 									href={href}
-									target="_blank"
-									rel="noreferrer"
+									target={OPEN_TARGET}
+									rel="noopener"
 									title="Open"
 									aria-label="Open"
 								>
@@ -177,8 +177,8 @@
 								<a
 									class="inline-flex text-[var(--accent)]"
 									href={href}
-									target="_blank"
-									rel="noreferrer"
+									target={OPEN_TARGET}
+									rel="noopener"
 									title="Open"
 									aria-label="Open"
 								>

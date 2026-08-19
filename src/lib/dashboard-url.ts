@@ -1,3 +1,6 @@
+/** One named tab so a second Open replaces the first. Do not use rel=noreferrer — Chrome then ignores the name. */
+export const OPEN_TARGET = 'localberth-open';
+
 /** Prefer the observed listen address so IPv6-only Vite still opens. */
 export function rowOpenUrl(row: {
 	listening: boolean;

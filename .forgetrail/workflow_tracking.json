@@ -509,6 +509,10 @@
     {
       "date": "2026-08-19",
       "summary": "Bumped package to 0.2.2 for the user to publish."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Open icon reuses one named tab (localberth-open). rel=noreferrer was forcing a new tab each time."
     }
   ],
   "openQuestions": []

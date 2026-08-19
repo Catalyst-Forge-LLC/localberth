@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { isLoopbackClient } from '../binds.js';
-import { rowOpenUrl } from '../dashboard-url.js';
+import { OPEN_TARGET, rowOpenUrl } from '../dashboard-url.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
@@ -16,7 +16,7 @@ const OPEN_ICON =
 
 function openCell(href: string | null): string {
 	if (!href) return '<td class="go"></td>';
-	return `<td class="go"><a href="${esc(href)}" target="_blank" rel="noreferrer" title="Open" aria-label="Open">${OPEN_ICON}</a></td>`;
+	return `<td class="go"><a href="${esc(href)}" target="${OPEN_TARGET}" rel="noopener" title="Open" aria-label="Open">${OPEN_ICON}</a></td>`;
 }
 
 function rowKey(row: BoardRow): string {
