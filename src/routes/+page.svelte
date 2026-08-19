@@ -93,6 +93,7 @@
 					<th class="px-3 py-2 font-medium">Listening</th>
 					<th class="px-3 py-2 font-medium">Process</th>
 					<th class="px-3 py-2 font-medium">Firewall</th>
+					<th class="w-8 px-2 py-2"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -106,13 +107,7 @@
 						onclick={(event) => toggle(row, event)}
 					>
 						<td class="px-3 py-2 font-medium">{row.lease?.name}</td>
-						<td class="px-3 py-2 tabular-nums">
-							{#if href}
-								<a class="text-[var(--accent)]" href={href} target="_blank" rel="noreferrer">{row.lease?.port}</a>
-							{:else}
-								{row.lease?.port}
-							{/if}
-						</td>
+						<td class="px-3 py-2 tabular-nums">{row.lease?.port}</td>
 						<td class="px-3 py-2 text-[var(--muted)]">{row.lease?.bind}</td>
 						<td class="px-3 py-2">
 							{#if row.listening}
@@ -128,9 +123,27 @@
 							{/if}
 						</td>
 						<td class="px-3 py-2 text-[var(--muted)]">{row.lease?.firewall}</td>
+						<td class="w-8 px-2 py-2 text-right">
+							{#if href}
+								<a
+									class="inline-flex text-[var(--accent)]"
+									href={href}
+									target="_blank"
+									rel="noreferrer"
+									title="Open"
+									aria-label="Open"
+								>
+									<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+										<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
+										<path d="M9 2h5v5" />
+										<path d="M14 2 8 8" />
+									</svg>
+								</a>
+							{/if}
+						</td>
 					</tr>
 					<tr class="detail">
-						<td class="p-0" colspan="6">
+						<td class="p-0" colspan="7">
 							<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
 								<div class="min-h-0 overflow-hidden">
 									<div class="px-3 pb-2.5 pt-1.5 text-xs {expanded === key ? '' : 'invisible'}">
@@ -156,6 +169,7 @@
 					<th class="px-3 py-2 font-medium">Port</th>
 					<th class="px-3 py-2 font-medium">Bind</th>
 					<th class="px-3 py-2 font-medium">Process</th>
+					<th class="w-8 px-2 py-2"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -168,13 +182,7 @@
 							: ''} {expanded === key ? 'bg-white/[0.07]' : ''}"
 						onclick={(event) => toggle(row, event)}
 					>
-						<td class="px-3 py-2 tabular-nums">
-							{#if href}
-								<a class="text-[var(--accent)]" href={href} target="_blank" rel="noreferrer">{row.observed?.port}</a>
-							{:else}
-								{row.observed?.port}
-							{/if}
-						</td>
+						<td class="px-3 py-2 tabular-nums">{row.observed?.port}</td>
 						<td class="px-3 py-2 text-[var(--muted)]">{row.observed?.bind}</td>
 						<td class="px-3 py-2 text-[var(--muted)]">
 							{row.observed?.process ?? '—'}
@@ -182,9 +190,27 @@
 								<span class="text-xs">({row.observed.pid})</span>
 							{/if}
 						</td>
+						<td class="w-8 px-2 py-2 text-right">
+							{#if href}
+								<a
+									class="inline-flex text-[var(--accent)]"
+									href={href}
+									target="_blank"
+									rel="noreferrer"
+									title="Open"
+									aria-label="Open"
+								>
+									<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+										<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
+										<path d="M9 2h5v5" />
+										<path d="M14 2 8 8" />
+									</svg>
+								</a>
+							{/if}
+						</td>
 					</tr>
 					<tr>
-						<td class="p-0" colspan="3">
+						<td class="p-0" colspan="4">
 							<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
 								<div class="min-h-0 overflow-hidden">
 									<div class="px-3 pb-2.5 pt-1.5 text-xs {expanded === key ? '' : 'invisible'}">

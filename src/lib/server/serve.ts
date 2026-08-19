@@ -9,10 +9,12 @@ function esc(value: string): string {
 	return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
-function linked(label: string, href: string | null): string {
-	const text = esc(label);
-	if (!href) return text;
-	return `<a href="${esc(href)}" target="_blank" rel="noreferrer">${text}</a>`;
+const OPEN_ICON =
+	'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10"/><path d="M9 2h5v5"/><path d="M14 2 8 8"/></svg>';
+
+function openCell(href: string | null): string {
+	if (!href) return '<td class="go"></td>';
+	return `<td class="go"><a href="${esc(href)}" target="_blank" rel="noreferrer" title="Open" aria-label="Open">${OPEN_ICON}</a></td>`;
 }
 
 function rowKey(row: BoardRow): string {
@@ -44,14 +46,14 @@ function rowPair(row: BoardRow): string {
 	const pid = row.observed?.pid ? ` <span class="muted">(${row.observed.pid})</span>` : '';
 	const fw = row.lease?.firewall ?? '—';
 	const key = esc(rowKey(row));
-	return `<tr class="row" data-key="${key}"><td>${esc(name)}${tag}</td><td class="num">${linked(String(port || '—'), href)}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td></tr>
-<tr class="detail" data-for="${key}" data-port="${port}" data-listening="${row.listening ? '1' : ''}"><td colspan="6"><div class="panel"><div class="inner"><p class="muted">${facts(row)}</p><p class="peek muted">${row.listening ? 'Peeking…' : 'Not listening.'}</p></div></div></td></tr>`;
+	return `<tr class="row" data-key="${key}"><td>${esc(name)}${tag}</td><td class="num">${port || '—'}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td>${openCell(href)}</tr>
+<tr class="detail" data-for="${key}" data-port="${port}" data-listening="${row.listening ? '1' : ''}"><td colspan="7"><div class="panel"><div class="inner"><p class="muted">${facts(row)}</p><p class="peek muted">${row.listening ? 'Peeking…' : 'Not listening.'}</p></div></div></td></tr>`;
 }
 
 function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean): string {
 	const leases = board.leaseRows.map(rowPair).join('');
 	const observed = board.observedRows.map(rowPair).join('') ||
-		'<tr><td colspan="6" class="muted">Nothing extra listening (system ports hidden).</td></tr>';
+		'<tr><td colspan="7" class="muted">Nothing extra listening (system ports hidden).</td></tr>';
 	const toggle = showSystem
 		? '<a href="/">Hide system ports</a>'
 		: `<a href="/?system=1">Show ${board.hiddenSystem} system port${board.hiddenSystem === 1 ? '' : 's'}</a>`;
@@ -79,6 +81,8 @@ h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
 table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
 th,td { text-align:left; padding:.45rem .75rem; }
 th { color:var(--muted); font-weight:500; }
+.go { width:2.1rem; text-align:right; padding-left:.25rem; padding-right:.65rem; }
+.go a { display:inline-flex; color:var(--ok); }
 tr.row td { border-top:1px solid var(--line); }
 tr.row { cursor:pointer; }
 tr.row:nth-child(4n+3) { background:rgba(255,255,255,.035); }
@@ -101,12 +105,12 @@ a { color:var(--ok); }
 </header>
 <section>
 <h2>Leases</h2>
-<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th></tr></thead>
+<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
 <tbody>${leases}</tbody></table>
 </section>
 <section>
 <h2>Observed</h2>
-<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th></tr></thead>
+<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
 <tbody>${observed}</tbody></table>
 </section>
 <p class="muted" style="margin-top:1.5rem"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
