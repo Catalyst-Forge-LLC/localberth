@@ -61,7 +61,8 @@
       "notes": [
         "2026-08-18: user started Phase 3. README is the public/npm page — no process notes.",
         "2026-08-19: D23 npm 12 + better-sqlite3 12 global install. Package 0.2.1.",
-        "2026-08-19: Package 0.2.2 — IPv6 scan, listen bind, localberthListen, peek loopback-only."
+        "2026-08-19: Package 0.2.2 — IPv6 scan, listen bind, localberthListen, peek loopback-only.",
+        "2026-08-19: Package 0.2.3 — Open icon reuses one tab."
       ]
     },
     "4-feature-iteration": {
@@ -513,6 +514,10 @@
     {
       "date": "2026-08-19",
       "summary": "Open icon reuses one named tab (localberth-open). rel=noreferrer was forcing a new tab each time."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Bumped package to 0.2.3 for the user to publish."
     }
   ],
   "openQuestions": []

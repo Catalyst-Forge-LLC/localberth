@@ -31,4 +31,5 @@
 9. [x] Sibling LocalBerth rollout — waves 0–2 (FilePress engine + house sites + Engram + DictaWhisper). Wave 3 is other Vite apps.
 10. [ ] Publish `localberth@0.2.1` (better-sqlite3 13 for npm 12 global install; you; agent does not)
 11. [ ] Publish `localberth@0.2.2` (IPv6 scan, `localberthListen`, peek loopback-only; you; agent does not)
+12. [ ] Publish `localberth@0.2.3` (Open icon reuses one tab; you; agent does not)
 
