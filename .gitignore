@@ -1,4 +1,5 @@
 *.tgz
+/docs/.private/
 node_modules/
 .filepress-genie/
 .pnpm-store/

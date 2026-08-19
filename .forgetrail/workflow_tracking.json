@@ -434,6 +434,10 @@
     {
       "date": "2026-08-19",
       "summary": "D23: npm 12 skips better-sqlite3 12 install scripts on global install. Bump to ^13 and package 0.2.1."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Sibling adoption inventory stays local and gitignored."
     }
   ],
   "openQuestions": []
