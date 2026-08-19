@@ -438,6 +438,10 @@
     {
       "date": "2026-08-19",
       "summary": "Sibling adoption inventory stays local and gitignored."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Removed house lease inventory from tracked workflow tracking."
     }
   ],
   "openQuestions": []
