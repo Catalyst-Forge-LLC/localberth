@@ -1,18 +1,30 @@
 import { createServer } from 'node:http';
+import { dashboardHttpUrl } from '../dashboard-url.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
 import type { BoardRow } from './types.js';
 
+function esc(value: string): string {
+	return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
+function linked(label: string, href: string | null): string {
+	const text = esc(label);
+	if (!href) return text;
+	return `<a href="${esc(href)}" target="_blank" rel="noreferrer">${text}</a>`;
+}
+
 function rowCells(row: BoardRow): string {
 	const name = row.lease?.name ?? '—';
 	const tag = row.lease ? '' : ' <span class="warn">observed</span>';
-	const port = row.lease?.port ?? row.observed?.port ?? '';
+	const port = row.lease?.port ?? row.observed?.port ?? 0;
 	const bind = row.lease?.bind ?? row.observed?.bind ?? '';
+	const href = dashboardHttpUrl(bind, port);
 	const listening = row.listening ? '<span class="ok">yes</span>' : '<span class="muted">no</span>';
 	const proc = row.observed?.process ?? '—';
 	const pid = row.observed?.pid ? ` <span class="muted">(${row.observed.pid})</span>` : '';
 	const fw = row.lease?.firewall ?? '—';
-	return `<tr><td>${name}${tag}</td><td>${port}</td><td class="muted">${bind}</td><td>${listening}</td><td class="muted">${proc}${pid}</td><td class="muted">${fw}</td></tr>`;
+	return `<tr><td>${linked(name, href)}${tag}</td><td class="num">${linked(String(port || '—'), href)}</td><td class="muted">${esc(bind)}</td><td>${listening}</td><td class="muted">${esc(proc)}${pid}</td><td class="muted">${esc(fw)}</td></tr>`;
 }
 
 function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean): string {
@@ -32,32 +44,30 @@ function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean):
 <style>
 :root { --bg:#0c1220; --elev:#141c2e; --line:rgba(255,255,255,.08); --text:#e8eef8; --muted:#8b97ad; --ok:#6ec8c0; --warn:#e4b86a; }
 html,body { height:100%; }
-body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 ui-sans-serif,system-ui,sans-serif; }
-main { padding:2rem 1.5rem; }
-h1 { margin:.2rem 0 0; }
-.lede { color:var(--ok); font-size:.85rem; letter-spacing:.04em; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
+main { padding:1rem 1.25rem 1.5rem; }
 .muted { color:var(--muted); }
 .ok { color:var(--ok); }
 .warn { color:var(--warn); font-size:.75rem; }
-header { display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-section { margin-top:2rem; }
-h2 { font-size:1rem; font-weight:600; color:var(--muted); }
-table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-th,td { text-align:left; padding:.75rem 1rem; }
+.num { font-variant-numeric:tabular-nums; }
+header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+header .brand { font-weight:600; }
+header .meta { color:var(--muted); font-size:.8rem; }
+section { margin-top:1.15rem; }
+h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
+table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+th,td { text-align:left; padding:.45rem .75rem; }
 th { color:var(--muted); font-weight:500; }
 tr + tr td { border-top:1px solid var(--line); }
+tbody tr:nth-child(even) { background:rgba(255,255,255,.035); }
 a { color:var(--ok); }
 </style>
 </head>
 <body>
 <main>
 <header>
-<div>
-<p class="lede">Local DNS for ports</p>
-<h1>LocalBerth</h1>
-<p class="muted">Named port leases and what’s actually listening.</p>
-</div>
-<p class="muted">dashboard :${DASHBOARD_PORT}<br/>${toggle}</p>
+<p class="brand">LocalBerth</p>
+<p class="meta">:${DASHBOARD_PORT} · ${toggle}</p>
 </header>
 <section>
 <h2>Leases</h2>
