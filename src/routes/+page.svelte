@@ -4,7 +4,7 @@
 	import RowDetail from '$lib/RowDetail.svelte';
 	import { rowOpenUrl } from '$lib/dashboard-url';
 	import { rowBindDisplay } from '$lib/row-detail';
-	import type { BoardRow } from '$lib/server/types';
+	import type { BoardRow } from '$lib/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

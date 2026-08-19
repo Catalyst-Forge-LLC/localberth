@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { rowBindDisplay, rowDetailFields } from './row-detail.js';
-import type { BoardRow } from './server/types.js';
+import type { BoardRow } from './types.js';
 
 describe('rowDetailFields', () => {
 	it('labels lease and process facts', () => {

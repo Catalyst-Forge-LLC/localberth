@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { rowDetailFields } from '$lib/row-detail';
-	import type { BoardRow } from '$lib/server/types';
+	import type { BoardRow } from '$lib/types';
 
 	let { row, peek }: { row: BoardRow; peek: string } = $props();
 	const fields = $derived(rowDetailFields(row));

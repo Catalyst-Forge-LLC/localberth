@@ -1,5 +1,5 @@
-import { bindRelation } from './server/firewall/names.js';
-import type { BoardRow } from './server/types.js';
+import { bindRelation } from './binds.js';
+import type { BoardRow } from './types.js';
 
 export type DetailField = { label: string; value: string; wide?: boolean; warn?: boolean };
 

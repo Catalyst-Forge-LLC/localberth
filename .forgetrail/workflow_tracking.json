@@ -369,6 +369,12 @@
       "phase": "3-stabilization",
       "gotcha": "Windows netstat -ano -p TCP does not list IPv6. Vite default host localhost binds [::1] only; the lease on 127.0.0.1 looked dead while http://localhost:6173/ worked.",
       "fix": "Scan TCPv6 too. bindsOverlap treats 127.0.0.1 and ::1 as the same slip. Peek and the open icon try [::1] when IPv4 is silent."
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "3-stabilization",
+      "gotcha": "pnpm dev overlay: An impossible situation occurred. +page imported row-detail, which imported $lib/server/firewall/names. Kit forbids $lib/server in the browser and throws that instead of the usual leak warning when the import chain does not match an entrypoint.",
+      "fix": "Keep bind helpers in $lib/binds.ts. Dashboard client must not import $lib/server at runtime."
     }
   ],
   "sessions": [
@@ -479,6 +485,10 @@
     {
       "date": "2026-08-19",
       "summary": "D24: Bind column is the listen address. Claim vs Listen in the panel. localberthListen() for Vite host+port."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "Moved bind helpers out of $lib/server so pnpm dev does not throw Kit's impossible-situation overlay."
     }
   ],
   "openQuestions": []

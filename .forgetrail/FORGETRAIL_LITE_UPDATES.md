@@ -32,6 +32,14 @@ Suggested Lite change: next to the pnpm native-addon note, say npm 12 global ins
 
 Project pointer: LocalBerth 0.2.1 / D23.
 
+## 4. SvelteKit `$lib/server` in shared UI helpers (agent / Kit)
+
+A `+page.svelte` that imports a `$lib` helper which then imports `$lib/server/*` is a browser load of server code. Kit’s overlay is often **An impossible situation occurred** (`LoadPluginContext.load`), not the clearer “Cannot import $lib/server into code that runs in the browser” pyramid. That happens when the import chain does not match a page entrypoint in Kit’s map (nested `.svelte` helpers, Windows path normalize).
+
+Suggested Lite change: in the SvelteKit / agent anti-pattern list, say: keep bind/format helpers used by `+page.svelte` **outside** `$lib/server`. `import type` from `$lib/server` is not enough if a sibling runtime import pulls the folder in. The thrown string “impossible situation” is this class of leak, not a Vite kernel bug.
+
+Project pointer: LocalBerth dashboard `row-detail` → `$lib/server/firewall/names`.
+
 ---
 
 | Topic | Lite § | Status |
@@ -39,3 +47,4 @@ Project pointer: LocalBerth 0.2.1 / D23.
 | Published npm README vs operator dump | §14, §4.5 | candidate |
 | README images must ship in the tarball | §14 | candidate |
 | npm 12 + native addons on `npm i -g` | §4.1, §13 | candidate |
+| Kit `$lib/server` via a shared helper → “impossible situation” | agent / Kit | candidate |
