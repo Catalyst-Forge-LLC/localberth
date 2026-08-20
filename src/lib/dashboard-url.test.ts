@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { dashboardHttpUrl, rowOpenUrl } from './dashboard-url.js';
+import { dashboardHttpUrl, rowOpenUrl, visitorHttpUrl, visitorPageHost } from './dashboard-url.js';
 
 describe('dashboardHttpUrl', () => {
 	it('uses the bind as the host', () => {
@@ -29,5 +29,12 @@ describe('dashboardHttpUrl', () => {
 			}),
 			'http://[::1]:6173/'
 		);
+	});
+
+	it('builds visitor opens from the request Host', () => {
+		assert.equal(visitorPageHost('100.74.12.14:54321'), '100.74.12.14');
+		assert.equal(visitorPageHost('[fd7a:115c::2]:54321'), '[fd7a:115c::2]');
+		assert.equal(visitorPageHost('evil.com/x'), null);
+		assert.equal(visitorHttpUrl('100.74.12.14', 5193), 'http://100.74.12.14:5193/');
 	});
 });

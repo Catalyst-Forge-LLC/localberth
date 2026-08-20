@@ -72,7 +72,10 @@ describe('peekHttp', () => {
 });
 
 function listen(
-	server: { listen(port: number, host: string, cb: () => void): void; address(): unknown },
+	server: {
+		listen(port: number, host: string, cb: () => void): void;
+		address(): string | { port: number } | null;
+	},
 	host = '127.0.0.1'
 ): Promise<number> {
 	return new Promise((resolve, reject) => {

@@ -22,3 +22,28 @@ export function dashboardHttpUrl(bind: string, port: number): string | null {
 	if (host.includes(':') && !host.startsWith('[')) host = `[${host}]`;
 	return `http://${host}:${port}/`;
 }
+
+/**
+ * Host a visitor should use in Open links — the Host they already typed.
+ * Rejects junk so we never invent a Tailscale IP or follow a weird header.
+ */
+export function visitorPageHost(hostHeader: string | null | undefined): string | null {
+	if (!hostHeader) return null;
+	const raw = hostHeader.trim();
+	if (!raw || /[\s/@\\]/.test(raw)) return null;
+	try {
+		const url = new URL(`http://${raw}/`);
+		let host = url.hostname.replace(/^\[|\]$/g, '');
+		if (!host) return null;
+		if (host.includes(':')) host = `[${host}]`;
+		return host;
+	} catch {
+		return null;
+	}
+}
+
+/** Visitor Open URL: same host the phone used, app port. */
+export function visitorHttpUrl(pageHost: string, port: number): string | null {
+	if (!pageHost || !Number.isInteger(port) || port < 1 || port > 65535) return null;
+	return `http://${pageHost}:${port}/`;
+}

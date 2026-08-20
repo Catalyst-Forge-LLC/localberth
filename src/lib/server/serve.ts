@@ -1,7 +1,8 @@
 import { createServer } from 'node:http';
 import { isLoopbackClient } from '../binds.js';
-import { OPEN_TARGET, rowOpenUrl } from '../dashboard-url.js';
+import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl, visitorPageHost } from '../dashboard-url.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
+import { visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -168,14 +169,68 @@ a { color:var(--ok); }
 </html>`;
 }
 
+function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: string | null): string {
+	const rows = visitorLeaseRows(board.leaseRows);
+	const body =
+		rows.length === 0
+			? `<p class="muted">No LAN slips listening. Loopback leases stay on this machine. Claim with <code>--lan</code> to show up here.</p>`
+			: `<table><thead><tr><th>Name</th><th>Port</th><th>Notes</th><th class="go"></th></tr></thead><tbody>${rows
+					.map((row) => {
+						const name = row.lease!.name;
+						const port = row.lease!.port;
+						const notes = row.lease!.notes || '—';
+						const href = pageHost ? visitorHttpUrl(pageHost, port) : null;
+						return `<tr><td>${esc(name)}</td><td class="num">${port}</td><td class="muted">${esc(notes)}</td>${openCell(href)}</tr>`;
+					})
+					.join('')}</tbody></table>`;
+	return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta http-equiv="refresh" content="8"/>
+<title>LocalBerth</title>
+<style>
+:root { --bg:#0c1220; --elev:#141c2e; --line:rgba(255,255,255,.08); --text:#e8eef8; --muted:#8b97ad; --ok:#6ec8c0; }
+html,body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
+main { padding:1rem 1.25rem 1.5rem; }
+.muted { color:var(--muted); }
+.num { font-variant-numeric:tabular-nums; }
+header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+header .brand { font-weight:600; }
+header .meta { color:var(--muted); font-size:.8rem; }
+table { width:100%; max-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+th,td { text-align:left; padding:.55rem .85rem; }
+th { color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
+td { border-top:1px solid var(--line); }
+.go { width:2.1rem; text-align:right; padding-left:.25rem; padding-right:.65rem; }
+.go a { display:inline-flex; color:var(--ok); }
+a { color:var(--ok); }
+code { color:var(--text); }
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="brand">LocalBerth</p>
+<p class="meta">reachable on this machine</p>
+</header>
+${body}
+</main>
+</body>
+</html>`;
+}
+
 export async function serveDashboard(opts: { host?: string; port?: number } = {}): Promise<void> {
 	const host = opts.host ?? process.env.HOST?.trim() ?? '127.0.0.1';
 	const port = opts.port ?? Number(process.env.PORT || DASHBOARD_PORT);
 	const server = createServer(async (req, res) => {
 		try {
 			const url = new URL(req.url ?? '/', `http://${host}:${port}`);
+			const loopback = isLoopbackClient(req.socket.remoteAddress);
 			if (url.pathname === '/api/peek') {
-				if (!isLoopbackClient(req.socket.remoteAddress)) {
+				if (!loopback) {
 					res.writeHead(403, { 'content-type': 'application/json; charset=utf-8' });
 					res.end(JSON.stringify(peekLoopbackDenied()));
 					return;
@@ -190,13 +245,27 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 				res.end(JSON.stringify(await peekPayload(peekPort, { selfPort: port })));
 				return;
 			}
-			const showSystem = url.searchParams.get('system') === '1';
-			const board = await getBoard({ showSystem });
 			if (url.pathname === '/api/board') {
+				if (!loopback) {
+					res.writeHead(403, { 'content-type': 'application/json; charset=utf-8' });
+					res.end(JSON.stringify({ error: 'loopback only', line: 'Board API is loopback-only.' }));
+					return;
+				}
+				const showSystem = url.searchParams.get('system') === '1';
+				const board = await getBoard({ showSystem });
 				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
 				res.end(JSON.stringify(board));
 				return;
 			}
+			if (!loopback) {
+				const board = await getBoard({ showSystem: false });
+				const pageHost = visitorPageHost(req.headers.host);
+				res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+				res.end(visitorPage(board, pageHost));
+				return;
+			}
+			const showSystem = url.searchParams.get('system') === '1';
+			const board = await getBoard({ showSystem });
 			res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
 			res.end(page(board, showSystem));
 		} catch (err) {

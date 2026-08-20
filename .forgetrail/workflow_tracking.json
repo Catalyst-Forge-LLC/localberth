@@ -375,6 +375,17 @@
         "Bundle with esbuild at publish time",
         "Node type-stripping (needs Node 22+, engines are >=20)"
       ]
+    },
+    {
+      "id": "D27",
+      "timestamp": "2026-08-19",
+      "phase": "3-stabilization",
+      "decision": "Same :54321; loopback peer gets the operator board, non-loopback gets a visitor menu of listening non-loopback leases. Open links use the request Host. /api/board and /api/peek are loopback-only.",
+      "rationale": "Phone on Tailscale should see reachable slips, not PIDs and firewall. Default claim is loopback (D21); visitor menu is the --lan set. One port, no reverse proxy.",
+      "alternatives_considered": [
+        "Second port for the visitor menu",
+        "/guest path on a LAN-bound operator board"
+      ]
     }
   ],
   "gotchas": [
@@ -535,6 +546,10 @@
     {
       "date": "2026-08-19",
       "summary": "D26: published CLI is compiled JS. Package 0.2.4. tsx/esbuild stay in the repo only."
+    },
+    {
+      "date": "2026-08-19",
+      "summary": "D27: visitor menu for non-loopback peers on :54321; operator board stays loopback-only."
     }
   ],
   "openQuestions": []

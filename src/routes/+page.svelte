@@ -2,7 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
-	import { OPEN_TARGET, rowOpenUrl } from '$lib/dashboard-url';
+	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
 	import type { PageData } from './$types';
@@ -47,182 +47,237 @@
 	});
 </script>
 
-<header class="mb-3 flex flex-wrap items-center justify-between gap-3">
-	<p class="font-semibold">LocalBerth</p>
-	<p class="text-xs text-[var(--muted)]">
-		:54321 ·
-		{#if data.showSystem}
-			<a class="text-[var(--accent)]" href="/">Hide system ports</a>
-		{:else}
-			<a class="text-[var(--accent)]" href="/?system=1">
-				Show {data.hiddenSystem} system port{data.hiddenSystem === 1 ? '' : 's'}
-			</a>
-		{/if}
+{#if data.face === 'visitor'}
+	<header class="mb-3 flex flex-wrap items-center justify-between gap-3">
+		<p class="font-semibold">LocalBerth</p>
+		<p class="text-xs text-[var(--muted)]">reachable on this machine</p>
+	</header>
+
+	{#if data.visitorRows.length === 0}
+		<p class="text-sm text-[var(--muted)]">
+			No LAN slips listening. Loopback leases stay on this machine. Claim with
+			<code class="text-[var(--text)]">--lan</code> to show up here.
+		</p>
+	{:else}
+		<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
+			<table class="w-full max-w-[40rem] text-left text-sm">
+				<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
+					<tr>
+						<th class="px-3.5 py-2.5">Name</th>
+						<th class="px-3.5 py-2.5">Port</th>
+						<th class="px-3.5 py-2.5">Notes</th>
+						<th class="w-8 px-2 py-2.5"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.visitorRows as row, i}
+						{@const href = data.pageHost && row.lease ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
+						<tr class="border-t border-[var(--line)] {i % 2 === 1 ? 'bg-white/[0.035]' : ''}">
+							<td class="px-3.5 py-2.5 font-medium">{row.lease?.name}</td>
+							<td class="px-3.5 py-2.5 tabular-nums">{row.lease?.port}</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.lease?.notes || '—'}</td>
+							<td class="w-8 px-2 py-2 text-right">
+								{#if href}
+									<a
+										class="inline-flex text-[var(--accent)]"
+										href={href}
+										target={OPEN_TARGET}
+										rel="noopener"
+										title="Open"
+										aria-label="Open"
+									>
+										<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+											<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
+											<path d="M9 2h5v5" />
+											<path d="M14 2 8 8" />
+										</svg>
+									</a>
+								{/if}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{/if}
+{:else}
+	<header class="mb-3 flex flex-wrap items-center justify-between gap-3">
+		<p class="font-semibold">LocalBerth</p>
+		<p class="text-xs text-[var(--muted)]">
+			:54321 ·
+			{#if data.showSystem}
+				<a class="text-[var(--accent)]" href="/">Hide system ports</a>
+			{:else}
+				<a class="text-[var(--accent)]" href="/?system=1">
+					Show {data.hiddenSystem} system port{data.hiddenSystem === 1 ? '' : 's'}
+				</a>
+			{/if}
+		</p>
+	</header>
+
+	<section class="mb-5">
+		<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Leases</h2>
+		<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
+			<table class="w-full min-w-[40rem] text-left text-sm">
+				<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
+					<tr>
+						<th class="px-3.5 py-2.5">Name</th>
+						<th class="px-3.5 py-2.5">Port</th>
+						<th class="px-3.5 py-2.5">Bind</th>
+						<th class="px-3.5 py-2.5">Listening</th>
+						<th class="px-3.5 py-2.5">Process</th>
+						<th class="px-3.5 py-2.5">Firewall</th>
+						<th class="w-8 px-2 py-2.5"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.leaseRows as row, i}
+						{@const href = rowOpenUrl(row)}
+						{@const key = rowId(row)}
+						<tr
+							class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1
+								? 'bg-white/[0.035]'
+								: ''} {expanded === key ? 'bg-white/[0.07]' : ''}"
+							onclick={(event) => toggle(row, event)}
+						>
+							<td class="px-3.5 py-2.5 font-medium">{row.lease?.name}</td>
+							<td class="px-3.5 py-2.5 tabular-nums">{row.lease?.port}</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">{rowBindDisplay(row)}</td>
+							<td class="px-3.5 py-2.5">
+								{#if row.listening}
+									<span class="text-[var(--accent)]">yes</span>
+								{:else}
+									<span class="text-[var(--muted)]">no</span>
+								{/if}
+							</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">
+								{row.observed?.process ?? '—'}
+								{#if row.observed?.pid}
+									<span class="text-xs">({row.observed.pid})</span>
+								{/if}
+							</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.lease?.firewall}</td>
+							<td class="w-8 px-2 py-2 text-right">
+								{#if href}
+									<a
+										class="inline-flex text-[var(--accent)]"
+										href={href}
+										target={OPEN_TARGET}
+										rel="noopener"
+										title="Open"
+										aria-label="Open"
+									>
+										<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+											<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
+											<path d="M9 2h5v5" />
+											<path d="M14 2 8 8" />
+										</svg>
+									</a>
+								{/if}
+							</td>
+						</tr>
+						<tr class="detail">
+							<td class="p-0" colspan="7">
+								<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
+									<div class="min-h-0 overflow-hidden">
+										<div class="px-4 pb-3.5 pt-2.5 text-sm {expanded === key ? '' : 'invisible'}">
+											<RowDetail
+												{row}
+												peek={peekLine[key] ?? (row.listening ? 'Peeking…' : 'Not listening.')}
+											/>
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section>
+		<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Observed</h2>
+		<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
+			<table class="w-full min-w-[40rem] text-left text-sm">
+				<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
+					<tr>
+						<th class="px-3.5 py-2.5">Port</th>
+						<th class="px-3.5 py-2.5">Bind</th>
+						<th class="px-3.5 py-2.5">Process</th>
+						<th class="w-8 px-2 py-2.5"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.observedRows as row, i}
+						{@const href = rowOpenUrl(row)}
+						{@const key = rowId(row)}
+						<tr
+							class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1
+								? 'bg-white/[0.035]'
+								: ''} {expanded === key ? 'bg-white/[0.07]' : ''}"
+							onclick={(event) => toggle(row, event)}
+						>
+							<td class="px-3.5 py-2.5 tabular-nums">{row.observed?.port}</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.observed?.bind}</td>
+							<td class="px-3.5 py-2.5 text-[var(--muted)]">
+								{row.observed?.process ?? '—'}
+								{#if row.observed?.pid}
+									<span class="text-xs">({row.observed.pid})</span>
+								{/if}
+							</td>
+							<td class="w-8 px-2 py-2 text-right">
+								{#if href}
+									<a
+										class="inline-flex text-[var(--accent)]"
+										href={href}
+										target={OPEN_TARGET}
+										rel="noopener"
+										title="Open"
+										aria-label="Open"
+									>
+										<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+											<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
+											<path d="M9 2h5v5" />
+											<path d="M14 2 8 8" />
+										</svg>
+									</a>
+								{/if}
+							</td>
+						</tr>
+						<tr>
+							<td class="p-0" colspan="4">
+								<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
+									<div class="min-h-0 overflow-hidden">
+										<div class="px-4 pb-3.5 pt-2.5 text-sm {expanded === key ? '' : 'invisible'}">
+											<RowDetail
+												{row}
+												peek={peekLine[key] ?? (row.listening ? 'Peeking…' : 'Not listening.')}
+											/>
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+					{:else}
+						<tr>
+							<td class="px-3 py-2 text-[var(--muted)]" colspan="3">
+								Nothing extra listening (system ports hidden).
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<p class="mt-6 text-sm text-[var(--muted)]">
+		<code class="text-[var(--text)]">localberth claim name --port N</code>
+		·
+		<code class="text-[var(--text)]">localberth get name</code>
+		·
+		<code class="text-[var(--text)]">localberth release name</code>
+		·
+		<code class="text-[var(--text)]">localberth serve</code>
 	</p>
-</header>
-
-<section class="mb-5">
-	<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Leases</h2>
-	<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
-		<table class="w-full min-w-[40rem] text-left text-sm">
-			<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
-				<tr>
-					<th class="px-3.5 py-2.5">Name</th>
-					<th class="px-3.5 py-2.5">Port</th>
-					<th class="px-3.5 py-2.5">Bind</th>
-					<th class="px-3.5 py-2.5">Listening</th>
-					<th class="px-3.5 py-2.5">Process</th>
-					<th class="px-3.5 py-2.5">Firewall</th>
-					<th class="w-8 px-2 py-2.5"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.leaseRows as row, i}
-					{@const href = rowOpenUrl(row)}
-					{@const key = rowId(row)}
-					<tr
-						class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1
-							? 'bg-white/[0.035]'
-							: ''} {expanded === key ? 'bg-white/[0.07]' : ''}"
-						onclick={(event) => toggle(row, event)}
-					>
-						<td class="px-3.5 py-2.5 font-medium">{row.lease?.name}</td>
-						<td class="px-3.5 py-2.5 tabular-nums">{row.lease?.port}</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">{rowBindDisplay(row)}</td>
-						<td class="px-3.5 py-2.5">
-							{#if row.listening}
-								<span class="text-[var(--accent)]">yes</span>
-							{:else}
-								<span class="text-[var(--muted)]">no</span>
-							{/if}
-						</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">
-							{row.observed?.process ?? '—'}
-							{#if row.observed?.pid}
-								<span class="text-xs">({row.observed.pid})</span>
-							{/if}
-						</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.lease?.firewall}</td>
-						<td class="w-8 px-2 py-2 text-right">
-							{#if href}
-								<a
-									class="inline-flex text-[var(--accent)]"
-									href={href}
-									target={OPEN_TARGET}
-									rel="noopener"
-									title="Open"
-									aria-label="Open"
-								>
-									<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-										<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
-										<path d="M9 2h5v5" />
-										<path d="M14 2 8 8" />
-									</svg>
-								</a>
-							{/if}
-						</td>
-					</tr>
-					<tr class="detail">
-						<td class="p-0" colspan="7">
-							<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
-								<div class="min-h-0 overflow-hidden">
-									<div class="px-4 pb-3.5 pt-2.5 text-sm {expanded === key ? '' : 'invisible'}">
-										<RowDetail
-											{row}
-											peek={peekLine[key] ?? (row.listening ? 'Peeking…' : 'Not listening.')}
-										/>
-									</div>
-								</div>
-							</div>
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-</section>
-
-<section>
-	<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Observed</h2>
-	<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
-		<table class="w-full min-w-[40rem] text-left text-sm">
-			<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
-				<tr>
-					<th class="px-3.5 py-2.5">Port</th>
-					<th class="px-3.5 py-2.5">Bind</th>
-					<th class="px-3.5 py-2.5">Process</th>
-					<th class="w-8 px-2 py-2.5"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.observedRows as row, i}
-					{@const href = rowOpenUrl(row)}
-					{@const key = rowId(row)}
-					<tr
-						class="cursor-pointer border-t border-[var(--line)] hover:bg-white/[0.07] {i % 2 === 1
-							? 'bg-white/[0.035]'
-							: ''} {expanded === key ? 'bg-white/[0.07]' : ''}"
-						onclick={(event) => toggle(row, event)}
-					>
-						<td class="px-3.5 py-2.5 tabular-nums">{row.observed?.port}</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.observed?.bind}</td>
-						<td class="px-3.5 py-2.5 text-[var(--muted)]">
-							{row.observed?.process ?? '—'}
-							{#if row.observed?.pid}
-								<span class="text-xs">({row.observed.pid})</span>
-							{/if}
-						</td>
-						<td class="w-8 px-2 py-2 text-right">
-							{#if href}
-								<a
-									class="inline-flex text-[var(--accent)]"
-									href={href}
-									target={OPEN_TARGET}
-									rel="noopener"
-									title="Open"
-									aria-label="Open"
-								>
-									<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-										<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
-										<path d="M9 2h5v5" />
-										<path d="M14 2 8 8" />
-									</svg>
-								</a>
-							{/if}
-						</td>
-					</tr>
-					<tr>
-						<td class="p-0" colspan="4">
-							<div class="grid transition-[grid-template-rows] duration-200 {expanded === key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}">
-								<div class="min-h-0 overflow-hidden">
-									<div class="px-4 pb-3.5 pt-2.5 text-sm {expanded === key ? '' : 'invisible'}">
-										<RowDetail
-											{row}
-											peek={peekLine[key] ?? (row.listening ? 'Peeking…' : 'Not listening.')}
-										/>
-									</div>
-								</div>
-							</div>
-						</td>
-					</tr>
-				{:else}
-					<tr>
-						<td class="px-3 py-2 text-[var(--muted)]" colspan="3">
-							Nothing extra listening (system ports hidden).
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-</section>
-
-<p class="mt-6 text-sm text-[var(--muted)]">
-	<code class="text-[var(--text)]">localberth claim name --port N</code>
-	·
-	<code class="text-[var(--text)]">localberth get name</code>
-	·
-	<code class="text-[var(--text)]">localberth release name</code>
-	·
-	<code class="text-[var(--text)]">localberth serve</code>
-</p>
+{/if}
