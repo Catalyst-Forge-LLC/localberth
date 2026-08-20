@@ -15,6 +15,8 @@ localberth get foo
 
 **localhost** is the machine; **LocalBerth** is the slip.
 
+**berth** *n.* a ship's allotted place at a dock.
+
 A claim is loopback unless you pass `--lan`.
 
 After you install, `localberth serve` opens the dashboard at `http://127.0.0.1:54321`.

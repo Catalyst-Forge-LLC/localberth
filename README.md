@@ -10,6 +10,8 @@ Vite hands out 5173, then 5174. Reboot, and they swap. Name the port so they do 
 
 **localhost** is the machine; **LocalBerth** is the slip.
 
+**berth** *n.* a ship's allotted place at a dock.
+
 **Docs:** [localberth.com/docs](https://localberth.com/docs) · **Site:** [localberth.com](https://localberth.com)
 
 ## Install

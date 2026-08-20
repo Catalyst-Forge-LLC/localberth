@@ -28,7 +28,7 @@ Point at `aibreze` (`node_modules/aibreze/rules/core.md`). Do not fork core.
 ## House extras
 
 - Site copy follows `aibreze` `landing.md`. Max 2 teaching antitheses (site vs dashboard; not a reverse proxy). Spend the pairing once per page.
-- Brand-metaphor budget: **slip** and **Local DNS for ports**. Do not ride berth/harbor through every heading.
+- Brand-metaphor budget: **slip** and **Local DNS for ports**. Do not ride berth/harbor through every heading. Home and the npm README may keep one dictionary gloss of **berth** (noun: a ship's allotted place at a dock). That line is the definition, not a third heading.
 - README is the npm page: short install, pointer to [docs](https://localberth.com/docs). Flag lists live under `/docs`, not the README.
 - “Harbor board” is house slang. Public pages say dashboard or board.
 - Em dashes in `<title>` and meta: prefer a comma or colon.
