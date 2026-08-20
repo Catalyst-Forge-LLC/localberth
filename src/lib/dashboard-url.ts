@@ -1,3 +1,5 @@
+import { isLoopbackBind, isLoopbackClient } from './binds.js';
+
 /** One named tab so a second Open replaces the first. Do not use rel=noreferrer — Chrome then ignores the name. */
 export const OPEN_TARGET = 'localberth-open';
 
@@ -40,6 +42,25 @@ export function visitorPageHost(hostHeader: string | null | undefined): string |
 	} catch {
 		return null;
 	}
+}
+
+/** Host the browser asked for is loopback (localhost / 127 / ::1). */
+export function isLoopbackPageHost(hostHeader: string | null | undefined): boolean {
+	const host = visitorPageHost(hostHeader);
+	return Boolean(host && isLoopbackBind(host));
+}
+
+/**
+ * Operator board only when the TCP peer is loopback and Host is too (or omitted).
+ * Vite and some Tailscale paths show 127.0.0.1 as the peer while Host is 100.x.
+ */
+export function isOperatorFace(
+	peer: string | null | undefined,
+	hostHeader: string | null | undefined
+): boolean {
+	if (!isLoopbackClient(peer)) return false;
+	if (!hostHeader?.trim()) return true;
+	return isLoopbackPageHost(hostHeader);
 }
 
 /** Visitor Open URL: same host the phone used, app port. */

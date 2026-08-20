@@ -448,6 +448,12 @@
       "phase": "3-stabilization",
       "gotcha": "A loopback claim with Vite --host was reachable on Tailscale/Wi-Fi but hidden on visitor tiles, which filtered on the claim bind.",
       "fix": "isVisitorLease uses observed.bind (fallback lease.bind). Loopback-only sockets stay off the phone menu."
+    },
+    {
+      "date": "2026-08-20",
+      "phase": "3-stabilization",
+      "gotcha": "Phone on the Tailscale IP saw the operator table. Vite (and some Tailscale paths) present the TCP peer as 127.0.0.1 while Host is 100.x. Global 0.2.4 also has no visitor face.",
+      "fix": "isOperatorFace requires loopback peer and loopback Host. Peek/board APIs stay peer-only. server is an alias of serve."
     }
   ],
   "sessions": [
@@ -606,6 +612,10 @@
     {
       "date": "2026-08-20",
       "summary": "Bumped package to 0.2.5 for the user to publish."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Operator face requires loopback peer AND loopback Host so Vite/Tailscale 100.x does not get the full board."
     }
   ],
   "openQuestions": []

@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import {
 	dashboardHttpUrl,
 	rowOpenUrl,
+	isOperatorFace,
 	visitorFaviconCandidates,
 	visitorHttpUrl,
 	visitorPageHost,
@@ -54,5 +55,10 @@ describe('dashboardHttpUrl', () => {
 		);
 		assert.equal(visitorTileLetter('fizzbuzz'), 'F');
 		assert.equal(visitorTileLetter(''), '?');
+		assert.equal(isOperatorFace('127.0.0.1', '127.0.0.1:54321'), true);
+		assert.equal(isOperatorFace('127.0.0.1', 'localhost:54321'), true);
+		assert.equal(isOperatorFace('127.0.0.1', null), true);
+		assert.equal(isOperatorFace('127.0.0.1', '100.64.1.2:54321'), false);
+		assert.equal(isOperatorFace('100.64.1.2', '127.0.0.1:54321'), false);
 	});
 });

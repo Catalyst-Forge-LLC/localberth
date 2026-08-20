@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { isLoopbackClient } from '../binds.js';
 import {
 	OPEN_TARGET,
+	isOperatorFace,
 	rowOpenUrl,
 	visitorFaviconCandidates,
 	visitorHttpUrl,
@@ -262,6 +263,7 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 		try {
 			const url = new URL(req.url ?? '/', `http://${host}:${port}`);
 			const loopback = isLoopbackClient(req.socket.remoteAddress);
+			const operator = isOperatorFace(req.socket.remoteAddress, req.headers.host);
 			if (url.pathname === '/api/peek') {
 				if (!loopback) {
 					res.writeHead(403, { 'content-type': 'application/json; charset=utf-8' });
@@ -290,7 +292,7 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 				res.end(JSON.stringify(board));
 				return;
 			}
-			if (!loopback) {
+			if (!operator) {
 				const board = await getBoard({ showSystem: false });
 				const pageHost = visitorPageHost(req.headers.host);
 				res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });

@@ -17,6 +17,7 @@ Usage:
   localberth firewall sync
   localberth firewall status
   localberth serve [--host ADDR] [--port N]
+  localberth server          same as serve
 
 claim flags:
   --port N       request this TCP port (omit = next free from the pool)
@@ -194,7 +195,7 @@ async function main(): Promise<void> {
 		return;
 	}
 
-	if (cmd === 'serve') {
+	if (cmd === 'serve' || cmd === 'server') {
 		const host = takeOpt(argv, '--host');
 		const portRaw = takeOpt(argv, '--port');
 		const port = portRaw !== undefined ? Number(portRaw) : undefined;
