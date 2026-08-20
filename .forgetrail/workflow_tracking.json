@@ -625,6 +625,10 @@
     {
       "date": "2026-08-20",
       "summary": "Dashboard chrome uses the FilePress parchment background and site logo.png."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Header is logo + LocalBerth + hostname + LAN/Tailscale IPv4. Visitor tiles drop the self card."
     }
   ],
   "openQuestions": []

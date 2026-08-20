@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import BrandMark from '$lib/BrandMark.svelte';
+	import BoardHeader from '$lib/BoardHeader.svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
 	import VisitorTile from '$lib/VisitorTile.svelte';
 	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
-	import { isVisitorSelf } from '$lib/visitor';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
 	import type { PageData } from './$types';
@@ -51,10 +50,9 @@
 </script>
 
 {#if data.face === 'visitor'}
-	<header class="mb-3 flex flex-wrap items-center justify-between gap-3">
-		<BrandMark />
-		<p class="text-xs text-[var(--muted)]">reachable on this machine</p>
-	</header>
+	<BoardHeader hostname={data.machine.hostname} addresses={data.machine.addresses}>
+		reachable on this machine
+	</BoardHeader>
 
 	{#if data.visitorRows.length === 0}
 		<p class="text-sm text-[var(--muted)]">
@@ -66,31 +64,26 @@
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
 			{#each data.visitorRows as row}
 				{#if row.lease}
-					{@const here = isVisitorSelf(row)}
 					<VisitorTile
 						name={row.lease.name}
 						port={row.lease.port}
-						href={here || !data.pageHost ? null : visitorHttpUrl(data.pageHost, row.lease.port)}
-						{here}
+						href={data.pageHost ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
 					/>
 				{/if}
 			{/each}
 		</div>
 	{/if}
 {:else}
-	<header class="mb-3 flex flex-wrap items-center justify-between gap-3">
-		<BrandMark />
-		<p class="text-xs text-[var(--muted)]">
-			:54321 ·
-			{#if data.showSystem}
-				<a class="text-[var(--accent)]" href="/">Hide system ports</a>
-			{:else}
-				<a class="text-[var(--accent)]" href="/?system=1">
-					Show {data.hiddenSystem} system port{data.hiddenSystem === 1 ? '' : 's'}
-				</a>
-			{/if}
-		</p>
-	</header>
+	<BoardHeader hostname={data.machine.hostname} addresses={data.machine.addresses}>
+		:54321 ·
+		{#if data.showSystem}
+			<a class="text-[var(--accent)]" href="/">Hide system ports</a>
+		{:else}
+			<a class="text-[var(--accent)]" href="/?system=1">
+				Show {data.hiddenSystem} system port{data.hiddenSystem === 1 ? '' : 's'}
+			</a>
+		{/if}
+	</BoardHeader>
 
 	<section class="mb-5">
 		<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Leases</h2>

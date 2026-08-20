@@ -59,16 +59,15 @@ describe('visitorLeaseRows', () => {
 		assert.equal(isVisitorLease(rows[1]!), false);
 	});
 
-	it('puts the LocalBerth board last', () => {
+	it('omits the LocalBerth board', () => {
 		const rows = [
 			row({ name: 'localberth', port: 54321, bind: '0.0.0.0', listening: true }),
 			row({ name: 'phone', port: 5193, bind: '0.0.0.0', listening: true })
 		];
 		assert.deepEqual(
 			visitorLeaseRows(rows).map((r) => r.lease?.name),
-			['phone', 'localberth']
+			['phone']
 		);
 		assert.equal(isVisitorSelf(rows[0]!), true);
-		assert.equal(isVisitorSelf(rows[1]!), false);
 	});
 });

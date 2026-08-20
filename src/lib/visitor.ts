@@ -14,8 +14,5 @@ export function isVisitorSelf(row: BoardRow): boolean {
 }
 
 export function visitorLeaseRows(rows: BoardRow[]): BoardRow[] {
-	const shown = rows.filter(isVisitorLease);
-	const apps = shown.filter((row) => !isVisitorSelf(row));
-	const self = shown.filter(isVisitorSelf);
-	return [...apps, ...self];
+	return rows.filter((row) => isVisitorLease(row) && !isVisitorSelf(row));
 }

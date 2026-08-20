@@ -13,8 +13,9 @@ import {
 	visitorPageHost,
 	visitorTileLetter
 } from '../dashboard-url.js';
+import { machineCard } from '../machine.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
-import { isVisitorSelf, visitorLeaseRows } from '../visitor.js';
+import { visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -31,15 +32,31 @@ html,body { height:100%; }
 body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
 main { padding:1rem 1.25rem 1.5rem; }
 .muted { color:var(--muted); }
-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+header { margin-bottom:1rem; }
+header .ident { display:flex; align-items:center; gap:.75rem; }
 header .brand { margin:0; }
 header .brand img { display:block; height:3.5rem; width:auto; }
-header .meta { color:var(--muted); font-size:.8rem; }
+header .word { margin:0; font-size:1.125rem; font-weight:600; letter-spacing:-0.02em; }
+header .host { margin:.15rem 0 0; font-size:.875rem; }
+header .addrs { margin:.15rem 0 0; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+header .meta { margin:.5rem 0 0; color:var(--muted); font-size:.8rem; }
 a { color:var(--ok); }
 code { color:var(--text); }`;
 
 function brandHeader(meta: string): string {
-	return `<header><p class="brand"><img src="/logo.png" alt="LocalBerth"/></p><p class="meta">${meta}</p></header>`;
+	const machine = machineCard();
+	const addrs = machine.addresses.map(esc).join(' · ');
+	return `<header>
+<div class="ident">
+<p class="brand"><img src="/logo.png" alt=""/></p>
+<div>
+<p class="word">LocalBerth</p>
+<p class="host">${esc(machine.hostname)}</p>
+${addrs ? `<p class="addrs">${addrs}</p>` : ''}
+</div>
+</div>
+<p class="meta">${meta}</p>
+</header>`;
 }
 
 function sendSiteAsset(res: import('node:http').ServerResponse, file: string, type: string): boolean {
@@ -231,9 +248,8 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 					.map((row) => {
 						const name = row.lease!.name;
 						const port = row.lease!.port;
-						const here = isVisitorSelf(row);
-						const href = here || !pageHost ? null : visitorHttpUrl(pageHost, port);
-						return visitorTile(name, port, href, here);
+						const href = pageHost ? visitorHttpUrl(pageHost, port) : null;
+						return visitorTile(name, port, href, false);
 					})
 					.join('')}</div>`;
 	return `<!doctype html>

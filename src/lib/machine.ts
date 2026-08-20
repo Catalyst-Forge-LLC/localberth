@@ -1,0 +1,49 @@
+import { networkInterfaces, hostname as osHostname } from 'node:os';
+
+export type MachineCard = {
+	hostname: string;
+	addresses: string[];
+};
+
+const SKIP_IFACE = /vethernet|hyper-?v|docker|wsl|loopback|bluetooth|vmware|virtualbox|vbox|br-|veth|cni|flannel/i;
+
+export function skipIfaceName(name: string): boolean {
+	return SKIP_IFACE.test(name);
+}
+
+export function isPublicV4(address: string, internal: boolean): boolean {
+	if (internal) return false;
+	if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(address)) return false;
+	if (address.startsWith('169.254.')) return false;
+	if (address.startsWith('127.')) return false;
+	return true;
+}
+
+function addrRank(address: string): number {
+	const [a, b] = address.split('.').map(Number);
+	if (a === 100 && (b ?? 0) >= 64 && (b ?? 0) <= 127) return 0;
+	if (a === 10 || a === 192 && b === 168 || a === 172 && (b ?? 0) >= 16 && (b ?? 0) <= 31) return 1;
+	return 2;
+}
+
+export function pickAddresses(
+	ifaces: Record<string, { address: string; family: string | number; internal: boolean }[] | undefined>
+): string[] {
+	const found: string[] = [];
+	for (const [name, addrs] of Object.entries(ifaces)) {
+		if (skipIfaceName(name)) continue;
+		for (const row of addrs ?? []) {
+			if (row.family !== 'IPv4' && row.family !== 4) continue;
+			if (!isPublicV4(row.address, row.internal)) continue;
+			found.push(row.address);
+		}
+	}
+	return [...new Set(found)].sort((x, y) => addrRank(x) - addrRank(y) || x.localeCompare(y)).slice(0, 4);
+}
+
+export function machineCard(): MachineCard {
+	return {
+		hostname: osHostname(),
+		addresses: pickAddresses(networkInterfaces())
+	};
+}
