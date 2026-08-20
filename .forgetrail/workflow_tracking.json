@@ -723,6 +723,10 @@
     {
       "date": "2026-08-20",
       "summary": "Home and README gloss berth as a ship's allotted place at a dock."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Dashboard footer keeps localberth.com centered between Catalyst Forge and Docs."
     }
   ],
   "openQuestions": []
