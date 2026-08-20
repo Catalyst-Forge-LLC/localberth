@@ -24,13 +24,13 @@
 	const favicon = $derived(!broken && iconIndex < candidates.length ? (candidates[iconIndex] ?? null) : null);
 
 	const tileClass =
-		'flex flex-col items-center gap-2 rounded-[10px] border bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline';
+		'flex flex-col items-center gap-2 rounded-[10px] border bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline shadow-sm';
 	const tileTone = $derived(here ? 'border-[var(--accent)]/35' : 'border-[var(--line)]');
 </script>
 
 {#snippet face()}
 	<span
-		class="relative flex size-12 items-center justify-center overflow-hidden rounded-xl bg-white/8 text-lg font-semibold text-[var(--muted)]"
+		class="relative flex size-12 items-center justify-center overflow-hidden rounded-xl bg-black/[0.06] text-lg font-semibold text-[var(--muted)]"
 		aria-hidden="true"
 	>
 		{letter}
@@ -53,7 +53,7 @@
 {/snippet}
 
 {#if href && !here}
-	<a class="{tileClass} {tileTone} hover:bg-white/[0.07]" {href} target={OPEN_TARGET} rel="noopener" aria-label="Open {name}">
+	<a class="{tileClass} {tileTone} hover:bg-[var(--wash)]" {href} target={OPEN_TARGET} rel="noopener" aria-label="Open {name}">
 		{@render face()}
 	</a>
 {:else}

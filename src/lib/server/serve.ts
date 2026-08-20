@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { isLoopbackClient } from '../binds.js';
 import {
 	OPEN_TARGET,
@@ -19,6 +22,35 @@ import type { BoardRow } from './types.js';
 
 function esc(value: string): string {
 	return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
+const SITE_STATIC = join(dirname(fileURLToPath(import.meta.url)), '../../../site/static');
+
+const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; }
+html,body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
+main { padding:1rem 1.25rem 1.5rem; }
+.muted { color:var(--muted); }
+header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+header .brand { margin:0; }
+header .brand img { display:block; height:3.5rem; width:auto; }
+header .meta { color:var(--muted); font-size:.8rem; }
+a { color:var(--ok); }
+code { color:var(--text); }`;
+
+function brandHeader(meta: string): string {
+	return `<header><p class="brand"><img src="/logo.png" alt="LocalBerth"/></p><p class="meta">${meta}</p></header>`;
+}
+
+function sendSiteAsset(res: import('node:http').ServerResponse, file: string, type: string): boolean {
+	try {
+		const body = readFileSync(join(SITE_STATIC, file));
+		res.writeHead(200, { 'content-type': type, 'cache-control': 'public, max-age=3600' });
+		res.end(body);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 const OPEN_ICON =
@@ -78,17 +110,10 @@ function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean):
 <meta http-equiv="refresh" content="8"/>
 <title>LocalBerth</title>
 <style>
-:root { --bg:#0c1220; --elev:#141c2e; --line:rgba(255,255,255,.08); --text:#e8eef8; --muted:#8b97ad; --ok:#6ec8c0; --warn:#e4b86a; }
-html,body { height:100%; }
-body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
-main { padding:1rem 1.25rem 1.5rem; }
-.muted { color:var(--muted); }
+${FACE_CSS}
 .ok { color:var(--ok); }
 .warn { color:var(--warn); font-size:.75rem; }
 .num { font-variant-numeric:tabular-nums; }
-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
-header .brand { font-weight:600; }
-header .meta { color:var(--muted); font-size:.8rem; }
 section { margin-top:1.15rem; }
 h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
 table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
@@ -98,8 +123,8 @@ th { color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em
 .go a { display:inline-flex; color:var(--ok); }
 tr.row td { border-top:1px solid var(--line); }
 tr.row { cursor:pointer; }
-tr.row:nth-child(4n+3) { background:rgba(255,255,255,.035); }
-tr.row:hover, tr.row.open { background:rgba(255,255,255,.07); }
+tr.row:nth-child(4n+3) { background:rgba(26,25,23,.03); }
+tr.row:hover, tr.row.open { background:rgba(26,25,23,.05); }
 tr.detail td { padding:0; border:0; }
 tr.detail .panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows .18s ease; }
 tr.detail .inner { overflow:hidden; min-height:0; }
@@ -118,10 +143,7 @@ a { color:var(--ok); }
 </head>
 <body>
 <main>
-<header>
-<p class="brand">LocalBerth</p>
-<p class="meta">:${DASHBOARD_PORT} · ${toggle}</p>
-</header>
+${brandHeader(`:${DASHBOARD_PORT} · ${toggle}`)}
 <section>
 <h2>Leases</h2>
 <table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
@@ -222,20 +244,13 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 <meta http-equiv="refresh" content="8"/>
 <title>LocalBerth</title>
 <style>
-:root { --bg:#0c1220; --elev:#141c2e; --line:rgba(255,255,255,.08); --text:#e8eef8; --muted:#8b97ad; --ok:#6ec8c0; }
-html,body { height:100%; }
-body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
-main { padding:1rem 1.25rem 1.5rem; }
-.muted { color:var(--muted); }
-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
-header .brand { font-weight:600; }
-header .meta { color:var(--muted); font-size:.8rem; }
+${FACE_CSS}
 .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
 @media (min-width:640px) { .tiles { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; }
-.tile.here { border-color:rgba(110,200,192,.35); }
-a.tile:hover { background:rgba(255,255,255,.07); }
-.logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(255,255,255,.08); color:var(--muted); font-size:1.125rem; font-weight:600; }
+.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; box-shadow:0 1px 2px rgba(26,25,23,.04); }
+.tile.here { border-color:rgba(42,111,106,.35); }
+a.tile:hover { background:rgba(26,25,23,.04); }
+.logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(26,25,23,.06); color:var(--muted); font-size:1.125rem; font-weight:600; }
 .logo img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
 .name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
 .port { font-variant-numeric:tabular-nums; font-size:.75rem; color:var(--muted); }
@@ -246,10 +261,7 @@ code { color:var(--text); }
 </head>
 <body>
 <main>
-<header>
-<p class="brand">LocalBerth</p>
-<p class="meta">reachable on this machine</p>
-</header>
+${brandHeader('reachable on this machine')}
 ${body}
 </main>
 </body>
@@ -262,6 +274,8 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 	const server = createServer(async (req, res) => {
 		try {
 			const url = new URL(req.url ?? '/', `http://${host}:${port}`);
+			if (url.pathname === '/logo.png' && sendSiteAsset(res, 'logo.png', 'image/png')) return;
+			if (url.pathname === '/favicon.svg' && sendSiteAsset(res, 'favicon.svg', 'image/svg+xml')) return;
 			const loopback = isLoopbackClient(req.socket.remoteAddress);
 			const operator = isOperatorFace(req.socket.remoteAddress, req.headers.host);
 			if (url.pathname === '/api/peek') {

@@ -621,6 +621,10 @@
     {
       "date": "2026-08-20",
       "summary": "Bumped package to 0.2.6 for the user to publish."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Dashboard chrome uses the FilePress parchment background and site logo.png."
     }
   ],
   "openQuestions": []
