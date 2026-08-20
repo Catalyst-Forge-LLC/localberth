@@ -12,16 +12,17 @@ export default defineFilepressConfig({
 	homePage: 'home',
 	nav: [
 		{ label: 'Home', href: '/' },
+		{ label: 'Docs', href: '/docs' },
 		{ label: 'Notes', href: '/writing' },
 		{ label: 'Install', href: '/install' },
-		{ label: 'CLI', href: '/cli' },
 		{ label: 'npm', href: 'https://www.npmjs.com/package/localberth' }
 	],
 	footerLinks: [
+		{ label: 'Docs', href: '/docs' },
 		{ label: 'Notes', href: '/writing' },
 		{ label: 'Install', href: '/install' },
-		{ label: 'CLI', href: '/cli' },
 		{ label: 'npm', href: 'https://www.npmjs.com/package/localberth' }
 	],
-	topics: [{ label: 'Notes', tag: 'notes' }]
+	topics: [{ label: 'Notes', tag: 'notes' }],
+	paths: [{ url: '/docs', dir: 'docs/dist' }]
 });

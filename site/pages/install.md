@@ -4,47 +4,19 @@ description: Install LocalBerth from npm.
 order: 1
 ---
 
-Node.js 20 or newer.
+Requires **Node.js 20+**.
 
-```text
+```bash
 npm i -g localberth
 ```
 
-or
+or `pnpm add -g localberth`.
 
-```text
-pnpm add -g localberth
-```
-
-Then claim a port and start your app with it:
-
-```text
-localberth claim fizzbuzz --port 5193
-PORT=$(localberth get fizzbuzz)
-```
-
-On Windows PowerShell:
-
-```text
-$env:PORT = localberth get fizzbuzz
-```
-
-Open the dashboard:
-
-```text
+```bash
+localberth claim foo --port 5173
 localberth serve
 ```
 
-Then visit `http://127.0.0.1:54321`.
+Dashboard: `http://127.0.0.1:54321`. Leases live in `~/.localberth/`.
 
-From a phone on the LAN, claim with `--lan` (binds `0.0.0.0` and syncs the firewall):
-
-```text
-localberth claim fizzbuzz --port 5193 --lan
-```
-
-When you are done with a name:
-
-```text
-localberth release fizzbuzz
-```
+Flags, Vite, firewall, and the visitor menu live in the [docs](/docs).

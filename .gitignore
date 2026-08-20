@@ -5,6 +5,7 @@ node_modules/
 .pnpm-store/
 /build/
 /dist/
+site/docs/dist/
 .svelte-kit/
 *.log
 .DS_Store

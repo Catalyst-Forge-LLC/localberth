@@ -423,6 +423,17 @@
         "Proxy favicons through LocalBerth",
         "Show PID, firewall, and notes on the visitor face"
       ]
+    },
+    {
+      "id": "D31",
+      "timestamp": "2026-08-20",
+      "phase": "3-stabilization",
+      "decision": "Public how-to lives at localberth.com/docs (FilePress path mount, same docs shell as ollanet). The npm README is short: install, quick start, link to docs.",
+      "rationale": "The CLI and dashboard grew past a one-page README. Marketing pages stay thin; flags and Vite/firewall notes belong in /docs.",
+      "alternatives_considered": [
+        "Keep growing the npm README",
+        "Put the full flag list only on /cli"
+      ]
     }
   ],
   "gotchas": [
@@ -667,6 +678,10 @@
     {
       "date": "2026-08-20",
       "summary": "Visitor chrome: header and localberth.com footer stay put; only the tile grid scrolls."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "D31: FilePress /docs mount (ollanet shell). README trimmed to install + docs link."
     }
   ],
   "openQuestions": []

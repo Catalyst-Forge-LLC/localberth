@@ -1,0 +1,25 @@
+{
+	"sections": [
+		{
+			"title": "Getting started",
+			"items": [
+				{ "id": "introduction", "title": "Introduction" },
+				{ "id": "install", "title": "Install" },
+				{ "id": "quick-start", "title": "Quick start" }
+			]
+		},
+		{
+			"title": "Using LocalBerth",
+			"items": [
+				{ "id": "claim", "title": "Claim" },
+				{ "id": "dashboard", "title": "Dashboard" },
+				{ "id": "firewall", "title": "Firewall" },
+				{ "id": "vite", "title": "Vite" }
+			]
+		},
+		{
+			"title": "Reference",
+			"items": [{ "id": "commands", "title": "Commands" }]
+		}
+	]
+}

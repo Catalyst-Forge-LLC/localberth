@@ -6,7 +6,7 @@ Point at `aibreze` (`node_modules/aibreze/rules/core.md`). Do not fork core.
 
 | Surface | Voice |
 | --- | --- |
-| Site (`site/pages`, `site/posts`) | **you** for the reader. Catalyst Forge is the footer, not a corporate we. |
+| Site (`site/pages`, `site/posts`, `site/docs`) | **you** for the reader. Catalyst Forge is the footer, not a corporate we. |
 | README, CLI help, flags | **you** / imperative. Terms of art stay. |
 | Chat with the maintainer | **I** is fine. |
 
@@ -29,6 +29,6 @@ Point at `aibreze` (`node_modules/aibreze/rules/core.md`). Do not fork core.
 
 - Site copy follows `aibreze` `landing.md`. Max 2 teaching antitheses (site vs dashboard; not a reverse proxy). Spend the pairing once per page.
 - Brand-metaphor budget: **slip** and **Local DNS for ports**. Do not ride berth/harbor through every heading.
-- README is the npm page. Checkout / FilePress / `site/` paths are later, not the lead. Do not flatten the flag list into landing voice.
+- README is the npm page: short install, pointer to [docs](https://localberth.com/docs). Flag lists live under `/docs`, not the README.
 - “Harbor board” is house slang. Public pages say dashboard or board.
 - Em dashes in `<title>` and meta: prefer a comma or colon.
