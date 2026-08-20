@@ -45,6 +45,7 @@ header .meta a { color:#8fd4cf; text-decoration:none; }
 header .dot { color:rgba(250,248,243,.3); }
 header button.copy { margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
 .feed { flex:1; min-height:0; overflow:auto; padding:0 1.25rem 1rem; }
+.feed.board { display:flex; flex-direction:column; overflow:hidden; padding-top:1rem; }
 .sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
 .sitefoot a { color:rgba(250,248,243,.8); text-decoration:none; font-size:.875rem; }
 a { color:var(--ok); }
@@ -216,12 +217,17 @@ ${FACE_CSS}
 .ok { color:var(--ok); }
 .warn { color:var(--warn); font-size:.75rem; }
 .num { font-variant-numeric:tabular-nums; }
-section { margin-top:1.15rem; }
-.feed > section:first-child { margin-top:0; }
-h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
-table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.tabs { display:flex; gap:.15rem; flex-shrink:0; margin-bottom:.75rem; }
+.tabs button { margin:0; padding:.35rem .75rem; border:0; border-bottom:2px solid transparent; background:none; color:var(--muted); font:inherit; font-size:.875rem; cursor:pointer; }
+.tabs button[aria-selected="true"] { color:var(--text); font-weight:500; border-bottom-color:var(--ok); }
+.tabs .n { font-variant-numeric:tabular-nums; color:var(--muted); margin-left:.25rem; }
+.pane { display:none; flex:1; min-height:0; }
+.pane.on { display:flex; flex-direction:column; }
+.scroll { flex:1; min-height:0; overflow:auto; border:1px solid var(--line); border-radius:10px; background:var(--elev); }
+.hint { flex-shrink:0; margin:.75rem 0 0; }
+table { width:100%; min-width:40rem; border-collapse:separate; border-spacing:0; }
 th,td { text-align:left; padding:.55rem .85rem; }
-th { color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
+th { position:sticky; top:0; z-index:1; background:var(--elev); color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em; text-transform:uppercase; border-bottom:1px solid var(--line); }
 .go { width:2.1rem; text-align:right; padding-left:.25rem; padding-right:.65rem; }
 .go a { display:inline-flex; color:var(--ok); }
 tr.row td { border-top:1px solid var(--line); }
@@ -247,24 +253,37 @@ a { color:var(--ok); }
 <body>
 <main>
 ${brandHeader(`:${DASHBOARD_PORT} · ${toggle}`)}
-<div class="feed">
-<section>
-<h2>Leases</h2>
-<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
-<tbody>${leases}</tbody></table>
-</section>
-<section>
-<h2>Observed</h2>
-<table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
-<tbody>${observed}</tbody></table>
-</section>
-<p class="muted" style="margin-top:1.5rem"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
+<div class="feed board">
+<div class="tabs" role="tablist" aria-label="Board">
+<button type="button" role="tab" id="tab-leases" data-tab="leases" aria-controls="pane-leases" aria-selected="true">Leases <span class="n">${board.leaseRows.length}</span></button>
+<button type="button" role="tab" id="tab-observed" data-tab="observed" aria-controls="pane-observed" aria-selected="false">Observed <span class="n">${board.observedRows.length}</span></button>
+</div>
+<div class="pane on" id="pane-leases" data-pane="leases" role="tabpanel" aria-labelledby="tab-leases"><div class="scroll"><table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
+<tbody>${leases}</tbody></table></div></div>
+<div class="pane" id="pane-observed" data-pane="observed" role="tabpanel" aria-labelledby="tab-observed"><div class="scroll"><table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
+<tbody>${observed}</tbody></table></div></div>
+<p class="muted hint"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
 </div>
 ${siteFooter()}
 </main>
 <script>
 ${COPY_SCRIPT}
 (function () {
+	function showTab(id) {
+		document.querySelectorAll('[data-tab]').forEach(function (b) {
+			b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false');
+		});
+		document.querySelectorAll('[data-pane]').forEach(function (p) {
+			p.classList.toggle('on', p.getAttribute('data-pane') === id);
+		});
+	}
+	document.querySelectorAll('[data-tab]').forEach(function (btn) {
+		btn.addEventListener('click', function () {
+			showTab(btn.getAttribute('data-tab'));
+			closeAll();
+			location.hash = '';
+		});
+	});
 	function closeAll() {
 		document.querySelectorAll('tr.detail.open').forEach(function (el) { el.classList.remove('open'); });
 		document.querySelectorAll('tr.row.open').forEach(function (el) { el.classList.remove('open'); });
@@ -300,7 +319,11 @@ ${COPY_SCRIPT}
 			openKey(key);
 		});
 	});
-	if (location.hash.length > 1) openKey(decodeURIComponent(location.hash.slice(1)));
+	if (location.hash.length > 1) {
+		var hashKey = decodeURIComponent(location.hash.slice(1));
+		if (hashKey.indexOf('obs:') === 0) showTab('observed');
+		openKey(hashKey);
+	}
 })();
 </script>
 </body>

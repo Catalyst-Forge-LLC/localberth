@@ -434,6 +434,17 @@
         "Keep growing the npm README",
         "Put the full flag list only on /cli"
       ]
+    },
+    {
+      "id": "D32",
+      "timestamp": "2026-08-20",
+      "phase": "3-stabilization",
+      "decision": "Operator Leases and Observed are tabs. Each pane has its own scroll box; thead stays pinned. CLI HTML matches the Svelte board.",
+      "rationale": "Two stacked tables fight the pinned chrome. One scrolling pane keeps header and footer put.",
+      "alternatives_considered": [
+        "Keep both tables stacked on one page scroll",
+        "Side-by-side tables"
+      ]
     }
   ],
   "gotchas": [
@@ -700,6 +711,10 @@
     {
       "date": "2026-08-20",
       "summary": "Dashboard header is a black bar matching the logo, with hostname and IPs on one wrapping line."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "D32: operator Leases and Observed are tabs with a scrolling pane and sticky table headers."
     }
   ],
   "openQuestions": []
