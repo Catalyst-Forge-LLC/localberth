@@ -357,6 +357,12 @@ a.tile:hover { background:rgba(26,25,23,.04); }
 .name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
 .port { display:flex; align-items:center; justify-content:center; flex:0 0 18%; min-height:1.75rem; width:100%; background:var(--tile-band); color:var(--tile-band-ink); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8125rem; }
 .port.here { font-family:inherit; font-size:.75rem; font-weight:500; }
+html, body { height:100%; overflow:hidden; }
+main { display:flex; flex-direction:column; height:100%; min-height:100dvh; padding:0; overflow:hidden; }
+header { flex-shrink:0; padding:1rem 1.25rem .75rem; margin-bottom:0; }
+#feed { flex:1; min-height:0; overflow-y:auto; padding:0 1.25rem 1rem; }
+.sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
+.sitefoot a { color:rgba(250,248,243,.8); text-decoration:none; font-size:.875rem; }
 a { color:var(--ok); }
 code { color:var(--text); }
 </style>
@@ -365,6 +371,7 @@ code { color:var(--text); }
 <main>
 ${brandHeader('')}
 <div id="feed">${body}</div>
+<footer class="sitefoot"><a href="https://localberth.com" rel="noopener">localberth.com</a></footer>
 </main>
 <script>
 ${COPY_SCRIPT}

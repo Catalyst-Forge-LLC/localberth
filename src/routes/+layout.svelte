@@ -7,6 +7,6 @@
 	<title>LocalBerth</title>
 </svelte:head>
 
-<div class="min-h-full px-5 py-4">
+<div class="h-full">
 	{@render children()}
 </div>

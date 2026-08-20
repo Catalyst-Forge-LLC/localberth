@@ -663,6 +663,10 @@
     {
       "date": "2026-08-20",
       "summary": "Visitor tiles put :PORT in a dark full-width monospace band at the bottom."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Visitor chrome: header and localberth.com footer stay put; only the tile grid scrolls."
     }
   ],
   "openQuestions": []

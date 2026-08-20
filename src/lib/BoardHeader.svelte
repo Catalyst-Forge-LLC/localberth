@@ -7,10 +7,12 @@
 	let {
 		hostname,
 		addresses,
+		class: className = '',
 		children
 	}: {
 		hostname: string;
 		addresses: string[];
+		class?: string;
 		children?: Snippet;
 	} = $props();
 
@@ -27,7 +29,7 @@
 	}
 </script>
 
-<header class="mb-4">
+<header class="mb-4 {className}">
 	<div class="flex items-center gap-3">
 		<BrandMark />
 		<div class="min-w-0">
