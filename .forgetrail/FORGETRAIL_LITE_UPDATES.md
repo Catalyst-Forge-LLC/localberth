@@ -48,6 +48,14 @@ Suggested Lite change: if Phase 1 says the app is a **published CLI**, compile w
 
 Project pointer: LocalBerth D26 / 0.2.4.
 
+## 6. CLI `tsc` include of `src/lib/**` vs browser helpers (§4.1 / agent)
+
+A published CLI often uses `tsconfig.cli.json` with `"lib": ["ES2022"]`, `"types": ["node"]`, and `"include": ["src/cli/**/*.ts", "src/lib/**/*.ts"]`. That is right until a dashboard helper uses `document` / `navigator`. `prepublishOnly` then fails (`Cannot find name 'document'`) even though the CLI never imports the file.
+
+Suggested Lite change: next to the compile-on-publish note, say the CLI tsconfig must **exclude** browser-only modules (or keep them out of `src/lib/**`). Do not add `"DOM"` to the CLI lib to silence it.
+
+Project pointer: LocalBerth `copy-text.ts` / `pnpm publish`.
+
 ---
 
 | Topic | Lite § | Status |
@@ -57,3 +65,4 @@ Project pointer: LocalBerth D26 / 0.2.4.
 | npm 12 + native addons on `npm i -g` | §4.1, §13 | candidate |
 | Kit `$lib/server` via a shared helper → “impossible situation” | agent / Kit | candidate |
 | Published CLI: compile, do not runtime-depend on tsx | §4.1, §13 | candidate |
+| CLI tsc include vs browser helpers | §4.1 / agent | candidate |
