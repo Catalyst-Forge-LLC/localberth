@@ -597,6 +597,10 @@
     {
       "date": "2026-08-20",
       "summary": "Visitor self tile: localberth last, not a link, labeled This app."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Visitor tiles try favicon.png, then .svg, then .ico. Do not mint .ico for every sibling."
     }
   ],
   "openQuestions": []

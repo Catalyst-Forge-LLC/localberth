@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { OPEN_TARGET, visitorFaviconUrl, visitorTileLetter } from '$lib/dashboard-url';
+	import { OPEN_TARGET, visitorFaviconCandidates, visitorTileLetter, VISITOR_FAVICON_FILES } from '$lib/dashboard-url';
 
 	let {
 		name,
@@ -9,8 +9,19 @@
 	}: { name: string; port: number; href: string | null; here?: boolean } = $props();
 
 	const letter = $derived(visitorTileLetter(name));
-	const favicon = $derived(here ? '/favicon.svg' : href ? visitorFaviconUrl(href) : null);
+	const candidates = $derived(
+		here ? VISITOR_FAVICON_FILES.map((file) => `/${file}`) : href ? visitorFaviconCandidates(href) : []
+	);
+	let iconIndex = $state(0);
 	let broken = $state(false);
+
+	$effect(() => {
+		void candidates;
+		iconIndex = 0;
+		broken = false;
+	});
+
+	const favicon = $derived(!broken && iconIndex < candidates.length ? (candidates[iconIndex] ?? null) : null);
 
 	const tileClass =
 		'flex flex-col items-center gap-2 rounded-[10px] border bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline';
@@ -29,7 +40,8 @@
 				src={favicon}
 				alt=""
 				onerror={() => {
-					broken = true;
+					if (iconIndex + 1 < candidates.length) iconIndex += 1;
+					else broken = true;
 				}}
 			/>
 		{/if}

@@ -48,12 +48,16 @@ export function visitorHttpUrl(pageHost: string, port: number): string | null {
 	return `http://${pageHost}:${port}/`;
 }
 
-/** App favicon the phone loads itself — LocalBerth does not proxy it. */
-export function visitorFaviconUrl(href: string): string | null {
+/** Well-known icon files. Phone tries each; LocalBerth does not proxy. */
+export const VISITOR_FAVICON_FILES = ['favicon.png', 'favicon.svg', 'favicon.ico'] as const;
+
+/** App icons the phone loads itself. png first — that is what most house sites ship. */
+export function visitorFaviconCandidates(href: string): string[] {
 	try {
-		return new URL('favicon.ico', href).href;
+		const base = new URL(href);
+		return VISITOR_FAVICON_FILES.map((name) => new URL(name, base).href);
 	} catch {
-		return null;
+		return [];
 	}
 }
 

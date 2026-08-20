@@ -3,8 +3,9 @@ import { isLoopbackClient } from '../binds.js';
 import {
 	OPEN_TARGET,
 	rowOpenUrl,
-	visitorFaviconUrl,
+	visitorFaviconCandidates,
 	visitorHttpUrl,
+	VISITOR_FAVICON_FILES,
 	visitorPageHost,
 	visitorTileLetter
 } from '../dashboard-url.js';
@@ -176,12 +177,20 @@ a { color:var(--ok); }
 </html>`;
 }
 
+function visitorIconImg(candidates: string[]): string {
+	if (candidates.length === 0) return '';
+	const [first, ...rest] = candidates;
+	return `<img src="${esc(first ?? '')}" alt="" data-next="${esc(JSON.stringify(rest))}" onerror="var n;try{n=JSON.parse(this.getAttribute('data-next')||'[]')}catch(e){n=[]}if(!n.length){this.hidden=true;return;}this.src=n.shift();this.setAttribute('data-next',JSON.stringify(n))"/>`;
+}
+
 function visitorTile(name: string, port: number, href: string | null, here: boolean): string {
 	const letter = esc(visitorTileLetter(name));
-	const favicon = here ? '/favicon.svg' : href ? visitorFaviconUrl(href) : null;
-	const img = favicon
-		? `<img src="${esc(favicon)}" alt="" onerror="this.hidden=true"/>`
-		: '';
+	const candidates = here
+		? VISITOR_FAVICON_FILES.map((file) => `/${file}`)
+		: href
+			? visitorFaviconCandidates(href)
+			: [];
+	const img = visitorIconImg(candidates);
 	const caption = here ? 'This app' : String(port);
 	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(name)}</span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
 	if (!href || here) {

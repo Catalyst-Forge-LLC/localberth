@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import {
 	dashboardHttpUrl,
 	rowOpenUrl,
-	visitorFaviconUrl,
+	visitorFaviconCandidates,
 	visitorHttpUrl,
 	visitorPageHost,
 	visitorTileLetter
@@ -43,11 +43,15 @@ describe('dashboardHttpUrl', () => {
 		assert.equal(visitorPageHost('[fd7a:115c::2]:54321'), '[fd7a:115c::2]');
 		assert.equal(visitorPageHost('evil.com/x'), null);
 		assert.equal(visitorHttpUrl('100.74.12.14', 5193), 'http://100.74.12.14:5193/');
-		assert.equal(
-			visitorFaviconUrl('http://100.74.12.14:5193/'),
+		assert.deepEqual(visitorFaviconCandidates('http://100.74.12.14:5193/'), [
+			'http://100.74.12.14:5193/favicon.png',
+			'http://100.74.12.14:5193/favicon.svg',
 			'http://100.74.12.14:5193/favicon.ico'
+		]);
+		assert.equal(
+			visitorFaviconCandidates('http://[fd7a:115c::2]:6173/')[0],
+			'http://[fd7a:115c::2]:6173/favicon.png'
 		);
-		assert.equal(visitorFaviconUrl('http://[fd7a:115c::2]:6173/'), 'http://[fd7a:115c::2]:6173/favicon.ico');
 		assert.equal(visitorTileLetter('catalyst-forge'), 'C');
 		assert.equal(visitorTileLetter(''), '?');
 	});
