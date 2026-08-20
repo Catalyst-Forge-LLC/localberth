@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
+	import VisitorTile from '$lib/VisitorTile.svelte';
 	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
@@ -59,45 +60,16 @@
 			<code class="text-[var(--text)]">--lan</code> to show up here.
 		</p>
 	{:else}
-		<div class="overflow-x-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)]">
-			<table class="w-full max-w-[40rem] text-left text-sm">
-				<thead class="border-b border-[var(--line)] text-[0.68rem] font-medium tracking-wide text-[var(--muted)] uppercase">
-					<tr>
-						<th class="px-3.5 py-2.5">Name</th>
-						<th class="px-3.5 py-2.5">Port</th>
-						<th class="px-3.5 py-2.5">Notes</th>
-						<th class="w-8 px-2 py-2.5"></th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each data.visitorRows as row, i}
-						{@const href = data.pageHost && row.lease ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
-						<tr class="border-t border-[var(--line)] {i % 2 === 1 ? 'bg-white/[0.035]' : ''}">
-							<td class="px-3.5 py-2.5 font-medium">{row.lease?.name}</td>
-							<td class="px-3.5 py-2.5 tabular-nums">{row.lease?.port}</td>
-							<td class="px-3.5 py-2.5 text-[var(--muted)]">{row.lease?.notes || '—'}</td>
-							<td class="w-8 px-2 py-2 text-right">
-								{#if href}
-									<a
-										class="inline-flex text-[var(--accent)]"
-										href={href}
-										target={OPEN_TARGET}
-										rel="noopener"
-										title="Open"
-										aria-label="Open"
-									>
-										<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-											<path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10" />
-											<path d="M9 2h5v5" />
-											<path d="M14 2 8 8" />
-										</svg>
-									</a>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+			{#each data.visitorRows as row}
+				{#if row.lease}
+					<VisitorTile
+						name={row.lease.name}
+						port={row.lease.port}
+						href={data.pageHost ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
+					/>
+				{/if}
+			{/each}
 		</div>
 	{/if}
 {:else}

@@ -47,3 +47,17 @@ export function visitorHttpUrl(pageHost: string, port: number): string | null {
 	if (!pageHost || !Number.isInteger(port) || port < 1 || port > 65535) return null;
 	return `http://${pageHost}:${port}/`;
 }
+
+/** App favicon the phone loads itself — LocalBerth does not proxy it. */
+export function visitorFaviconUrl(href: string): string | null {
+	try {
+		return new URL('favicon.ico', href).href;
+	} catch {
+		return null;
+	}
+}
+
+export function visitorTileLetter(name: string): string {
+	const ch = [...name.trim()][0];
+	return ch ? ch.toUpperCase() : '?';
+}

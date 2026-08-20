@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { isLoopbackClient } from './binds.js';
+import { displayBind, isLoopbackClient } from './binds.js';
 
 describe('isLoopbackClient', () => {
 	it('allows IPv4 and IPv6 loopback', () => {
@@ -17,5 +17,15 @@ describe('isLoopbackClient', () => {
 		assert.equal(isLoopbackClient('::'), false);
 		assert.equal(isLoopbackClient(''), false);
 		assert.equal(isLoopbackClient(undefined), false);
+	});
+});
+
+describe('displayBind', () => {
+	it('labels IPv6 any as 0.0.0.0', () => {
+		assert.equal(displayBind('::'), '0.0.0.0');
+		assert.equal(displayBind('[::]'), '0.0.0.0');
+		assert.equal(displayBind('0.0.0.0'), '0.0.0.0');
+		assert.equal(displayBind('::1'), '::1');
+		assert.equal(displayBind('127.0.0.1'), '127.0.0.1');
 	});
 });

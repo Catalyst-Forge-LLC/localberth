@@ -1,12 +1,13 @@
-import { bindRelation } from './binds.js';
+import { bindRelation, displayBind } from './binds.js';
 import type { BoardRow } from './types.js';
 
 export type DetailField = { label: string; value: string; wide?: boolean; warn?: boolean };
 
 /** Bind the table should show: the listen address when up, else the claim. */
 export function rowBindDisplay(row: BoardRow): string {
-	if (row.listening && row.observed?.bind) return row.observed.bind;
-	return row.lease?.bind ?? row.observed?.bind ?? '—';
+	if (row.listening && row.observed?.bind) return displayBind(row.observed.bind);
+	const raw = row.lease?.bind ?? row.observed?.bind;
+	return raw ? displayBind(raw) : '—';
 }
 
 export function rowDetailFields(row: BoardRow): DetailField[] {
@@ -15,10 +16,10 @@ export function rowDetailFields(row: BoardRow): DetailField[] {
 		fields.push({ label: 'Kind', value: row.lease.kind });
 		if (row.lease.notes) fields.push({ label: 'Notes', value: row.lease.notes, wide: true });
 		fields.push({ label: 'Claimed', value: row.lease.updatedAt.slice(0, 19).replace('T', ' ') });
-		fields.push({ label: 'Claim', value: row.lease.bind });
+		fields.push({ label: 'Claim', value: displayBind(row.lease.bind) });
 	}
 	if (row.observed?.bind) {
-		fields.push({ label: 'Listen', value: row.observed.bind });
+		fields.push({ label: 'Listen', value: displayBind(row.observed.bind) });
 	}
 	if (row.lease && row.observed?.bind) {
 		const relation = bindRelation(row.lease.bind, row.observed.bind);

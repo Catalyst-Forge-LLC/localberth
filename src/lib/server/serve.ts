@@ -1,6 +1,13 @@
 import { createServer } from 'node:http';
 import { isLoopbackClient } from '../binds.js';
-import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl, visitorPageHost } from '../dashboard-url.js';
+import {
+	OPEN_TARGET,
+	rowOpenUrl,
+	visitorFaviconUrl,
+	visitorHttpUrl,
+	visitorPageHost,
+	visitorTileLetter
+} from '../dashboard-url.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
 import { visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
@@ -169,20 +176,30 @@ a { color:var(--ok); }
 </html>`;
 }
 
+function visitorTile(name: string, port: number, href: string | null): string {
+	const letter = esc(visitorTileLetter(name));
+	const favicon = href ? visitorFaviconUrl(href) : null;
+	const img = favicon
+		? `<img src="${esc(favicon)}" alt="" onerror="this.hidden=true"/>`
+		: '';
+	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(name)}</span><span class="port">${port}</span>`;
+	if (!href) return `<div class="tile">${face}</div>`;
+	return `<a class="tile" href="${esc(href)}" target="${OPEN_TARGET}" rel="noopener" aria-label="Open ${esc(name)}">${face}</a>`;
+}
+
 function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: string | null): string {
 	const rows = visitorLeaseRows(board.leaseRows);
 	const body =
 		rows.length === 0
 			? `<p class="muted">No LAN slips listening. Loopback leases stay on this machine. Claim with <code>--lan</code> to show up here.</p>`
-			: `<table><thead><tr><th>Name</th><th>Port</th><th>Notes</th><th class="go"></th></tr></thead><tbody>${rows
+			: `<div class="tiles">${rows
 					.map((row) => {
 						const name = row.lease!.name;
 						const port = row.lease!.port;
-						const notes = row.lease!.notes || '—';
 						const href = pageHost ? visitorHttpUrl(pageHost, port) : null;
-						return `<tr><td>${esc(name)}</td><td class="num">${port}</td><td class="muted">${esc(notes)}</td>${openCell(href)}</tr>`;
+						return visitorTile(name, port, href);
 					})
-					.join('')}</tbody></table>`;
+					.join('')}</div>`;
 	return `<!doctype html>
 <html lang="en">
 <head>
@@ -196,16 +213,17 @@ html,body { height:100%; }
 body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
 main { padding:1rem 1.25rem 1.5rem; }
 .muted { color:var(--muted); }
-.num { font-variant-numeric:tabular-nums; }
 header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
 header .brand { font-weight:600; }
 header .meta { color:var(--muted); font-size:.8rem; }
-table { width:100%; max-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-th,td { text-align:left; padding:.55rem .85rem; }
-th { color:var(--muted); font-size:.68rem; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
-td { border-top:1px solid var(--line); }
-.go { width:2.1rem; text-align:right; padding-left:.25rem; padding-right:.65rem; }
-.go a { display:inline-flex; color:var(--ok); }
+.tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
+@media (min-width:640px) { .tiles { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; }
+a.tile:hover { background:rgba(255,255,255,.07); }
+.logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(255,255,255,.08); color:var(--muted); font-size:1.125rem; font-weight:600; }
+.logo img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+.name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
+.port { font-variant-numeric:tabular-nums; font-size:.75rem; color:var(--muted); }
 a { color:var(--ok); }
 code { color:var(--text); }
 </style>

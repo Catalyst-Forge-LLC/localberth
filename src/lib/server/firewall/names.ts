@@ -8,6 +8,7 @@ import type { Lease } from '../types.js';
 export {
 	bindRelation,
 	bindsOverlap,
+	displayBind,
 	isLoopbackBind,
 	isWildcardBind,
 	normalizeBind,

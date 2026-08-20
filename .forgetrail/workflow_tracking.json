@@ -386,6 +386,18 @@
         "Second port for the visitor menu",
         "/guest path on a LAN-bound operator board"
       ]
+    },
+    {
+      "id": "D28",
+      "timestamp": "2026-08-20",
+      "phase": "3-stabilization",
+      "decision": "Visitor menu is tiles (favicon from the app URL + name + port). Whole tile is the Open link. No version. Operator bind column labels :: as 0.0.0.0.",
+      "rationale": "Phone menu should look like apps, not a lease table. The phone loads /favicon.ico itself so LocalBerth does not proxy images. Vite --host on Windows is dual-stack ::; the board should say 0.0.0.0.",
+      "alternatives_considered": [
+        "claim --logo / --version fields",
+        "LocalBerth fetches and serves favicons",
+        "Show raw :: in the bind column"
+      ]
     }
   ],
   "gotchas": [
@@ -412,6 +424,12 @@
       "phase": "3-stabilization",
       "gotcha": "pnpm dev overlay: An impossible situation occurred. +page imported row-detail, which imported $lib/server/firewall/names. Kit forbids $lib/server in the browser and throws that instead of the usual leak warning when the import chain does not match an entrypoint.",
       "fix": "Keep bind helpers in $lib/binds.ts. Dashboard client must not import $lib/server at runtime."
+    },
+    {
+      "date": "2026-08-20",
+      "phase": "3-stabilization",
+      "gotcha": "Vite --host (all interfaces) on Windows is a dual-stack socket. netstat TCPv6 reports ::, which looked like a bug next to 127.0.0.1 claims.",
+      "fix": "displayBind maps wildcard :: / * / 0.0.0.0 to 0.0.0.0 for the table and Listen field. Relation is still wider vs a loopback claim."
     }
   ],
   "sessions": [
@@ -550,6 +568,10 @@
     {
       "date": "2026-08-19",
       "summary": "D27: visitor menu for non-loopback peers on :54321; operator board stays loopback-only."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "D28: visitor tiles (favicon + name + port). Bind column shows 0.0.0.0 for Vite --host ::."
     }
   ],
   "openQuestions": []

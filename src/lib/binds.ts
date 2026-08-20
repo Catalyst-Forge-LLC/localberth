@@ -43,6 +43,13 @@ export function isWildcardBind(bind: string): boolean {
 	return !b || b === '0.0.0.0' || b === '::' || b === '*';
 }
 
+/** Labels for the board. Dual-stack Vite `--host` is `::` on Windows; show `0.0.0.0`. */
+export function displayBind(bind: string): string {
+	const b = normalizeBind(bind);
+	if (isWildcardBind(b)) return '0.0.0.0';
+	return b;
+}
+
 /** Same slip: exact bind, both loopback, or either side is all-interfaces. */
 export function bindsOverlap(leaseBind: string, observedBind: string): boolean {
 	const a = normalizeBind(leaseBind);

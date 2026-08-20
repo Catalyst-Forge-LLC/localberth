@@ -69,6 +69,35 @@ describe('rowDetailFields', () => {
 		assert.ok(rowDetailFields(row).some((f) => f.label === 'Claim' && f.value === '127.0.0.1'));
 	});
 
+	it('labels Vite --host (::) as 0.0.0.0 in the bind column', () => {
+		const row: BoardRow = {
+			lease: {
+				name: 'engram',
+				port: 5193,
+				bind: '127.0.0.1',
+				protocol: 'tcp',
+				kind: 'always',
+				notes: '',
+				firewall: 'skipped',
+				updatedAt: '2026-08-19T17:30:02.000Z'
+			},
+			observed: {
+				port: 5193,
+				bind: '::',
+				pid: 28552,
+				process: 'node.exe',
+				seenAt: '2026-08-19T17:40:00.000Z',
+				leaseName: 'engram'
+			},
+			listening: true,
+			conflict: true,
+			also: []
+		};
+		assert.equal(rowBindDisplay(row), '0.0.0.0');
+		assert.ok(rowDetailFields(row).some((f) => f.label === 'Listen' && f.value === '0.0.0.0'));
+		assert.ok(rowDetailFields(row).some((f) => f.label === 'Mismatch' && f.warn));
+	});
+
 	it('warns when the process is wider than the claim', () => {
 		const row: BoardRow = {
 			lease: {
