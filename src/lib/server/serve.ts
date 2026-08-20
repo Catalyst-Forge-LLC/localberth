@@ -191,7 +191,7 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 	const rows = visitorLeaseRows(board.leaseRows);
 	const body =
 		rows.length === 0
-			? `<p class="muted">No LAN slips listening. Loopback leases stay on this machine. Claim with <code>--lan</code> to show up here.</p>`
+			? `<p class="muted">Nothing listening past loopback. Claim with <code>--lan</code> or start the app on all interfaces.</p>`
 			: `<div class="tiles">${rows
 					.map((row) => {
 						const name = row.lease!.name;

@@ -56,8 +56,9 @@
 
 	{#if data.visitorRows.length === 0}
 		<p class="text-sm text-[var(--muted)]">
-			No LAN slips listening. Loopback leases stay on this machine. Claim with
-			<code class="text-[var(--text)]">--lan</code> to show up here.
+			Nothing listening past loopback. Claim with
+			<code class="text-[var(--text)]">--lan</code>
+			or start the app on all interfaces.
 		</p>
 	{:else}
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">

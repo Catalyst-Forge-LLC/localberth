@@ -398,6 +398,17 @@
         "LocalBerth fetches and serves favicons",
         "Show raw :: in the bind column"
       ]
+    },
+    {
+      "id": "D29",
+      "timestamp": "2026-08-20",
+      "phase": "3-stabilization",
+      "decision": "Visitor tiles key off the observed listen bind, not the claim. Still require a named lease.",
+      "rationale": "Vite --host makes a 127.0.0.1 claim reachable on Tailscale/LAN. The phone menu should follow the socket, not the lease text.",
+      "alternatives_considered": [
+        "Require claim --lan before a tile appears",
+        "Show unclaimed listeners"
+      ]
     }
   ],
   "gotchas": [
@@ -430,6 +441,12 @@
       "phase": "3-stabilization",
       "gotcha": "Vite --host (all interfaces) on Windows is a dual-stack socket. netstat TCPv6 reports ::, which looked like a bug next to 127.0.0.1 claims.",
       "fix": "displayBind maps wildcard :: / * / 0.0.0.0 to 0.0.0.0 for the table and Listen field. Relation is still wider vs a loopback claim."
+    },
+    {
+      "date": "2026-08-20",
+      "phase": "3-stabilization",
+      "gotcha": "forgetrail-site on 5195 was claimed 127.0.0.1 but Vite --host printed Tailscale/Wi-Fi URLs. Visitor tiles hid it because they filtered on the claim bind.",
+      "fix": "isVisitorLease uses observed.bind (fallback lease.bind). Loopback-only sockets stay off the phone menu."
     }
   ],
   "sessions": [
@@ -572,6 +589,10 @@
     {
       "date": "2026-08-20",
       "summary": "D28: visitor tiles (favicon + name + port). Bind column shows 0.0.0.0 for Vite --host ::."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "D29: visitor tiles follow the listen bind so Vite --host shows up without --lan on the claim."
     }
   ],
   "openQuestions": []

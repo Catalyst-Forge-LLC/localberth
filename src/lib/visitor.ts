@@ -1,9 +1,10 @@
 import { isLoopbackBind } from './binds.js';
 import type { BoardRow } from './types.js';
 
-/** Listening lease with a non-loopback claim — reachable from LAN / Tailscale. */
+/** Named slip whose process is listening past loopback — the phone can reach it. */
 export function isVisitorLease(row: BoardRow): boolean {
-	return Boolean(row.listening && row.lease && !isLoopbackBind(row.lease.bind));
+	const bind = row.observed?.bind ?? row.lease?.bind;
+	return Boolean(row.listening && row.lease && bind && !isLoopbackBind(bind));
 }
 
 export function visitorLeaseRows(rows: BoardRow[]): BoardRow[] {

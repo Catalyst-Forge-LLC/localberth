@@ -8,7 +8,9 @@ function row(partial: {
 	port: number;
 	bind: string;
 	listening: boolean;
+	listenBind?: string;
 }): BoardRow {
+	const listenBind = partial.listenBind ?? partial.bind;
 	return {
 		lease: {
 			name: partial.name,
@@ -23,7 +25,7 @@ function row(partial: {
 		observed: partial.listening
 			? {
 					port: partial.port,
-					bind: partial.bind === '0.0.0.0' ? '0.0.0.0' : partial.bind,
+					bind: listenBind,
 					pid: 1,
 					process: 'node.exe',
 					seenAt: '2026-08-19T12:00:00.000Z',
@@ -37,15 +39,22 @@ function row(partial: {
 }
 
 describe('visitorLeaseRows', () => {
-	it('keeps listening non-loopback leases only', () => {
+	it('keeps named slips whose process is past loopback', () => {
 		const rows = [
 			row({ name: 'phone', port: 5193, bind: '0.0.0.0', listening: true }),
 			row({ name: 'desk', port: 6173, bind: '127.0.0.1', listening: true }),
-			row({ name: 'down', port: 5180, bind: '0.0.0.0', listening: false })
+			row({ name: 'down', port: 5180, bind: '0.0.0.0', listening: false }),
+			row({
+				name: 'forgetrail-site',
+				port: 5195,
+				bind: '127.0.0.1',
+				listening: true,
+				listenBind: '::'
+			})
 		];
 		assert.deepEqual(
 			visitorLeaseRows(rows).map((r) => r.lease?.name),
-			['phone']
+			['phone', 'forgetrail-site']
 		);
 		assert.equal(isVisitorLease(rows[1]!), false);
 	});
