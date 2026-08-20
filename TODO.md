@@ -34,4 +34,5 @@
 12. [ ] Publish `localberth@0.2.3` (Open icon reuses one tab; you; agent does not)
 13. [ ] Publish `localberth@0.2.4` (compiled CLI, no runtime tsx/esbuild; you; agent does not)
 14. [ ] Publish `localberth@0.2.5` (visitor tiles, listen-bind cards, favicon fallback; you; agent does not)
+15. [ ] Publish `localberth@0.2.6` (operator face needs loopback Host; you; agent does not)
 
