@@ -39,7 +39,7 @@
 	const favicon = $derived(!broken && iconIndex < candidates.length ? (candidates[iconIndex] ?? null) : null);
 
 	const tileClass =
-		'flex flex-col items-center gap-2 rounded-[10px] border bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline shadow-sm select-none [-webkit-touch-callout:none]';
+		'flex min-h-[9.5rem] flex-col overflow-hidden rounded-[10px] border bg-[var(--bg-elevated)] p-0 text-center text-[var(--text)] no-underline shadow-sm select-none [-webkit-touch-callout:none]';
 	const tileTone = $derived(here ? 'border-[var(--accent)]/35' : 'border-[var(--line)]');
 
 	function clearPress() {
@@ -82,26 +82,32 @@
 </script>
 
 {#snippet face()}
-	<span
-		class="relative flex size-12 items-center justify-center overflow-hidden rounded-xl bg-black/[0.06] text-lg font-semibold text-[var(--muted)]"
-		aria-hidden="true"
-	>
-		{letter}
-		{#if favicon && !broken}
-			<img
-				class="absolute inset-0 size-full object-contain"
-				src={favicon}
-				alt=""
-				onerror={() => {
-					if (iconIndex + 1 < candidates.length) iconIndex += 1;
-					else broken = true;
-				}}
-			/>
-		{/if}
+	<span class="flex flex-1 flex-col items-center justify-center gap-2 px-3 pt-4 pb-3">
+		<span
+			class="relative flex size-12 items-center justify-center overflow-hidden rounded-xl bg-black/[0.06] text-lg font-semibold text-[var(--muted)]"
+			aria-hidden="true"
+		>
+			{letter}
+			{#if favicon && !broken}
+				<img
+					class="absolute inset-0 size-full object-contain"
+					src={favicon}
+					alt=""
+					onerror={() => {
+						if (iconIndex + 1 < candidates.length) iconIndex += 1;
+						else broken = true;
+					}}
+				/>
+			{/if}
+		</span>
+		<span class="w-full truncate text-sm font-medium">{copied ? 'Copied' : heading}</span>
 	</span>
-	<span class="w-full truncate text-sm font-medium">{copied ? 'Copied' : heading}</span>
-	<span class="text-xs {here ? 'text-[var(--accent)]' : 'tabular-nums text-[var(--muted)]'}">
-		{here ? 'This app' : port}
+	<span
+		class="flex h-[18%] min-h-7 w-full items-center justify-center bg-[var(--tile-band)] text-[var(--tile-band-ink)] {here
+			? 'text-xs font-medium'
+			: 'font-mono text-sm'}"
+	>
+		{here ? 'This app' : `:${port}`}
 	</span>
 {/snippet}
 

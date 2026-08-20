@@ -28,7 +28,7 @@ function esc(value: string): string {
 
 const SITE_STATIC = join(dirname(fileURLToPath(import.meta.url)), '../../../site/static');
 
-const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; }
+const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; --tile-band:#1a1917; --tile-band-ink:#faf8f3; }
 html,body { height:100%; }
 body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
 main { padding:1rem 1.25rem 1.5rem; }
@@ -319,8 +319,8 @@ function visitorTile(
 			? visitorTileIcons(href, icon)
 			: [];
 	const img = visitorIconImg(candidates);
-	const caption = here ? 'This app' : String(port);
-	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(heading)}</span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
+	const caption = here ? 'This app' : `:${port}`;
+	const face = `<span class="face"><span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(heading)}</span></span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
 	if (!href || here) {
 		return `<div class="tile${here ? ' here' : ''}"${here ? ' aria-current="page"' : ''}>${face}</div>`;
 	}
@@ -348,14 +348,15 @@ async function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost
 ${FACE_CSS}
 .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
 @media (min-width:640px) { .tiles { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; box-shadow:0 1px 2px rgba(26,25,23,.04); user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+.tile { display:flex; flex-direction:column; align-items:stretch; min-height:9.5rem; padding:0; overflow:hidden; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; box-shadow:0 1px 2px rgba(26,25,23,.04); user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
 .tile.here { border-color:rgba(42,111,106,.35); }
 a.tile:hover { background:rgba(26,25,23,.04); }
+.face { display:flex; flex:1; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; padding:1rem .75rem .75rem; }
 .logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(26,25,23,.06); color:var(--muted); font-size:1.125rem; font-weight:600; }
 .logo img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
 .name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
-.port { font-variant-numeric:tabular-nums; font-size:.75rem; color:var(--muted); }
-.port.here { font-variant-numeric:normal; color:var(--ok); }
+.port { display:flex; align-items:center; justify-content:center; flex:0 0 18%; min-height:1.75rem; width:100%; background:var(--tile-band); color:var(--tile-band-ink); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8125rem; }
+.port.here { font-family:inherit; font-size:.75rem; font-weight:500; }
 a { color:var(--ok); }
 code { color:var(--text); }
 </style>
@@ -426,14 +427,17 @@ ${COPY_SCRIPT}
 			img.onerror = function () { nextIcon(img); };
 			logo.appendChild(img);
 		}
+		var face = document.createElement('span');
+		face.className = 'face';
 		var name = document.createElement('span');
 		name.className = 'name';
 		name.textContent = heading;
 		var port = document.createElement('span');
 		port.className = 'port';
-		port.textContent = String(tile.port);
-		root.appendChild(logo);
-		root.appendChild(name);
+		port.textContent = ':' + tile.port;
+		face.appendChild(logo);
+		face.appendChild(name);
+		root.appendChild(face);
 		root.appendChild(port);
 		if (href && window.localberthBindHold) window.localberthBindHold(root);
 		return root;

@@ -10,6 +10,8 @@
 	--warn: #9a6b12;
 	--danger: #a33b3b;
 	--wash: rgb(26 25 23 / 0.04);
+	--tile-band: #1a1917;
+	--tile-band-ink: #faf8f3;
 }
 
 html,
