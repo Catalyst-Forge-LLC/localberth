@@ -16,12 +16,7 @@
 	let visitorFeed = $state<VisitorSnapshot | null>(null);
 
 	const visitorMachine = $derived(visitorFeed ?? data.machine);
-	const visitorTiles = $derived(
-		visitorFeed?.tiles ??
-			data.visitorRows.flatMap((row) =>
-				row.lease ? [{ name: row.lease.name, port: row.lease.port }] : []
-			)
-	);
+	const visitorTiles = $derived(visitorFeed?.tiles ?? data.visitorTiles);
 
 	function rowId(row: BoardRow): string {
 		if (row.lease) return `lease:${row.lease.name}`;
@@ -84,6 +79,8 @@
 				<VisitorTile
 					name={tile.name}
 					port={tile.port}
+					title={tile.title}
+					icon={tile.icon}
 					href={data.pageHost ? visitorHttpUrl(data.pageHost, tile.port) : null}
 				/>
 			{/each}

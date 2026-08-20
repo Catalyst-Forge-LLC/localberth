@@ -17,7 +17,12 @@ export function visitorLeaseRows(rows: BoardRow[]): BoardRow[] {
 	return rows.filter((row) => isVisitorLease(row) && !isVisitorSelf(row));
 }
 
-export type VisitorTileInfo = { name: string; port: number };
+export type VisitorTileInfo = {
+	name: string;
+	port: number;
+	title?: string | null;
+	icon?: string | null;
+};
 
 export type VisitorSnapshot = {
 	hostname: string;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { addressCaption } from '$lib/address';
 	import BrandMark from '$lib/BrandMark.svelte';
 	import { copyText } from '$lib/copy-text';
 	import type { Snippet } from 'svelte';
@@ -43,7 +44,7 @@
 					{#each addresses as addr, i}
 						{#if i > 0}<span aria-hidden="true"> · </span>{/if}
 						<button type="button" class="cursor-pointer text-left" onclick={() => copy(addr)}>
-							{copied === addr ? 'Copied' : addr}
+							{copied === addr ? 'Copied' : addressCaption(addr)}
 						</button>
 					{/each}
 				</p>

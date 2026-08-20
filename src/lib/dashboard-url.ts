@@ -82,6 +82,39 @@ export function visitorFaviconCandidates(href: string): string[] {
 	}
 }
 
+/**
+ * Peeked link rel=icon rewritten onto the visitor Host.
+ * Off-machine URLs are dropped so we never point the phone at a CDN we did not ask for.
+ */
+export function visitorIconUrl(openHref: string, iconHref: string | null | undefined): string | null {
+	if (!iconHref?.trim()) return null;
+	const raw = iconHref.trim();
+	if (/^javascript:/i.test(raw)) return null;
+	if (raw.startsWith('data:image/')) return raw;
+	try {
+		const open = new URL(openHref);
+		const url = new URL(raw, open);
+		if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+		const iconHost = url.hostname.replace(/^\[|\]$/g, '');
+		const openHost = open.hostname.replace(/^\[|\]$/g, '');
+		if (!isLoopbackBind(iconHost) && iconHost !== openHost) return null;
+		url.protocol = open.protocol;
+		url.hostname = open.hostname;
+		url.port = open.port;
+		return url.href;
+	} catch {
+		return null;
+	}
+}
+
+/** Peeked icon first, then the well-known files. Phone loads each itself. */
+export function visitorTileIcons(openHref: string, iconHref?: string | null): string[] {
+	const guessed = visitorFaviconCandidates(openHref);
+	const peeked = visitorIconUrl(openHref, iconHref);
+	if (!peeked) return guessed;
+	return [peeked, ...guessed.filter((url) => url !== peeked)];
+}
+
 export function visitorTileLetter(name: string): string {
 	const ch = [...name.trim()][0];
 	return ch ? ch.toUpperCase() : '?';

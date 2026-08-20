@@ -6,6 +6,7 @@ export type HttpPeek = {
 	contentType?: string;
 	server?: string;
 	title?: string;
+	iconHref?: string;
 	location?: string;
 	error?: string;
 	ms: number;
@@ -56,8 +57,11 @@ async function peekUrl(url: string): Promise<HttpPeek> {
 		const server = res.headers.get('server')?.trim() || undefined;
 		const location = res.headers.get('location')?.trim() || undefined;
 		let title: string | undefined;
+		let iconHref: string | undefined;
 		if ((contentType ?? '').includes('text/html')) {
-			title = readTitle(await readPrefix(res));
+			const html = await readPrefix(res);
+			title = readTitle(html);
+			iconHref = readIconHref(html);
 		} else {
 			res.body?.cancel();
 		}
@@ -67,6 +71,7 @@ async function peekUrl(url: string): Promise<HttpPeek> {
 			contentType,
 			server,
 			title,
+			iconHref,
 			location,
 			ms: Date.now() - started
 		};
@@ -118,8 +123,35 @@ async function readPrefix(res: Response): Promise<string> {
 	return new TextDecoder('utf-8', { fatal: false }).decode(out);
 }
 
-function readTitle(html: string): string | undefined {
+export function readTitle(html: string): string | undefined {
 	const match = html.match(/<title[^>]*>([^<]*)<\/title>/i);
 	const title = match?.[1]?.replace(/\s+/g, ' ').trim();
 	return title || undefined;
+}
+
+function readAttr(tag: string, name: string): string | undefined {
+	const match = tag.match(new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'));
+	return match?.[1] ?? match?.[2] ?? match?.[3];
+}
+
+/** First apple-touch-icon, then rel=icon, then shortcut icon. */
+export function readIconHref(html: string): string | undefined {
+	const found: { href: string; rank: number }[] = [];
+	for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
+		const tag = match[0] ?? '';
+		const rel = (readAttr(tag, 'rel') ?? '')
+			.toLowerCase()
+			.split(/\s+/)
+			.filter(Boolean);
+		const href = readAttr(tag, 'href')?.trim();
+		if (!href || /^javascript:/i.test(href)) continue;
+		const apple = rel.some((r) => r === 'apple-touch-icon' || r === 'apple-touch-icon-precomposed');
+		const icon = rel.includes('icon');
+		const shortcut = rel.includes('shortcut');
+		if (!apple && !icon && !shortcut) continue;
+		const rank = apple ? 0 : icon && !shortcut ? 1 : 2;
+		found.push({ href, rank });
+	}
+	found.sort((a, b) => a.rank - b.rank);
+	return found[0]?.href;
 }

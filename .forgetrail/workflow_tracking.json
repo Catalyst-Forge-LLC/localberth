@@ -411,6 +411,18 @@
         "Require claim --lan before a tile appears",
         "Show unclaimed listeners"
       ]
+    },
+    {
+      "id": "D30",
+      "timestamp": "2026-08-20",
+      "phase": "3-stabilization",
+      "decision": "Visitor tiles show the peeked HTML title and link rel=icon. Long-press copies the open URL. Header IPv4s are labeled Tailscale (100.64/10) or LAN (RFC1918).",
+      "rationale": "The phone should see the app's own name and icon, not only the lease. Peek stays on the LocalBerth host (loopback); /api/peek stays loopback-only. Labels tell you which address is the tailnet vs Wi-Fi.",
+      "alternatives_considered": [
+        "Phone calls /api/peek",
+        "Proxy favicons through LocalBerth",
+        "Show PID, firewall, and notes on the visitor face"
+      ]
     }
   ],
   "gotchas": [
@@ -633,6 +645,10 @@
     {
       "date": "2026-08-20",
       "summary": "Dropped 'reachable on this machine'. Hostname/IPs tap to copy. Visitor polls /api/visitor instead of a full refresh."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "D30: visitor tiles peek title and icon on the host. Long-press copies the open URL. Header IPs labeled Tailscale or LAN."
     }
   ],
   "openQuestions": []

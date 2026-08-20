@@ -6,7 +6,9 @@ import {
 	isOperatorFace,
 	visitorFaviconCandidates,
 	visitorHttpUrl,
+	visitorIconUrl,
 	visitorPageHost,
+	visitorTileIcons,
 	visitorTileLetter
 } from './dashboard-url.js';
 
@@ -52,6 +54,19 @@ describe('dashboardHttpUrl', () => {
 		assert.equal(
 			visitorFaviconCandidates('http://[fd7a:115c::2]:6173/')[0],
 			'http://[fd7a:115c::2]:6173/favicon.png'
+		);
+		assert.equal(
+			visitorIconUrl('http://100.64.1.2:5193/', '/mark.svg'),
+			'http://100.64.1.2:5193/mark.svg'
+		);
+		assert.equal(
+			visitorIconUrl('http://100.64.1.2:5193/', 'http://127.0.0.1:5193/mark.svg'),
+			'http://100.64.1.2:5193/mark.svg'
+		);
+		assert.equal(visitorIconUrl('http://100.64.1.2:5193/', 'https://cdn.example.com/x.ico'), null);
+		assert.equal(
+			visitorTileIcons('http://100.64.1.2:5193/', '/mark.svg')[0],
+			'http://100.64.1.2:5193/mark.svg'
 		);
 		assert.equal(visitorTileLetter('fizzbuzz'), 'F');
 		assert.equal(visitorTileLetter(''), '?');

@@ -7,16 +7,17 @@ import {
 	OPEN_TARGET,
 	isOperatorFace,
 	rowOpenUrl,
-	visitorFaviconCandidates,
 	visitorHttpUrl,
 	VISITOR_FAVICON_FILES,
 	visitorPageHost,
+	visitorTileIcons,
 	visitorTileLetter
 } from '../dashboard-url.js';
+import { addressCaption } from '../address.js';
 import { machineCard } from '../machine.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
-import { visitorSnapshot, visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
+import { visitorFeed } from './visitor-feed.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
 import type { BoardRow } from './types.js';
@@ -47,7 +48,10 @@ code { color:var(--text); }`;
 function brandHeader(meta: string): string {
 	const machine = machineCard();
 	const addrs = machine.addresses
-		.map((addr) => `<button type="button" class="copy" data-copy="${esc(addr)}">${esc(addr)}</button>`)
+		.map(
+			(addr) =>
+				`<button type="button" class="copy" data-copy="${esc(addr)}">${esc(addressCaption(addr))}</button>`
+		)
 		.join('<span aria-hidden="true"> · </span>');
 	return `<header>
 <div class="ident">
@@ -105,6 +109,45 @@ const COPY_SCRIPT = `(function () {
 			setTimeout(function () { btn.textContent = prev; }, 1200);
 		});
 	});
+	function bindHold(el) {
+		var url = el.getAttribute('data-copy-url');
+		if (!url || el.getAttribute('data-hold-bound')) return;
+		el.setAttribute('data-hold-bound', '1');
+		var timer = null;
+		var held = false;
+		function clear() { if (timer) clearTimeout(timer); timer = null; }
+		function flash() {
+			copyText(url).then(function (ok) {
+				if (!ok) return;
+				held = true;
+				var label = el.querySelector('.name');
+				if (!label) return;
+				var prev = label.textContent;
+				label.textContent = 'Copied';
+				setTimeout(function () { label.textContent = prev; }, 1200);
+			});
+		}
+		el.addEventListener('pointerdown', function (e) {
+			if (e.pointerType === 'mouse' && e.button !== 0) return;
+			held = false;
+			clear();
+			timer = setTimeout(flash, 500);
+		});
+		el.addEventListener('pointerup', clear);
+		el.addEventListener('pointercancel', clear);
+		el.addEventListener('pointerleave', clear);
+		el.addEventListener('click', function (e) {
+			if (!held) return;
+			e.preventDefault();
+			held = false;
+		});
+		el.addEventListener('contextmenu', function (e) {
+			e.preventDefault();
+			flash();
+		});
+	}
+	document.querySelectorAll('[data-copy-url]').forEach(bindHold);
+	window.localberthBindHold = bindHold;
 })();`;
 
 const OPEN_ICON =
@@ -260,33 +303,39 @@ function visitorIconImg(candidates: string[]): string {
 	return `<img src="${esc(first ?? '')}" alt="" data-next="${esc(JSON.stringify(rest))}" onerror="var n;try{n=JSON.parse(this.getAttribute('data-next')||'[]')}catch(e){n=[]}if(!n.length){this.hidden=true;return;}this.src=n.shift();this.setAttribute('data-next',JSON.stringify(n))"/>`;
 }
 
-function visitorTile(name: string, port: number, href: string | null, here: boolean): string {
+function visitorTile(
+	name: string,
+	port: number,
+	href: string | null,
+	here: boolean,
+	title?: string | null,
+	icon?: string | null
+): string {
+	const heading = (title?.trim() || name);
 	const letter = esc(visitorTileLetter(name));
 	const candidates = here
 		? VISITOR_FAVICON_FILES.map((file) => `/${file}`)
 		: href
-			? visitorFaviconCandidates(href)
+			? visitorTileIcons(href, icon)
 			: [];
 	const img = visitorIconImg(candidates);
 	const caption = here ? 'This app' : String(port);
-	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(name)}</span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
+	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(heading)}</span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
 	if (!href || here) {
 		return `<div class="tile${here ? ' here' : ''}"${here ? ' aria-current="page"' : ''}>${face}</div>`;
 	}
-	return `<a class="tile" href="${esc(href)}" target="${OPEN_TARGET}" rel="noopener" aria-label="Open ${esc(name)}">${face}</a>`;
+	return `<a class="tile" href="${esc(href)}" target="${OPEN_TARGET}" rel="noopener" aria-label="Open ${esc(heading)}" data-copy-url="${esc(href)}">${face}</a>`;
 }
 
-function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: string | null): string {
-	const rows = visitorLeaseRows(board.leaseRows);
+async function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: string | null): Promise<string> {
+	const feed = await visitorFeed(board.leaseRows, machineCard());
 	const body =
-		rows.length === 0
+		feed.tiles.length === 0
 			? `<p class="muted">Nothing listening past loopback. Claim with <code>--lan</code> or start the app on all interfaces.</p>`
-			: `<div class="tiles">${rows
-					.map((row) => {
-						const name = row.lease!.name;
-						const port = row.lease!.port;
-						const href = pageHost ? visitorHttpUrl(pageHost, port) : null;
-						return visitorTile(name, port, href, false);
+			: `<div class="tiles">${feed.tiles
+					.map((tile) => {
+						const href = pageHost ? visitorHttpUrl(pageHost, tile.port) : null;
+						return visitorTile(tile.name, tile.port, href, false, tile.title, tile.icon);
 					})
 					.join('')}</div>`;
 	return `<!doctype html>
@@ -299,7 +348,7 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 ${FACE_CSS}
 .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
 @media (min-width:640px) { .tiles { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; box-shadow:0 1px 2px rgba(26,25,23,.04); }
+.tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; box-shadow:0 1px 2px rgba(26,25,23,.04); user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
 .tile.here { border-color:rgba(42,111,106,.35); }
 a.tile:hover { background:rgba(26,25,23,.04); }
 .logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(26,25,23,.06); color:var(--muted); font-size:1.125rem; font-weight:600; }
@@ -331,21 +380,45 @@ ${COPY_SCRIPT}
 		img.src = n.shift();
 		img.setAttribute('data-next', JSON.stringify(n));
 	}
+	function resolveIcon(openHref, iconHref) {
+		if (!iconHref) return null;
+		var raw = String(iconHref).trim();
+		if (!raw || /^javascript:/i.test(raw)) return null;
+		if (raw.indexOf('data:image/') === 0) return raw;
+		try {
+			var open = new URL(openHref);
+			var url = new URL(raw, open);
+			if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+			var host = url.hostname.replace(/^\[|\]$/g, '');
+			var openHost = open.hostname.replace(/^\[|\]$/g, '');
+			var loop = host === '127.0.0.1' || host === '::1' || host === 'localhost';
+			if (!loop && host !== openHost) return null;
+			url.protocol = open.protocol;
+			url.hostname = open.hostname;
+			url.port = open.port;
+			return url.href;
+		} catch (e) { return null; }
+	}
 	function tileEl(tile) {
 		var href = pageHost ? ('http://' + pageHost + ':' + tile.port + '/') : null;
+		var heading = (tile.title && String(tile.title).trim()) || tile.name;
 		var root = document.createElement(href ? 'a' : 'div');
 		root.className = 'tile';
 		if (href) {
 			root.href = href;
 			root.target = ${JSON.stringify(OPEN_TARGET)};
 			root.rel = 'noopener';
+			root.setAttribute('data-copy-url', href);
+			root.setAttribute('aria-label', 'Open ' + heading);
 		}
 		var logo = document.createElement('span');
 		logo.className = 'logo';
 		logo.setAttribute('aria-hidden', 'true');
 		logo.textContent = (tile.name.trim().charAt(0) || '?').toUpperCase();
 		if (href) {
-			var files = ['favicon.png', 'favicon.svg', 'favicon.ico'].map(function (f) { return href + f; });
+			var guessed = ['favicon.png', 'favicon.svg', 'favicon.ico'].map(function (f) { return href + f; });
+			var peeked = resolveIcon(href, tile.icon);
+			var files = peeked ? [peeked].concat(guessed.filter(function (u) { return u !== peeked; })) : guessed;
 			var img = document.createElement('img');
 			img.alt = '';
 			img.src = files.shift();
@@ -355,13 +428,14 @@ ${COPY_SCRIPT}
 		}
 		var name = document.createElement('span');
 		name.className = 'name';
-		name.textContent = tile.name;
+		name.textContent = heading;
 		var port = document.createElement('span');
 		port.className = 'port';
 		port.textContent = String(tile.port);
 		root.appendChild(logo);
 		root.appendChild(name);
 		root.appendChild(port);
+		if (href && window.localberthBindHold) window.localberthBindHold(root);
 		return root;
 	}
 	function draw(tiles) {
@@ -420,7 +494,7 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 			if (url.pathname === '/api/visitor') {
 				const board = await getBoard({ showSystem: false });
 				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-				res.end(JSON.stringify(visitorSnapshot(board.leaseRows, machineCard())));
+				res.end(JSON.stringify(await visitorFeed(board.leaseRows, machineCard())));
 				return;
 			}
 			if (url.pathname === '/api/board') {
@@ -439,7 +513,7 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 				const board = await getBoard({ showSystem: false });
 				const pageHost = visitorPageHost(req.headers.host);
 				res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-				res.end(visitorPage(board, pageHost));
+				res.end(await visitorPage(board, pageHost));
 				return;
 			}
 			const showSystem = url.searchParams.get('system') === '1';

@@ -1,6 +1,6 @@
 import { machineCard } from '$lib/machine';
 import { getBoard } from '$lib/server/board';
-import { visitorLeaseRows } from '$lib/visitor';
+import { visitorFeed } from '$lib/server/visitor-feed';
 import { isOperatorFace, visitorPageHost } from '$lib/dashboard-url';
 import type { PageServerLoad } from './$types';
 
@@ -8,9 +8,10 @@ export const load: PageServerLoad = async ({ url, getClientAddress, request }) =
 	const machine = machineCard();
 	if (!isOperatorFace(getClientAddress(), request.headers.get('host'))) {
 		const board = await getBoard({ showSystem: false });
+		const feed = await visitorFeed(board.leaseRows, machine);
 		return {
 			face: 'visitor' as const,
-			visitorRows: visitorLeaseRows(board.leaseRows),
+			visitorTiles: feed.tiles,
 			pageHost: visitorPageHost(request.headers.get('host')),
 			showSystem: false,
 			hiddenSystem: 0,
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({ url, getClientAddress, request }) =
 		face: 'operator' as const,
 		...(await getBoard({ showSystem })),
 		showSystem,
-		visitorRows: [],
+		visitorTiles: [],
 		pageHost: null,
 		machine
 	};

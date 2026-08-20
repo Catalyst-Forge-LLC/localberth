@@ -1,4 +1,5 @@
 import { networkInterfaces, hostname as osHostname } from 'node:os';
+import { addrRank } from './address.js';
 
 export type MachineCard = {
 	hostname: string;
@@ -17,13 +18,6 @@ export function isPublicV4(address: string, internal: boolean): boolean {
 	if (address.startsWith('169.254.')) return false;
 	if (address.startsWith('127.')) return false;
 	return true;
-}
-
-function addrRank(address: string): number {
-	const [a, b] = address.split('.').map(Number);
-	if (a === 100 && (b ?? 0) >= 64 && (b ?? 0) <= 127) return 0;
-	if (a === 10 || a === 192 && b === 168 || a === 172 && (b ?? 0) >= 16 && (b ?? 0) <= 31) return 1;
-	return 2;
 }
 
 export function pickAddresses(

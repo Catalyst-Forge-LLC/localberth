@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createServer as createNet, type AddressInfo } from 'node:net';
 import { after, describe, it } from 'node:test';
-import { formatPeek, parsePeekPort, peekHttp, peekPayload } from './http-peek.js';
+import { formatPeek, parsePeekPort, peekHttp, peekPayload, readIconHref, readTitle } from './http-peek.js';
 
 describe('parsePeekPort', () => {
 	it('accepts a real TCP port', () => {
@@ -21,10 +21,12 @@ describe('peekHttp', () => {
 		for (const s of servers) s.close();
 	});
 
-	it('reads status, type, and title', async () => {
+	it('reads status, type, title, and icon', async () => {
 		const server = createServer((_req, res) => {
 			res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', server: 'testkit' });
-			res.end('<html><head><title>Fizz</title></head><body>ok</body></html>');
+			res.end(
+				'<html><head><title>Fizz</title><link rel="icon" href="/mark.svg"></head><body>ok</body></html>'
+			);
 		});
 		servers.push(server);
 		const port = await listen(server);
@@ -33,6 +35,7 @@ describe('peekHttp', () => {
 		assert.equal(peek.status, 200);
 		assert.equal(peek.contentType, 'text/html');
 		assert.equal(peek.title, 'Fizz');
+		assert.equal(peek.iconHref, '/mark.svg');
 		assert.match(formatPeek(peek), /200 · text\/html · Fizz/);
 	});
 
@@ -56,6 +59,15 @@ describe('peekHttp', () => {
 		const peek = await peekHttp(port);
 		assert.equal(peek.http, false);
 		assert.equal(formatPeek(peek), 'Not HTTP.');
+	});
+
+	it('prefers apple-touch-icon over rel=icon', () => {
+		const html =
+			'<link rel="icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/touch.png">';
+		assert.equal(readTitle('<title>  Desk  App </title>'), 'Desk App');
+		assert.equal(readIconHref(html), '/touch.png');
+		assert.equal(readIconHref('<link rel="shortcut icon" href="mark.ico">'), 'mark.ico');
+		assert.equal(readIconHref('<link rel="stylesheet" href="/app.css">'), undefined);
 	});
 
 	it('falls back to IPv6 loopback', async () => {
