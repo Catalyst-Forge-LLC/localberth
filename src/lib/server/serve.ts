@@ -46,13 +46,13 @@ header .dot { color:rgba(250,248,243,.3); }
 header button.copy { margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
 .feed { flex:1; min-height:0; overflow:auto; padding:0 1.25rem 1rem; }
 .feed.board { display:flex; flex-direction:column; overflow:hidden; padding-top:1rem; }
-.sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
+.sitefoot { display:flex; justify-content:space-between; align-items:center; flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
 .sitefoot a { color:rgba(250,248,243,.8); text-decoration:none; font-size:.875rem; }
 a { color:var(--ok); }
 code { color:var(--text); }`;
 
 function siteFooter(): string {
-	return `<footer class="sitefoot"><a href="https://localberth.com" rel="noopener">localberth.com</a></footer>`;
+	return `<footer class="sitefoot"><a href="https://www.catalystforge.com" rel="noopener">Catalyst Forge, LLC</a><a href="https://localberth.com/docs" rel="noopener">Docs</a></footer>`;
 }
 
 function brandHeader(meta: string): string {

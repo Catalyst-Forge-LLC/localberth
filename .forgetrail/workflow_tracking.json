@@ -715,6 +715,10 @@
     {
       "date": "2026-08-20",
       "summary": "D32: operator Leases and Observed are tabs with a scrolling pane and sticky table headers."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Dashboard footer: Catalyst Forge, LLC left; Docs (localberth.com/docs) right."
     }
   ],
   "openQuestions": []
