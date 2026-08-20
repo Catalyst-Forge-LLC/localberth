@@ -72,7 +72,7 @@ describe('rowDetailFields', () => {
 	it('labels Vite --host (::) as 0.0.0.0 in the bind column', () => {
 		const row: BoardRow = {
 			lease: {
-				name: 'engram',
+				name: 'foo',
 				port: 5193,
 				bind: '127.0.0.1',
 				protocol: 'tcp',
@@ -84,10 +84,10 @@ describe('rowDetailFields', () => {
 			observed: {
 				port: 5193,
 				bind: '::',
-				pid: 28552,
+				pid: 1,
 				process: 'node.exe',
 				seenAt: '2026-08-19T17:40:00.000Z',
-				leaseName: 'engram'
+				leaseName: 'foo'
 			},
 			listening: true,
 			conflict: true,

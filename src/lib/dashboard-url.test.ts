@@ -39,20 +39,20 @@ describe('dashboardHttpUrl', () => {
 	});
 
 	it('builds visitor opens from the request Host', () => {
-		assert.equal(visitorPageHost('100.74.12.14:54321'), '100.74.12.14');
+		assert.equal(visitorPageHost('100.64.1.2:54321'), '100.64.1.2');
 		assert.equal(visitorPageHost('[fd7a:115c::2]:54321'), '[fd7a:115c::2]');
 		assert.equal(visitorPageHost('evil.com/x'), null);
-		assert.equal(visitorHttpUrl('100.74.12.14', 5193), 'http://100.74.12.14:5193/');
-		assert.deepEqual(visitorFaviconCandidates('http://100.74.12.14:5193/'), [
-			'http://100.74.12.14:5193/favicon.png',
-			'http://100.74.12.14:5193/favicon.svg',
-			'http://100.74.12.14:5193/favicon.ico'
+		assert.equal(visitorHttpUrl('100.64.1.2', 5193), 'http://100.64.1.2:5193/');
+		assert.deepEqual(visitorFaviconCandidates('http://100.64.1.2:5193/'), [
+			'http://100.64.1.2:5193/favicon.png',
+			'http://100.64.1.2:5193/favicon.svg',
+			'http://100.64.1.2:5193/favicon.ico'
 		]);
 		assert.equal(
 			visitorFaviconCandidates('http://[fd7a:115c::2]:6173/')[0],
 			'http://[fd7a:115c::2]:6173/favicon.png'
 		);
-		assert.equal(visitorTileLetter('catalyst-forge'), 'C');
+		assert.equal(visitorTileLetter('fizzbuzz'), 'F');
 		assert.equal(visitorTileLetter(''), '?');
 	});
 });

@@ -445,7 +445,7 @@
     {
       "date": "2026-08-20",
       "phase": "3-stabilization",
-      "gotcha": "forgetrail-site on 5195 was claimed 127.0.0.1 but Vite --host printed Tailscale/Wi-Fi URLs. Visitor tiles hid it because they filtered on the claim bind.",
+      "gotcha": "A loopback claim with Vite --host was reachable on Tailscale/Wi-Fi but hidden on visitor tiles, which filtered on the claim bind.",
       "fix": "isVisitorLease uses observed.bind (fallback lease.bind). Loopback-only sockets stay off the phone menu."
     }
   ],

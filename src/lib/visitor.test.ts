@@ -45,7 +45,7 @@ describe('visitorLeaseRows', () => {
 			row({ name: 'desk', port: 6173, bind: '127.0.0.1', listening: true }),
 			row({ name: 'down', port: 5180, bind: '0.0.0.0', listening: false }),
 			row({
-				name: 'forgetrail-site',
+				name: 'fizzbuzz',
 				port: 5195,
 				bind: '127.0.0.1',
 				listening: true,
@@ -54,7 +54,7 @@ describe('visitorLeaseRows', () => {
 		];
 		assert.deepEqual(
 			visitorLeaseRows(rows).map((r) => r.lease?.name),
-			['phone', 'forgetrail-site']
+			['phone', 'fizzbuzz']
 		);
 		assert.equal(isVisitorLease(rows[1]!), false);
 	});
