@@ -453,6 +453,12 @@
     {
       "date": "2026-08-20",
       "phase": "3-stabilization",
+      "gotcha": "Cursor `git commit -m` injects a Co-authored-by: Cursor trailer after the message. Repo rule forbids unrequested trailers.",
+      "fix": "Write the message to a file and `bash -c 'git commit -F path'` (or `--amend -F`). Check `git log -1 --format=%B`."
+    },
+    {
+      "date": "2026-08-20",
+      "phase": "3-stabilization",
       "gotcha": "Vite --host (all interfaces) on Windows is a dual-stack socket. netstat TCPv6 reports ::, which looked like a bug next to 127.0.0.1 claims.",
       "fix": "displayBind maps wildcard :: / * / 0.0.0.0 to 0.0.0.0 for the table and Listen field. Relation is still wider vs a loopback claim."
     },
