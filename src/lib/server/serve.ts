@@ -29,11 +29,11 @@ function esc(value: string): string {
 const SITE_STATIC = join(dirname(fileURLToPath(import.meta.url)), '../../../site/static');
 
 const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; --tile-band:#1a1917; --tile-band-ink:#faf8f3; }
-html,body { height:100%; }
+html,body { height:100%; overflow:hidden; }
 body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
-main { padding:1rem 1.25rem 1.5rem; }
+main { display:flex; flex-direction:column; height:100%; min-height:100dvh; padding:0; overflow:hidden; }
 .muted { color:var(--muted); }
-header { margin-bottom:1rem; }
+header { flex-shrink:0; padding:1rem 1.25rem .75rem; margin:0; }
 header .ident { display:flex; align-items:center; gap:.75rem; }
 header .brand { margin:0; }
 header .brand img { display:block; height:3.5rem; width:auto; }
@@ -42,8 +42,15 @@ header .host { margin:.15rem 0 0; font-size:.875rem; }
 header .addrs { margin:.15rem 0 0; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; }
 header .meta { margin:.5rem 0 0; color:var(--muted); font-size:.8rem; }
 header button.copy { margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.feed { flex:1; min-height:0; overflow:auto; padding:0 1.25rem 1rem; }
+.sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
+.sitefoot a { color:rgba(250,248,243,.8); text-decoration:none; font-size:.875rem; }
 a { color:var(--ok); }
 code { color:var(--text); }`;
+
+function siteFooter(): string {
+	return `<footer class="sitefoot"><a href="https://localberth.com" rel="noopener">localberth.com</a></footer>`;
+}
 
 function brandHeader(meta: string): string {
 	const machine = machineCard();
@@ -211,6 +218,7 @@ ${FACE_CSS}
 .warn { color:var(--warn); font-size:.75rem; }
 .num { font-variant-numeric:tabular-nums; }
 section { margin-top:1.15rem; }
+.feed > section:first-child { margin-top:0; }
 h2 { font-size:.8rem; font-weight:600; color:var(--muted); margin:0 0 .4rem; }
 table { width:100%; min-width:40rem; border-collapse:collapse; background:var(--elev); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
 th,td { text-align:left; padding:.55rem .85rem; }
@@ -240,6 +248,7 @@ a { color:var(--ok); }
 <body>
 <main>
 ${brandHeader(`:${DASHBOARD_PORT} · ${toggle}`)}
+<div class="feed">
 <section>
 <h2>Leases</h2>
 <table><thead><tr><th>Name</th><th>Port</th><th>Bind</th><th>Listening</th><th>Process</th><th>Firewall</th><th class="go"></th></tr></thead>
@@ -251,6 +260,8 @@ ${brandHeader(`:${DASHBOARD_PORT} · ${toggle}`)}
 <tbody>${observed}</tbody></table>
 </section>
 <p class="muted" style="margin-top:1.5rem"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
+</div>
+${siteFooter()}
 </main>
 <script>
 ${COPY_SCRIPT}
@@ -357,12 +368,7 @@ a.tile:hover { background:rgba(26,25,23,.04); }
 .name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
 .port { display:flex; align-items:center; justify-content:center; flex:0 0 18%; min-height:1.75rem; width:100%; background:var(--tile-band); color:var(--tile-band-ink); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8125rem; }
 .port.here { font-family:inherit; font-size:.75rem; font-weight:500; }
-html, body { height:100%; overflow:hidden; }
-main { display:flex; flex-direction:column; height:100%; min-height:100dvh; padding:0; overflow:hidden; }
-header { flex-shrink:0; padding:1rem 1.25rem .75rem; margin-bottom:0; }
-#feed { flex:1; min-height:0; overflow-y:auto; padding:0 1.25rem 1rem; }
-.sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
-.sitefoot a { color:rgba(250,248,243,.8); text-decoration:none; font-size:.875rem; }
+#feed { flex:1; }
 a { color:var(--ok); }
 code { color:var(--text); }
 </style>
@@ -370,8 +376,8 @@ code { color:var(--text); }
 <body>
 <main>
 ${brandHeader('')}
-<div id="feed">${body}</div>
-<footer class="sitefoot"><a href="https://localberth.com" rel="noopener">localberth.com</a></footer>
+<div class="feed" id="feed">${body}</div>
+${siteFooter()}
 </main>
 <script>
 ${COPY_SCRIPT}

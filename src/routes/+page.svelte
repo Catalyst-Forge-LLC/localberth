@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import BoardHeader from '$lib/BoardHeader.svelte';
+	import BoardShell from '$lib/BoardShell.svelte';
 	import RowDetail from '$lib/RowDetail.svelte';
 	import VisitorTile from '$lib/VisitorTile.svelte';
 	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
@@ -65,50 +66,38 @@
 </script>
 
 {#if data.face === 'visitor'}
-	<div class="flex h-dvh flex-col overflow-hidden">
-		<div class="shrink-0 px-5 pt-4 pb-3">
+	<BoardShell>
+		{#snippet header()}
 			<BoardHeader
 				class="mb-0"
 				hostname={visitorMachine.hostname}
 				addresses={visitorMachine.addresses}
 			/>
-		</div>
-		<div class="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
-			{#if visitorTiles.length === 0}
-				<p class="text-sm text-[var(--muted)]">
-					Nothing listening past loopback. Claim with
-					<code class="text-[var(--text)]">--lan</code>
-					or start the app on all interfaces.
-				</p>
-			{:else}
-				<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-					{#each visitorTiles as tile (tile.name)}
-						<VisitorTile
-							name={tile.name}
-							port={tile.port}
-							title={tile.title}
-							icon={tile.icon}
-							href={data.pageHost ? visitorHttpUrl(data.pageHost, tile.port) : null}
-						/>
-					{/each}
-				</div>
-			{/if}
-		</div>
-		<footer
-			class="shrink-0 border-t border-white/20 bg-[var(--tile-band)] px-5 py-3 text-center [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))]"
-		>
-			<a
-				class="text-sm text-[var(--tile-band-ink)]/80 no-underline"
-				href="https://localberth.com"
-				rel="noopener"
-			>
-				localberth.com
-			</a>
-		</footer>
-	</div>
+		{/snippet}
+		{#if visitorTiles.length === 0}
+			<p class="text-sm text-[var(--muted)]">
+				Nothing listening past loopback. Claim with
+				<code class="text-[var(--text)]">--lan</code>
+				or start the app on all interfaces.
+			</p>
+		{:else}
+			<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+				{#each visitorTiles as tile (tile.name)}
+					<VisitorTile
+						name={tile.name}
+						port={tile.port}
+						title={tile.title}
+						icon={tile.icon}
+						href={data.pageHost ? visitorHttpUrl(data.pageHost, tile.port) : null}
+					/>
+				{/each}
+			</div>
+		{/if}
+	</BoardShell>
 {:else}
-	<div class="px-5 py-4">
-	<BoardHeader hostname={data.machine.hostname} addresses={data.machine.addresses}>
+	<BoardShell>
+		{#snippet header()}
+	<BoardHeader class="mb-0" hostname={data.machine.hostname} addresses={data.machine.addresses}>
 		:54321 ·
 		{#if data.showSystem}
 			<a class="text-[var(--accent)]" href="/">Hide system ports</a>
@@ -118,6 +107,7 @@
 			</a>
 		{/if}
 	</BoardHeader>
+		{/snippet}
 
 	<section class="mb-5">
 		<h2 class="mb-1.5 text-xs font-medium text-[var(--muted)]">Leases</h2>
@@ -284,5 +274,5 @@
 		·
 		<code class="text-[var(--text)]">localberth serve</code>
 	</p>
-	</div>
+	</BoardShell>
 {/if}

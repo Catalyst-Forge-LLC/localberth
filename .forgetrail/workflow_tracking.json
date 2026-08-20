@@ -692,6 +692,10 @@
     {
       "date": "2026-08-20",
       "summary": "Docs nav 404 in filepress dev: SvelteKit treated /docs as a page slug. FilePress 0.1.8 marks path mounts as full reloads."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Operator board uses the same pinned header, scroll body, and localberth.com footer as the visitor face."
     }
   ],
   "openQuestions": []
