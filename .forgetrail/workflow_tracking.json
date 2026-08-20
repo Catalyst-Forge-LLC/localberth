@@ -727,6 +727,10 @@
     {
       "date": "2026-08-20",
       "summary": "Dashboard footer keeps localberth.com centered between Catalyst Forge and Docs."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Home hero carries a rounded italic dictionary gloss of berth; README uses a blockquote."
     }
   ],
   "openQuestions": []
