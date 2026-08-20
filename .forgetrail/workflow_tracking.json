@@ -593,6 +593,10 @@
     {
       "date": "2026-08-20",
       "summary": "D29: visitor tiles follow the listen bind so Vite --host shows up without --lan on the claim."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Visitor self tile: localberth last, not a link, labeled This app."
     }
   ],
   "openQuestions": []

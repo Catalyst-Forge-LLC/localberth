@@ -4,6 +4,7 @@
 	import RowDetail from '$lib/RowDetail.svelte';
 	import VisitorTile from '$lib/VisitorTile.svelte';
 	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
+	import { isVisitorSelf } from '$lib/visitor';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
 	import type { PageData } from './$types';
@@ -64,10 +65,12 @@
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
 			{#each data.visitorRows as row}
 				{#if row.lease}
+					{@const here = isVisitorSelf(row)}
 					<VisitorTile
 						name={row.lease.name}
 						port={row.lease.port}
-						href={data.pageHost ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
+						href={here || !data.pageHost ? null : visitorHttpUrl(data.pageHost, row.lease.port)}
+						{here}
 					/>
 				{/if}
 			{/each}

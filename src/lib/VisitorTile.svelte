@@ -1,14 +1,20 @@
 <script lang="ts">
 	import { OPEN_TARGET, visitorFaviconUrl, visitorTileLetter } from '$lib/dashboard-url';
 
-	let { name, port, href }: { name: string; port: number; href: string | null } = $props();
+	let {
+		name,
+		port,
+		href,
+		here = false
+	}: { name: string; port: number; href: string | null; here?: boolean } = $props();
 
 	const letter = $derived(visitorTileLetter(name));
-	const favicon = $derived(href ? visitorFaviconUrl(href) : null);
+	const favicon = $derived(here ? '/favicon.svg' : href ? visitorFaviconUrl(href) : null);
 	let broken = $state(false);
 
 	const tileClass =
-		'flex flex-col items-center gap-2 rounded-[10px] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline';
+		'flex flex-col items-center gap-2 rounded-[10px] border bg-[var(--bg-elevated)] px-3 py-4 text-center text-[var(--text)] no-underline';
+	const tileTone = $derived(here ? 'border-[var(--accent)]/35' : 'border-[var(--line)]');
 </script>
 
 {#snippet face()}
@@ -29,15 +35,17 @@
 		{/if}
 	</span>
 	<span class="w-full truncate text-sm font-medium">{name}</span>
-	<span class="tabular-nums text-xs text-[var(--muted)]">{port}</span>
+	<span class="text-xs {here ? 'text-[var(--accent)]' : 'tabular-nums text-[var(--muted)]'}">
+		{here ? 'This app' : port}
+	</span>
 {/snippet}
 
-{#if href}
-	<a class="{tileClass} hover:bg-white/[0.07]" {href} target={OPEN_TARGET} rel="noopener" aria-label="Open {name}">
+{#if href && !here}
+	<a class="{tileClass} {tileTone} hover:bg-white/[0.07]" {href} target={OPEN_TARGET} rel="noopener" aria-label="Open {name}">
 		{@render face()}
 	</a>
 {:else}
-	<div class={tileClass}>
+	<div class="{tileClass} {tileTone}" aria-current={here ? 'page' : undefined}>
 		{@render face()}
 	</div>
 {/if}

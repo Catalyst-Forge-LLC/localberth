@@ -9,7 +9,7 @@ import {
 	visitorTileLetter
 } from '../dashboard-url.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
-import { visitorLeaseRows } from '../visitor.js';
+import { isVisitorSelf, visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -176,14 +176,17 @@ a { color:var(--ok); }
 </html>`;
 }
 
-function visitorTile(name: string, port: number, href: string | null): string {
+function visitorTile(name: string, port: number, href: string | null, here: boolean): string {
 	const letter = esc(visitorTileLetter(name));
-	const favicon = href ? visitorFaviconUrl(href) : null;
+	const favicon = here ? '/favicon.svg' : href ? visitorFaviconUrl(href) : null;
 	const img = favicon
 		? `<img src="${esc(favicon)}" alt="" onerror="this.hidden=true"/>`
 		: '';
-	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(name)}</span><span class="port">${port}</span>`;
-	if (!href) return `<div class="tile">${face}</div>`;
+	const caption = here ? 'This app' : String(port);
+	const face = `<span class="logo" aria-hidden="true">${letter}${img}</span><span class="name">${esc(name)}</span><span class="port${here ? ' here' : ''}">${esc(caption)}</span>`;
+	if (!href || here) {
+		return `<div class="tile${here ? ' here' : ''}"${here ? ' aria-current="page"' : ''}>${face}</div>`;
+	}
 	return `<a class="tile" href="${esc(href)}" target="${OPEN_TARGET}" rel="noopener" aria-label="Open ${esc(name)}">${face}</a>`;
 }
 
@@ -196,8 +199,9 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 					.map((row) => {
 						const name = row.lease!.name;
 						const port = row.lease!.port;
-						const href = pageHost ? visitorHttpUrl(pageHost, port) : null;
-						return visitorTile(name, port, href);
+						const here = isVisitorSelf(row);
+						const href = here || !pageHost ? null : visitorHttpUrl(pageHost, port);
+						return visitorTile(name, port, href, here);
 					})
 					.join('')}</div>`;
 	return `<!doctype html>
@@ -219,11 +223,13 @@ header .meta { color:var(--muted); font-size:.8rem; }
 .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
 @media (min-width:640px) { .tiles { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 .tile { display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:1rem .75rem; text-align:center; text-decoration:none; color:var(--text); background:var(--elev); border:1px solid var(--line); border-radius:10px; }
+.tile.here { border-color:rgba(110,200,192,.35); }
 a.tile:hover { background:rgba(255,255,255,.07); }
 .logo { position:relative; display:flex; width:3rem; height:3rem; align-items:center; justify-content:center; overflow:hidden; border-radius:12px; background:rgba(255,255,255,.08); color:var(--muted); font-size:1.125rem; font-weight:600; }
 .logo img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
 .name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.875rem; font-weight:500; }
 .port { font-variant-numeric:tabular-nums; font-size:.75rem; color:var(--muted); }
+.port.here { font-variant-numeric:normal; color:var(--ok); }
 a { color:var(--ok); }
 code { color:var(--text); }
 </style>

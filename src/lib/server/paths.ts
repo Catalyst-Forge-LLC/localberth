@@ -2,8 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-export const DASHBOARD_PORT = 54321;
-export const DASHBOARD_NAME = 'localberth';
+export { DASHBOARD_NAME, DASHBOARD_PORT } from '../reserved.js';
 
 export function dataHome(): string {
 	const override = process.env.LOCALBERTH_HOME?.trim();
