@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { createServer as createNet } from 'node:net';
+import { createServer as createNet, type AddressInfo } from 'node:net';
 import { after, describe, it } from 'node:test';
 import { formatPeek, parsePeekPort, peekHttp, peekPayload } from './http-peek.js';
 
@@ -74,18 +74,18 @@ describe('peekHttp', () => {
 function listen(
 	server: {
 		listen(port: number, host: string, cb: () => void): void;
-		address(): string | { port: number } | null;
+		address(): string | AddressInfo | null;
 	},
 	host = '127.0.0.1'
 ): Promise<number> {
 	return new Promise((resolve, reject) => {
 		server.listen(0, host, () => {
 			const addr = server.address();
-			if (!addr || typeof addr === 'string') {
-				reject(new Error('expected a TCP address'));
+			if (addr && typeof addr === 'object' && typeof addr.port === 'number') {
+				resolve(addr.port);
 				return;
 			}
-			resolve(addr.port);
+			reject(new Error('expected a TCP address'));
 		});
 	});
 }
