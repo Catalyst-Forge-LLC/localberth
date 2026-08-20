@@ -15,7 +15,7 @@ import {
 } from '../dashboard-url.js';
 import { machineCard } from '../machine.js';
 import { rowBindDisplay, rowDetailFields } from '../row-detail.js';
-import { visitorLeaseRows } from '../visitor.js';
+import { visitorSnapshot, visitorLeaseRows } from '../visitor.js';
 import { parsePeekPort, peekLoopbackDenied, peekPayload } from './http-peek.js';
 import { DASHBOARD_PORT } from './paths.js';
 import { getBoard } from './board.js';
@@ -40,22 +40,25 @@ header .word { margin:0; font-size:1.125rem; font-weight:600; letter-spacing:-0.
 header .host { margin:.15rem 0 0; font-size:.875rem; }
 header .addrs { margin:.15rem 0 0; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; }
 header .meta { margin:.5rem 0 0; color:var(--muted); font-size:.8rem; }
+header button.copy { margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
 a { color:var(--ok); }
 code { color:var(--text); }`;
 
 function brandHeader(meta: string): string {
 	const machine = machineCard();
-	const addrs = machine.addresses.map(esc).join(' · ');
+	const addrs = machine.addresses
+		.map((addr) => `<button type="button" class="copy" data-copy="${esc(addr)}">${esc(addr)}</button>`)
+		.join('<span aria-hidden="true"> · </span>');
 	return `<header>
 <div class="ident">
 <p class="brand"><img src="/logo.png" alt=""/></p>
 <div>
 <p class="word">LocalBerth</p>
-<p class="host">${esc(machine.hostname)}</p>
+<button type="button" class="copy host" data-copy="${esc(machine.hostname)}">${esc(machine.hostname)}</button>
 ${addrs ? `<p class="addrs">${addrs}</p>` : ''}
 </div>
 </div>
-<p class="meta">${meta}</p>
+${meta ? `<p class="meta">${meta}</p>` : ''}
 </header>`;
 }
 
@@ -69,6 +72,40 @@ function sendSiteAsset(res: import('node:http').ServerResponse, file: string, ty
 		return false;
 	}
 }
+
+const COPY_SCRIPT = `(function () {
+	function copyText(text) {
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			return navigator.clipboard.writeText(text).then(function () { return true; }).catch(fallback);
+		}
+		return Promise.resolve(fallback());
+		function fallback() {
+			try {
+				var el = document.createElement('textarea');
+				el.value = text;
+				el.setAttribute('readonly', '');
+				el.style.position = 'fixed';
+				el.style.left = '-9999px';
+				document.body.appendChild(el);
+				el.select();
+				var ok = document.execCommand('copy');
+				el.remove();
+				return ok;
+			} catch (e) { return false; }
+		}
+	}
+	document.addEventListener('click', function (e) {
+		var btn = e.target.closest('[data-copy]');
+		if (!btn) return;
+		var value = btn.getAttribute('data-copy');
+		copyText(value).then(function (ok) {
+			if (!ok) return;
+			var prev = btn.textContent;
+			btn.textContent = 'Copied';
+			setTimeout(function () { btn.textContent = prev; }, 1200);
+		});
+	});
+})();`;
 
 const OPEN_ICON =
 	'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10"/><path d="M9 2h5v5"/><path d="M14 2 8 8"/></svg>';
@@ -124,7 +161,6 @@ function page(board: Awaited<ReturnType<typeof getBoard>>, showSystem: boolean):
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta http-equiv="refresh" content="8"/>
 <title>LocalBerth</title>
 <style>
 ${FACE_CSS}
@@ -174,6 +210,7 @@ ${brandHeader(`:${DASHBOARD_PORT} · ${toggle}`)}
 <p class="muted" style="margin-top:1.5rem"><code>localberth claim name --port N</code> · <code>localberth get name</code> · <code>localberth release name</code></p>
 </main>
 <script>
+${COPY_SCRIPT}
 (function () {
 	function closeAll() {
 		document.querySelectorAll('tr.detail.open').forEach(function (el) { el.classList.remove('open'); });
@@ -257,7 +294,6 @@ function visitorPage(board: Awaited<ReturnType<typeof getBoard>>, pageHost: stri
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta http-equiv="refresh" content="8"/>
 <title>LocalBerth</title>
 <style>
 ${FACE_CSS}
@@ -277,9 +313,80 @@ code { color:var(--text); }
 </head>
 <body>
 <main>
-${brandHeader('reachable on this machine')}
-${body}
+${brandHeader('')}
+<div id="feed">${body}</div>
 </main>
+<script>
+${COPY_SCRIPT}
+(function () {
+	var pageHost = ${JSON.stringify(pageHost)};
+	var last = '';
+	var empty = ${JSON.stringify(
+		`<p class="muted">Nothing listening past loopback. Claim with <code>--lan</code> or start the app on all interfaces.</p>`
+	)};
+	function nextIcon(img) {
+		var n;
+		try { n = JSON.parse(img.getAttribute('data-next') || '[]'); } catch (e) { n = []; }
+		if (!n.length) { img.hidden = true; return; }
+		img.src = n.shift();
+		img.setAttribute('data-next', JSON.stringify(n));
+	}
+	function tileEl(tile) {
+		var href = pageHost ? ('http://' + pageHost + ':' + tile.port + '/') : null;
+		var root = document.createElement(href ? 'a' : 'div');
+		root.className = 'tile';
+		if (href) {
+			root.href = href;
+			root.target = ${JSON.stringify(OPEN_TARGET)};
+			root.rel = 'noopener';
+		}
+		var logo = document.createElement('span');
+		logo.className = 'logo';
+		logo.setAttribute('aria-hidden', 'true');
+		logo.textContent = (tile.name.trim().charAt(0) || '?').toUpperCase();
+		if (href) {
+			var files = ['favicon.png', 'favicon.svg', 'favicon.ico'].map(function (f) { return href + f; });
+			var img = document.createElement('img');
+			img.alt = '';
+			img.src = files.shift();
+			img.setAttribute('data-next', JSON.stringify(files));
+			img.onerror = function () { nextIcon(img); };
+			logo.appendChild(img);
+		}
+		var name = document.createElement('span');
+		name.className = 'name';
+		name.textContent = tile.name;
+		var port = document.createElement('span');
+		port.className = 'port';
+		port.textContent = String(tile.port);
+		root.appendChild(logo);
+		root.appendChild(name);
+		root.appendChild(port);
+		return root;
+	}
+	function draw(tiles) {
+		var key = JSON.stringify(tiles);
+		if (key === last) return;
+		last = key;
+		var feed = document.getElementById('feed');
+		if (!feed) return;
+		feed.replaceChildren();
+		if (!tiles.length) {
+			feed.innerHTML = empty;
+			return;
+		}
+		var grid = document.createElement('div');
+		grid.className = 'tiles';
+		tiles.forEach(function (tile) { grid.appendChild(tileEl(tile)); });
+		feed.appendChild(grid);
+	}
+	setInterval(function () {
+		fetch('/api/visitor').then(function (r) { return r.json(); }).then(function (j) {
+			draw(j.tiles || []);
+		});
+	}, 8000);
+})();
+</script>
 </body>
 </html>`;
 }
@@ -308,6 +415,12 @@ export async function serveDashboard(opts: { host?: string; port?: number } = {}
 				}
 				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
 				res.end(JSON.stringify(await peekPayload(peekPort, { selfPort: port })));
+				return;
+			}
+			if (url.pathname === '/api/visitor') {
+				const board = await getBoard({ showSystem: false });
+				res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+				res.end(JSON.stringify(visitorSnapshot(board.leaseRows, machineCard())));
 				return;
 			}
 			if (url.pathname === '/api/board') {

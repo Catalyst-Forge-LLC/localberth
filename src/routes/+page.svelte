@@ -7,11 +7,21 @@
 	import { OPEN_TARGET, rowOpenUrl, visitorHttpUrl } from '$lib/dashboard-url';
 	import { rowBindDisplay } from '$lib/row-detail';
 	import type { BoardRow } from '$lib/types';
+	import type { VisitorSnapshot } from '$lib/visitor';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	let expanded = $state<string | null>(null);
 	let peekLine = $state<Record<string, string>>({});
+	let visitorFeed = $state<VisitorSnapshot | null>(null);
+
+	const visitorMachine = $derived(visitorFeed ?? data.machine);
+	const visitorTiles = $derived(
+		visitorFeed?.tiles ??
+			data.visitorRows.flatMap((row) =>
+				row.lease ? [{ name: row.lease.name, port: row.lease.port }] : []
+			)
+	);
 
 	function rowId(row: BoardRow): string {
 		if (row.lease) return `lease:${row.lease.name}`;
@@ -42,6 +52,16 @@
 	}
 
 	onMount(() => {
+		if (data.face === 'visitor') {
+			const id = setInterval(() => {
+				void fetch('/api/visitor')
+					.then((res) => res.json() as Promise<VisitorSnapshot>)
+					.then((body) => {
+						visitorFeed = body;
+					});
+			}, 8000);
+			return () => clearInterval(id);
+		}
 		const id = setInterval(() => {
 			void invalidateAll();
 		}, 8000);
@@ -50,11 +70,9 @@
 </script>
 
 {#if data.face === 'visitor'}
-	<BoardHeader hostname={data.machine.hostname} addresses={data.machine.addresses}>
-		reachable on this machine
-	</BoardHeader>
+	<BoardHeader hostname={visitorMachine.hostname} addresses={visitorMachine.addresses} />
 
-	{#if data.visitorRows.length === 0}
+	{#if visitorTiles.length === 0}
 		<p class="text-sm text-[var(--muted)]">
 			Nothing listening past loopback. Claim with
 			<code class="text-[var(--text)]">--lan</code>
@@ -62,14 +80,12 @@
 		</p>
 	{:else}
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-			{#each data.visitorRows as row}
-				{#if row.lease}
-					<VisitorTile
-						name={row.lease.name}
-						port={row.lease.port}
-						href={data.pageHost ? visitorHttpUrl(data.pageHost, row.lease.port) : null}
-					/>
-				{/if}
+			{#each visitorTiles as tile (tile.name)}
+				<VisitorTile
+					name={tile.name}
+					port={tile.port}
+					href={data.pageHost ? visitorHttpUrl(data.pageHost, tile.port) : null}
+				/>
 			{/each}
 		</div>
 	{/if}

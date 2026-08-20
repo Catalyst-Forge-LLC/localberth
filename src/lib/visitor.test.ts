@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { isVisitorLease, isVisitorSelf, visitorLeaseRows } from './visitor.js';
+import { isVisitorLease, isVisitorSelf, visitorLeaseRows, visitorSnapshot } from './visitor.js';
 import type { BoardRow } from './types.js';
 
 function row(partial: {
@@ -69,5 +69,17 @@ describe('visitorLeaseRows', () => {
 			['phone']
 		);
 		assert.equal(isVisitorSelf(rows[0]!), true);
+	});
+
+	it('snapshots hostname and tiles without the board itself', () => {
+		const rows = [
+			row({ name: 'localberth', port: 54321, bind: '0.0.0.0', listening: true }),
+			row({ name: 'phone', port: 5193, bind: '0.0.0.0', listening: true })
+		];
+		assert.deepEqual(visitorSnapshot(rows, { hostname: 'desk', addresses: ['100.64.1.2'] }), {
+			hostname: 'desk',
+			addresses: ['100.64.1.2'],
+			tiles: [{ name: 'phone', port: 5193 }]
+		});
 	});
 });

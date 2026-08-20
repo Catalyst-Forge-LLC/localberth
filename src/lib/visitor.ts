@@ -16,3 +16,24 @@ export function isVisitorSelf(row: BoardRow): boolean {
 export function visitorLeaseRows(rows: BoardRow[]): BoardRow[] {
 	return rows.filter((row) => isVisitorLease(row) && !isVisitorSelf(row));
 }
+
+export type VisitorTileInfo = { name: string; port: number };
+
+export type VisitorSnapshot = {
+	hostname: string;
+	addresses: string[];
+	tiles: VisitorTileInfo[];
+};
+
+export function visitorSnapshot(
+	rows: BoardRow[],
+	machine: { hostname: string; addresses: string[] }
+): VisitorSnapshot {
+	return {
+		hostname: machine.hostname,
+		addresses: machine.addresses,
+		tiles: visitorLeaseRows(rows).flatMap((row) =>
+			row.lease ? [{ name: row.lease.name, port: row.lease.port }] : []
+		)
+	};
+}
