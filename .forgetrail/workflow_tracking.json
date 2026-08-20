@@ -470,6 +470,12 @@
     {
       "date": "2026-08-20",
       "phase": "3-stabilization",
+      "gotcha": "Clicking Docs in `filepress dev` 404s as page slug `docs`. GET /docs already served the mount.",
+      "fix": "FilePress 0.1.8: data-sveltekit-reload on path-mount nav/footer/in-page links. Site pinned to link:../../filepress until that is on npm."
+    },
+    {
+      "date": "2026-08-20",
+      "phase": "3-stabilization",
       "gotcha": "Vite --host (all interfaces) on Windows is a dual-stack socket. netstat TCPv6 reports ::, which looked like a bug next to 127.0.0.1 claims.",
       "fix": "displayBind maps wildcard :: / * / 0.0.0.0 to 0.0.0.0 for the table and Listen field. Relation is still wider vs a loopback claim."
     },
@@ -682,6 +688,10 @@
     {
       "date": "2026-08-20",
       "summary": "D31: FilePress /docs mount (ollanet shell). README trimmed to install + docs link."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Docs nav 404 in filepress dev: SvelteKit treated /docs as a page slug. FilePress 0.1.8 marks path mounts as full reloads."
     }
   ],
   "openQuestions": []
