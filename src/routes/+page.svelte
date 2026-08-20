@@ -68,11 +68,7 @@
 {#if data.face === 'visitor'}
 	<BoardShell>
 		{#snippet header()}
-			<BoardHeader
-				class="mb-0"
-				hostname={visitorMachine.hostname}
-				addresses={visitorMachine.addresses}
-			/>
+			<BoardHeader hostname={visitorMachine.hostname} addresses={visitorMachine.addresses} />
 		{/snippet}
 		{#if visitorTiles.length === 0}
 			<p class="text-sm text-[var(--muted)]">
@@ -97,12 +93,12 @@
 {:else}
 	<BoardShell>
 		{#snippet header()}
-	<BoardHeader class="mb-0" hostname={data.machine.hostname} addresses={data.machine.addresses}>
+	<BoardHeader hostname={data.machine.hostname} addresses={data.machine.addresses}>
 		:54321 ·
 		{#if data.showSystem}
-			<a class="text-[var(--accent)]" href="/">Hide system ports</a>
+			<a href="/">Hide system ports</a>
 		{:else}
-			<a class="text-[var(--accent)]" href="/?system=1">
+			<a href="/?system=1">
 				Show {data.hiddenSystem} system port{data.hiddenSystem === 1 ? '' : 's'}
 			</a>
 		{/if}

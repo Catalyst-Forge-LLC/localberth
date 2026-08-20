@@ -696,6 +696,10 @@
     {
       "date": "2026-08-20",
       "summary": "Operator board uses the same pinned header, scroll body, and localberth.com footer as the visitor face."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Dashboard header is a black bar matching the logo, with hostname and IPs on one wrapping line."
     }
   ],
   "openQuestions": []

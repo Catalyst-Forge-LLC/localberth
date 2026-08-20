@@ -29,33 +29,34 @@
 	}
 </script>
 
-<header class="mb-4 {className}">
-	<div class="flex items-center gap-3">
-		<BrandMark />
-		<div class="min-w-0">
-			<p class="text-lg font-semibold tracking-tight">LocalBerth</p>
+<header class="bg-black text-[var(--tile-band-ink)] {className}">
+	<div class="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-2">
+		<span class="flex shrink-0 items-center gap-2.5">
+			<BrandMark class="h-11 w-auto" />
+			<span class="text-base font-semibold tracking-tight">LocalBerth</span>
+		</span>
+		<button
+			type="button"
+			class="cursor-pointer text-left text-sm text-white/85 hover:text-white"
+			onclick={() => copy(hostname)}
+		>
+			{copied === hostname ? 'Copied' : hostname}
+		</button>
+		{#each addresses as addr}
+			<span class="text-white/30" aria-hidden="true">·</span>
 			<button
 				type="button"
-				class="block max-w-full cursor-pointer truncate text-left text-sm"
-				onclick={() => copy(hostname)}
+				class="cursor-pointer text-left text-sm tabular-nums text-white/70 hover:text-white"
+				onclick={() => copy(addr)}
 			>
-				{copied === hostname ? 'Copied' : hostname}
+				{copied === addr ? 'Copied' : addressCaption(addr)}
 			</button>
-			{#if addresses.length > 0}
-				<p class="text-xs tabular-nums text-[var(--muted)]">
-					{#each addresses as addr, i}
-						{#if i > 0}<span aria-hidden="true"> · </span>{/if}
-						<button type="button" class="cursor-pointer text-left" onclick={() => copy(addr)}>
-							{copied === addr ? 'Copied' : addressCaption(addr)}
-						</button>
-					{/each}
-				</p>
-			{/if}
-		</div>
+		{/each}
+		{#if children}
+			<span class="text-white/30" aria-hidden="true">·</span>
+			<span class="text-sm text-white/70 [&_a]:text-[#8fd4cf] [&_a]:no-underline hover:[&_a]:text-white">
+				{@render children()}
+			</span>
+		{/if}
 	</div>
-	{#if children}
-		<div class="mt-2 text-xs text-[var(--muted)]">
-			{@render children()}
-		</div>
-	{/if}
 </header>

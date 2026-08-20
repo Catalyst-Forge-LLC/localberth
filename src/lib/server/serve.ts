@@ -28,19 +28,21 @@ function esc(value: string): string {
 
 const SITE_STATIC = join(dirname(fileURLToPath(import.meta.url)), '../../../site/static');
 
-const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; --tile-band:#1a1917; --tile-band-ink:#faf8f3; }
+const FACE_CSS = `:root { --bg:#faf8f3; --elev:#fff; --line:#e7e2d8; --text:#1a1917; --muted:#4d4a44; --ok:#2a6f6a; --warn:#9a6b12; --tile-band:#000; --tile-band-ink:#faf8f3; }
 html,body { height:100%; overflow:hidden; }
 body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif,system-ui,sans-serif; }
 main { display:flex; flex-direction:column; height:100%; min-height:100dvh; padding:0; overflow:hidden; }
 .muted { color:var(--muted); }
-header { flex-shrink:0; padding:1rem 1.25rem .75rem; margin:0; }
-header .ident { display:flex; align-items:center; gap:.75rem; }
-header .brand { margin:0; }
-header .brand img { display:block; height:3.5rem; width:auto; }
-header .word { margin:0; font-size:1.125rem; font-weight:600; letter-spacing:-0.02em; }
-header .host { margin:.15rem 0 0; font-size:.875rem; }
-header .addrs { margin:.15rem 0 0; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; }
-header .meta { margin:.5rem 0 0; color:var(--muted); font-size:.8rem; }
+header { flex-shrink:0; margin:0; padding:.5rem 1.25rem; background:#000; color:var(--tile-band-ink); }
+header .ident { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .75rem; }
+header .brand { display:flex; flex-shrink:0; align-items:center; gap:.65rem; margin:0; }
+header .brand img { display:block; height:2.75rem; width:auto; }
+header .word { margin:0; font-size:1rem; font-weight:600; letter-spacing:-0.02em; }
+header .host { font-size:.875rem; color:rgba(250,248,243,.85); }
+header .addrs, header .addrs button { font-size:.875rem; color:rgba(250,248,243,.7); font-variant-numeric:tabular-nums; }
+header .meta { font-size:.875rem; color:rgba(250,248,243,.7); }
+header .meta a { color:#8fd4cf; text-decoration:none; }
+header .dot { color:rgba(250,248,243,.3); }
 header button.copy { margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
 .feed { flex:1; min-height:0; overflow:auto; padding:0 1.25rem 1rem; }
 .sitefoot { flex-shrink:0; border-top:1px solid rgba(250,248,243,.2); background:var(--tile-band); text-align:center; padding:.75rem 1.25rem; padding-bottom:max(.75rem, env(safe-area-inset-bottom)); }
@@ -57,19 +59,16 @@ function brandHeader(meta: string): string {
 	const addrs = machine.addresses
 		.map(
 			(addr) =>
-				`<button type="button" class="copy" data-copy="${esc(addr)}">${esc(addressCaption(addr))}</button>`
+				`<span class="dot" aria-hidden="true">·</span><button type="button" class="copy addrs" data-copy="${esc(addr)}">${esc(addressCaption(addr))}</button>`
 		)
-		.join('<span aria-hidden="true"> · </span>');
+		.join('');
 	return `<header>
 <div class="ident">
-<p class="brand"><img src="/logo.png" alt=""/></p>
-<div>
-<p class="word">LocalBerth</p>
+<span class="brand"><img src="/logo.png" alt=""/><span class="word">LocalBerth</span></span>
 <button type="button" class="copy host" data-copy="${esc(machine.hostname)}">${esc(machine.hostname)}</button>
-${addrs ? `<p class="addrs">${addrs}</p>` : ''}
+${addrs}
+${meta ? `<span class="dot" aria-hidden="true">·</span><span class="meta">${meta}</span>` : ''}
 </div>
-</div>
-${meta ? `<p class="meta">${meta}</p>` : ''}
 </header>`;
 }
 

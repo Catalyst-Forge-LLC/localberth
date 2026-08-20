@@ -6,10 +6,10 @@
 </script>
 
 <div class="flex h-dvh flex-col overflow-hidden">
-	<div class="shrink-0 px-5 pt-4 pb-3">
+	<div class="shrink-0">
 		{@render header()}
 	</div>
-	<div class="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
+	<div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
 		{@render children()}
 	</div>
 	<SiteFooter />
