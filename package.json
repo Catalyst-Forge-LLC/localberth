@@ -24,7 +24,7 @@
     "site/static/logo.png"
   ],
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --host",
     "build": "vite build",
     "build:cli": "tsc -p tsconfig.cli.json",
     "prepublishOnly": "tsc -p tsconfig.cli.json",
