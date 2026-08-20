@@ -129,6 +129,19 @@ export function readTitle(html: string): string | undefined {
 	return title || undefined;
 }
 
+/** First `|` or ` - ` segment. Tiles want the app name, not the site tagline. */
+export function shortPeekTitle(title: string | null | undefined): string | null {
+	if (!title) return null;
+	const pipe = firstSegment(title, '|');
+	const dash = firstSegment(pipe, ' - ');
+	return dash || null;
+}
+
+function firstSegment(value: string, sep: string): string {
+	const first = value.split(sep).map((part) => part.replace(/\s+/g, ' ').trim()).find(Boolean);
+	return first ?? value.replace(/\s+/g, ' ').trim();
+}
+
 function readAttr(tag: string, name: string): string | undefined {
 	const match = tag.match(new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'));
 	return match?.[1] ?? match?.[2] ?? match?.[3];

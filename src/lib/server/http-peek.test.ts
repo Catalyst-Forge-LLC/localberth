@@ -2,7 +2,15 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createServer as createNet, type AddressInfo } from 'node:net';
 import { after, describe, it } from 'node:test';
-import { formatPeek, parsePeekPort, peekHttp, peekPayload, readIconHref, readTitle } from './http-peek.js';
+import {
+	formatPeek,
+	parsePeekPort,
+	peekHttp,
+	peekPayload,
+	readIconHref,
+	readTitle,
+	shortPeekTitle
+} from './http-peek.js';
 
 describe('parsePeekPort', () => {
 	it('accepts a real TCP port', () => {
@@ -59,6 +67,15 @@ describe('peekHttp', () => {
 		const peek = await peekHttp(port);
 		assert.equal(peek.http, false);
 		assert.equal(formatPeek(peek), 'Not HTTP.');
+	});
+
+	it('shortens titles at | and space-dash-space', () => {
+		assert.equal(shortPeekTitle('Desk | Local site'), 'Desk');
+		assert.equal(shortPeekTitle('Desk - a local app'), 'Desk');
+		assert.equal(shortPeekTitle('Desk | Foo - Bar'), 'Desk');
+		assert.equal(shortPeekTitle('Desk - Foo | Bar'), 'Desk');
+		assert.equal(shortPeekTitle('  Foo-Bar  '), 'Foo-Bar');
+		assert.equal(shortPeekTitle(null), null);
 	});
 
 	it('prefers apple-touch-icon over rel=icon', () => {

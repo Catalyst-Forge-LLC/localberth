@@ -1,6 +1,6 @@
 import { visitorLeaseRows, visitorSnapshot, type VisitorSnapshot, type VisitorTileInfo } from '../visitor.js';
 import type { BoardRow } from '../types.js';
-import { peekHttp } from './http-peek.js';
+import { peekHttp, shortPeekTitle } from './http-peek.js';
 
 /** Same as visitorSnapshot, plus a loopback peek for title and icon. */
 export async function visitorFeed(
@@ -15,7 +15,7 @@ export async function visitorFeed(
 			return {
 				name: row.lease.name,
 				port: row.lease.port,
-				title: peek.title ?? null,
+				title: shortPeekTitle(peek.title),
 				icon: peek.iconHref ?? null
 			};
 		})

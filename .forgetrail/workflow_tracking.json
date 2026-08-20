@@ -655,6 +655,10 @@
     {
       "date": "2026-08-20",
       "summary": "D30: visitor tiles peek title and icon on the host. Long-press copies the open URL. Header IPs labeled Tailscale or LAN."
+    },
+    {
+      "date": "2026-08-20",
+      "summary": "Visitor tile titles take the first `|` or ` - ` segment from the peeked HTML title."
     }
   ],
   "openQuestions": []

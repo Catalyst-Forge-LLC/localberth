@@ -42,7 +42,9 @@ describe('visitorFeed', () => {
 	it('peeks title and icon onto visitor tiles', async () => {
 		const server = createServer((_req, res) => {
 			res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-			res.end('<html><head><title>Desk</title><link rel="icon" href="/mark.svg"></head></html>');
+			res.end(
+				'<html><head><title>Desk | Local site</title><link rel="icon" href="/mark.svg"></head></html>'
+			);
 		});
 		servers.push(server);
 		const port = await listen(server);
